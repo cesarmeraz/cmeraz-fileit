@@ -27,7 +27,7 @@
 	// }
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "dotnet restore",
+	"postCreateCommand": "npm install -g azurite", // Or any other setup for your project
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -42,7 +42,8 @@
 	"containerEnv": {
 		"ACCEPT_EULA":"Y",
 		"MSSQL_SA_PASSWORD":"123qwe!@#QWE",
-		"SQL_WAIT_INTERVAL":"30"
+		"SQL_WAIT_INTERVAL":"30",
+		"AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHGmFOdcT0g==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
 	}
 
 
