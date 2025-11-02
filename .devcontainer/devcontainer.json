@@ -6,7 +6,7 @@
 	//"image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0",
     "dockerComposeFile": "docker-compose.yml",
     "service": "devcontainer",
-    "workspaceFolder": "/workspace",
+    "workspaceFolder": "/workspaces/cmeraz-fileit",
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers/features/azure-cli:1": {},

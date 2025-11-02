@@ -2,10 +2,7 @@ name: fileit-devcontainer
 services:
   devcontainer:
     image: mcr.microsoft.com/devcontainers/base:ubuntu
-    volumes:
-      - ../..:/workspaces:cached
-    network_mode: service:db
-    command: sleep infinity
+    network_mode: bridge
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
     ports:
