@@ -1,30 +1,25 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
-	"name": "C# (.NET)",
+	"name": "CMeraz-FileIt",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	//"image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0",
     "dockerComposeFile": "docker-compose.yml",
-    "service": "devcontainer",
+    "service": "app",
     "workspaceFolder": "/workspaces/cmeraz-fileit",
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers/features/azure-cli:1": {},
 		"ghcr.io/devcontainers/features/dotnet:2": {},
+		"ghcr.io/devcontainers/features/node:1": {},
 		"ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {},
 		"ghcr.io/devcontainers/features/docker-outside-of-docker": {}
 	},
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-    "forwardPorts": [10000, 5672, 5300],
-	// "portsAttributes": {
-	//		"5001": {
-	//			"protocol": "https"
-	//		}
-	// }
+  "forwardPorts": [10000, 10001],
+  "portsAttributes": {
+    "10000": {"label": "Azurite Blob Storage Emulator", "onAutoForward": "silent"},
+    "10001": {"label": "Azurite Blob Storage Emulator HTTPS", "onAutoForward": "silent"}
+  },
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "npm install -g azurite", // Or any other setup for your project
@@ -45,9 +40,6 @@
 		"MSSQL_SA_PASSWORD":"123qwe!@#QWE",
 		"SQL_WAIT_INTERVAL":"30",
 		"AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHGmFOdcT0g==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
-	}
-
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	},
+	"remoteUser": "vscode"
 }

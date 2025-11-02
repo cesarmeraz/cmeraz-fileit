@@ -1,15 +1,25 @@
 name: fileit-devcontainer
 services:
-  devcontainer:
-    image: mcr.microsoft.com/devcontainers/base:ubuntu
-    network_mode: host
-    command: sleep infinity
-  azurite:
-    image: mcr.microsoft.com/azure-storage/azurite
-    ports:
-      - "127.0.0.1:10000:10000"
-    command: ["azurite", "--blobHost", "0.0.0.0"]
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
-      - azurite_data:/workspaces/azurite_data # For persistence
+      - ..:/workspace:cached
+    network_mode: host
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+    environment:
+      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;
+
+
+  azurite:
+    container_name: azurite
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    restart: unless-stopped
+    volumes:
+      - azurite-data:/data
+    network_mode: service:app
+
 volumes:
-  azurite_data:
+  azurite-data:
