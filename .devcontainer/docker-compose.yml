@@ -3,6 +3,7 @@ services:
   devcontainer:
     image: mcr.microsoft.com/devcontainers/base:ubuntu
     network_mode: bridge
+    command: sleep infinity
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
     ports:

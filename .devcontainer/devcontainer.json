@@ -33,7 +33,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"-vms-dotnettools.csdevkit"
+				"-vms-dotnettools.csdevkit",
+				"ms-azuretools.vscode-containers"
 			]
 		}
 	},
