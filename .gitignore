@@ -416,3 +416,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+.vscode/launch.json
+.vscode/settings.json
+.vscode/tasks.json

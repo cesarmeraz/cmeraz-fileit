@@ -1,2 +1,2 @@
-# cmeraz-fileit-tool
-a commandline tool for endpoint testing
+# cmeraz-fileit
+a service bus test

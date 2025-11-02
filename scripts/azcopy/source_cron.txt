@@ -1,0 +1,16 @@
+# based on https://crontab.cronhub.io/
+
+
+# Every 5 minutes, between 06:00 PM and 09:59 PM, Monday through Friday
+#*/5 18-21 * * MON-FRI INGEST_PATH/crons/simple-source.sh
+
+
+# Every 5 minutes, between 08:00 AM and 09:59 PM, Saturday through Sunday
+#*/5 8-21 * * SAT-SUN INGEST_PATH/crons/simple-source.sh
+
+
+# Every 5 minutes, between 06:00 PM and 09:59 PM, Monday through Friday
+*/5 18-21 * * MON-FRI INGEST_PATH/crons_local/simple-source.sh
+
+# Every 5 minutes, between 08:00 AM and 09:59 PM, Saturday through Sunday
+*/5 8-21 * * SAT-SUN INGEST_PATH/crons_local/simple-source.sh
