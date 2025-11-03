@@ -1,51 +1,25 @@
 name: fileit-devcontainer
 services:
-  devcontainer:
-    image: mcr.microsoft.com/devcontainers/base:ubuntu
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
-      - ../..:/workspaces:cached
-    network_mode: service:db
+      - ..:/workspace:cached
+    network_mode: host
+    # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
-
-  emulator:
-    container_name: "servicebus-emulator"
-    image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
-    pull_policy: always
-    volumes:
-      - ./config.json:/workspace/emulator/config.json
-    ports:
-      - "5672:5672"
-      - "5300:5300"
     environment:
-      SQL_SERVER: mssql
-      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"  # Password should be same as what is set for SQL Server Linux 
-      ACCEPT_EULA: ${ACCEPT_EULA}
-      SQL_WAIT_INTERVAL: ${SQL_WAIT_INTERVAL} # Optional: Time in seconds to wait for SQL to be ready (default is 15 seconds)
-    depends_on:
-      - mssql
-    networks:
-      sb-emulator:
-        aliases:
-          - "sb-emulator"
-  mssql:
-        container_name: "mssql"
-        image: "mcr.microsoft.com/mssql/server:2022-latest"
-        networks:
-          sb-emulator:
-            aliases:
-              - "mssql"
-        environment:
-          ACCEPT_EULA: "${ACCEPT_EULA}"
-          MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}" # To be filled by user as per policy : https://learn.microsoft.com/en-us/sql/relational-databases/security/strong-passwords?view=sql-server-linux-ver16 
+      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;
+
 
   azurite:
-    image: mcr.microsoft.com/azure-storage/azurite
-    ports:
-      - "127.0.0.1:10000:10000"
-      - "127.0.0.1:10001:10001"
-      - "127.0.0.1:10002:10002"
-    command:
-      azurite
-      --blobHost 0.0.0.0
-      --queueHost 0.0.0.0
-      --tableHost 0.0.0.0
+    container_name: azurite
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    restart: unless-stopped
+    volumes:
+      - azurite-data:/data
+    network_mode: service:app
+
+volumes:
+  azurite-data:

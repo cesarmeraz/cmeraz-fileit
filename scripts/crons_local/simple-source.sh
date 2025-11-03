@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Load environment variables from .env file
-source "$(dirname "$0")/.env"
-
 # Upload a file to Azurite blob storage container "simple-source" using Azure CLI.
 # Usage: ./simple.sh /path/to/file
 set -euo pipefail
@@ -15,13 +12,10 @@ if ! command -v az >/dev/null 2>&1; then
     exit 2
 fi
 
-# Load environment variables from .env file
-source "$(dirname "$0")/.env"
-
 # Define the container name from filename without extension
-CONTAINER_NAME=$(basename "$0" .sh)
+CONTAINER_NAME="simple-source"
 
-DIRECTORY="$INGEST_PATH/$CONTAINER_NAME"
+DIRECTORY="$INGEST_PATH"
 
 if [ ! -d "$DIRECTORY" ]; then
     echo "ERROR: Directory not found: $DIRECTORY" >&2
