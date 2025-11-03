@@ -4,7 +4,7 @@
 connection_string="${STORAGE_LOCAL_CONNECTION_STRING}"
 
 # crons for local
-for file in scripts/crons_local/*.sh; do
+for file in /workspaces/cmeraz-fileit/scripts/crons_local/*.sh; do
   # Check if the file actually exists and is a regular file
   if [ -f "$file" ]; then
     echo "Processing file: $file"
