@@ -6,7 +6,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ..:/workspace:cached
-    network_mode: host
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
     environment:
@@ -19,7 +18,6 @@ services:
     restart: unless-stopped
     volumes:
       - azurite-data:/data
-    network_mode: service:app
 
   emulator:
     container_name: "servicebus-emulator"
@@ -35,17 +33,9 @@ services:
       ACCEPT_EULA: ${ACCEPT_EULA}
     depends_on:
       - sqledge
-    networks:
-      sb-emulator:
-        aliases:
-          - "sb-emulator"
   sqledge:
         container_name: "sqledge"
         image: "mcr.microsoft.com/azure-sql-edge:latest"
-        networks:
-          sb-emulator:
-            aliases:
-              - "sqledge"
         environment:
           ACCEPT_EULA: ${ACCEPT_EULA}
           MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
