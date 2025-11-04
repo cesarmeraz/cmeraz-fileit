@@ -15,7 +15,7 @@ fi
 # Define the container name from filename without extension
 CONTAINER_NAME="simple-source"
 
-DIRECTORY="$INGEST_PATH"
+DIRECTORY="$(pwd)"
 
 if [ ! -d "$DIRECTORY" ]; then
     echo "ERROR: Directory not found: $DIRECTORY" >&2
@@ -40,6 +40,12 @@ az storage container create \
     --name "$CONTAINER_NAME" \
     --connection-string "$CONN" \
     --only-show-errors >/dev/null
+
+# Create a test file to upload
+TIMESTAMP=$(date +%Y%m%d%H%M%S)
+FILENAME="test_${TIMESTAMP}.txt"
+echo "The current working directory is: $(pwd)" >> "$FILENAME"
+
 
 # Loop through all files in the directory, excluding *.sh files
 find "$DIRECTORY" -type f ! -name "*.sh" -print0 | while IFS= read -r -d $'\0' FILE; do

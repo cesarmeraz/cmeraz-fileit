@@ -10,7 +10,7 @@ namespace FileIt.App.Services
     public interface ISimpleService
     {
         Task ProcessAsync(ServiceBusReceivedMessage message);
-        //Task QueueAsync(Stream stream, string name);
+        Task QueueAsync(Stream stream, string name);
         Task<bool> ValidateBlobAsync(Stream stream, string name);
     }
 
@@ -23,16 +23,16 @@ namespace FileIt.App.Services
 
         private readonly ILogger<SimpleService> _logger;
         private readonly IBlobProvider _blobProvider;
-        //private readonly IBusProvider _busProvider;
+        private readonly IBusProvider _busProvider;
 
         public SimpleService(
             ILogger<SimpleService> logger,
-            IBlobProvider blobProvider//,
-            //IBusProvider busProvider
+            IBlobProvider blobProvider,
+            IBusProvider busProvider
         )
         {
             _blobProvider = blobProvider;
-          //  _busProvider = busProvider;
+            _busProvider = busProvider;
             _logger = logger;
         }
 
@@ -43,21 +43,21 @@ namespace FileIt.App.Services
             await _blobProvider.MoveBlobAsync(name, WORKING_CONTAINER, FINAL_CONTAINER);
         }
 
-        // public async Task QueueAsync(Stream stream, string name)
-        // {
-        //     _logger.LogInformation($"blob name: {name}");
-        //     await _blobProvider.MoveBlobAsync(name, SOURCE_CONTAINER, WORKING_CONTAINER);
-        //     // Get record from Blob storage to parse metadata and properties
-        //     // _busProvider.
-        //     var messageObject = new SimpleMessage { BlobName = name };
-        //     ServiceBusMessage message = new ServiceBusMessage(
-        //         JsonSerializer.Serialize(messageObject)
-        //     );
-        //     message.ApplicationProperties.Add("BLOB_NAME", name);
-        //     message.ApplicationProperties.Add("SOURCE", WORKING_CONTAINER);
-        //     message.ApplicationProperties.Add("DESTINATION", FINAL_CONTAINER);
-        //     await _busProvider.SendMessageAsync(QUEUE_NAME, message);
-        // }
+        public async Task QueueAsync(Stream stream, string name)
+        {
+            _logger.LogInformation($"blob name: {name}");
+            await _blobProvider.MoveBlobAsync(name, SOURCE_CONTAINER, WORKING_CONTAINER);
+            // Get record from Blob storage to parse metadata and properties
+            // _busProvider.
+            var messageObject = new SimpleMessage { BlobName = name };
+            ServiceBusMessage message = new ServiceBusMessage(
+                JsonSerializer.Serialize(messageObject)
+            );
+            message.ApplicationProperties.Add("BLOB_NAME", name);
+            message.ApplicationProperties.Add("SOURCE", WORKING_CONTAINER);
+            message.ApplicationProperties.Add("DESTINATION", FINAL_CONTAINER);
+            await _busProvider.SendMessageAsync(QUEUE_NAME, message);
+        }
 
         public async Task<bool> ValidateBlobAsync(Stream stream, string name)
         {

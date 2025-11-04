@@ -1,4 +1,4 @@
-//using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus;
 using FileIt.App.Services;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -33,7 +33,7 @@ public class SimpleFunc
         if (isValid)
         {
             _logger.LogInformation($"Blob {name} is valid.");
-            //await _blobService.QueueAsync(stream, name);
+            await _blobService.QueueAsync(stream, name);
         }
         else
         {
@@ -41,17 +41,17 @@ public class SimpleFunc
         }
     }
 
-    // [Function(nameof(ProcessSimple))]
-    // public async Task ProcessSimple(
-    //     [ServiceBusTrigger("simple", Connection = "ServiceBusConnection")]
-    //         ServiceBusReceivedMessage message
-    // )
-    // {
-    //     _logger.LogInformation($"Message ID: {message.MessageId}");
-    //     _logger.LogInformation($"Message Body: {message.Body.ToString()}");
-    //     _logger.LogInformation($"Message Content-Type: {message.ContentType}");
-    //     // Process the Service Bus message here
-    //     await _blobService.ProcessAsync(message);
-    //     await Task.CompletedTask;
-    // }
+    [Function(nameof(ProcessSimple))]
+    public async Task ProcessSimple(
+        [ServiceBusTrigger("simple", Connection = "ServiceBusConnection")]
+            ServiceBusReceivedMessage message
+    )
+    {
+        _logger.LogInformation($"Message ID: {message.MessageId}");
+        _logger.LogInformation($"Message Body: {message.Body.ToString()}");
+        _logger.LogInformation($"Message Content-Type: {message.ContentType}");
+        // Process the Service Bus message here
+        await _blobService.ProcessAsync(message);
+        await Task.CompletedTask;
+    }
 }
