@@ -15,14 +15,16 @@
 		"ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {},
 		"ghcr.io/devcontainers/features/docker-outside-of-docker": {}
 	},
-  "forwardPorts": [10000, 10001],
+  "forwardPorts": [5300, 5672, 10000, 10001],
   "portsAttributes": {
+    "5300": {"label": "Azure Service Bus Emulator", "onAutoForward": "silent"},
+    "5672": {"label": "Azure Service Bus Emulator", "onAutoForward": "silent"},
     "10000": {"label": "Azurite Blob Storage Emulator", "onAutoForward": "silent"},
     "10001": {"label": "Azurite Blob Storage Emulator HTTPS", "onAutoForward": "silent"}
   },
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": ["npm install -g azurite", "docker compose -f ./.devcontainer/docker-compose.yml up -d"], // Or any other setup for your project
+	"postCreateCommand": "docker compose -f ./.devcontainer/docker-compose.yml up -d", // Or any other setup for your project
 
 	// Configure tool-specific properties.
 	"customizations": {
