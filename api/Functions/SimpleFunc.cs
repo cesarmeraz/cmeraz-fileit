@@ -43,7 +43,7 @@ public class SimpleFunc
 
     [Function(nameof(ProcessSimple))]
     public async Task ProcessSimple(
-        [ServiceBusTrigger("simple", Connection = "ServiceBusConnection")]
+        [ServiceBusTrigger("simple", Connection = "ServiceBusConnectionString")]
             ServiceBusReceivedMessage message
     )
     {

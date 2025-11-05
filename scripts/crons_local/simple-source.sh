@@ -15,7 +15,7 @@ fi
 # Define the container name from filename without extension
 CONTAINER_NAME="simple-source"
 
-DIRECTORY="$(pwd)"
+DIRECTORY="$(pwd)/scripts/crons_local"
 
 if [ ! -d "$DIRECTORY" ]; then
     echo "ERROR: Directory not found: $DIRECTORY" >&2
@@ -47,24 +47,16 @@ FILENAME="test_${TIMESTAMP}.txt"
 echo "The current working directory is: $(pwd)" >> "$FILENAME"
 
 
-# Loop through all files in the directory, excluding *.sh files
-find "$DIRECTORY" -type f ! -name "*.sh" -print0 | while IFS= read -r -d $'\0' FILE; do
-    if [ ! -f "$FILE" ]; then
-        echo "WARNING: File not found: $FILE" >&2
-        continue
-    fi
+BLOB_NAME="$(basename "$FILENAME")"
 
-    BLOB_NAME="$(basename "$FILE")"
+echo "Uploading '$FILENAME' as blob '$BLOB_NAME' to container '$CONTAINER_NAME'..."
+az storage blob upload \
+    --container-name "$CONTAINER_NAME" \
+    --file "$FILENAME" \
+    --name "$BLOB_NAME" \
+    --connection-string "$CONN" \
+    --overwrite \
+    --only-show-errors
 
-    echo "Uploading '$FILE' as blob '$BLOB_NAME' to container '$CONTAINER_NAME'..."
-    az storage blob upload \
-        --container-name "$CONTAINER_NAME" \
-        --file "$FILE" \
-        --name "$BLOB_NAME" \
-        --connection-string "$CONN" \
-        --overwrite \
-        --only-show-errors
-
-    echo "Upload complete: container='$CONTAINER_NAME' blob='$BLOB_NAME'"
-done
+echo "Upload complete: container='$CONTAINER_NAME' blob='$BLOB_NAME'"
 exit 0
