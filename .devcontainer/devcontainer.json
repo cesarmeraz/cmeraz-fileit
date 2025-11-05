@@ -25,7 +25,6 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "npm install -g azurite",
-	"postStartCommand": "docker compose -f ./docker-compose.yml up -d", // Or any other setup for your project
 
 	// Configure tool-specific properties.
 	"customizations": {
