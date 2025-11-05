@@ -39,6 +39,7 @@ namespace FileIt.Api
                             "Configuration is missing or invalid."
                         );
                     }
+                    Console.WriteLine("ServiceBusConnectionString: " + appConfig.ServiceBusConnectionString);
 
                     // Register your services here for dependency injection
                     // Example: services.AddSingleton<IMyService, MyService>();
@@ -51,12 +52,8 @@ namespace FileIt.Api
                     services.AddAzureClients(builder =>
                     {
                         builder.AddBlobServiceClient(appConfig.BlobStorageConnectionString);
-                        builder.AddClient<
-                            Azure.Messaging.ServiceBus.ServiceBusClient,
-                            Azure.Messaging.ServiceBus.ServiceBusClient
-                        >(s => new Azure.Messaging.ServiceBus.ServiceBusClient(
-                            appConfig.ServiceBusConnectionString
-                        ));
+                builder.AddServiceBusClient(
+"Endpoint=sb://emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;");
                     });
                 });
 

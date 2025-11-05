@@ -47,9 +47,11 @@ namespace FileIt.App.Providers
                 var destinationContainerClient = _blobServiceClient.GetBlobContainerClient(
                     destinationContainer
                 );
+                await destinationContainerClient.CreateIfNotExistsAsync();
 
                 var sourceBlobClient = sourceContainerClient.GetBlobClient(blobName);
                 var destinationBlobClient = destinationContainerClient.GetBlobClient(blobName);
+
 
                 var existsResponse = await sourceBlobClient.ExistsAsync();
                 if (!existsResponse.Value)
