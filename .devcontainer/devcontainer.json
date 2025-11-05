@@ -37,7 +37,8 @@
 			"extensions": [
 				"-vms-dotnettools.csdevkit",
 				"ms-azuretools.vscode-containers",
-				"rogalmic.bash-debug"
+				"rogalmic.bash-debug",
+				"csharpier.csharpier-vscode"
 			]
 		}
 	},
