@@ -10,10 +10,15 @@
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers/features/azure-cli:1": {},
-		"ghcr.io/devcontainers/features/dotnet:2": {},
-		"ghcr.io/devcontainers/features/node:1": {},
-		"ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {},
-		"ghcr.io/devcontainers/features/docker-outside-of-docker": {}
+		"ghcr.io/devcontainers/features/dotnet:2": {
+			"version": "8.0",
+	        "additionalVersions": "lts"
+		},
+		"ghcr.io/devcontainers/features/common-utils:1": {
+          "installBash": true
+        },
+		//"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {}
 	},
   "forwardPorts": [5300, 5672, 10000, 10001],
   "portsAttributes": {
@@ -24,14 +29,15 @@
   },
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "npm install -g azurite",
+	//"postCreateCommand": ". ${NVM_DIR}/nvm.sh && nvm install --lts",
 
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"-vms-dotnettools.csdevkit",
-				"ms-azuretools.vscode-containers"
+				"ms-azuretools.vscode-containers",
+				"rogalmic.bash-debug"
 			]
 		}
 	},

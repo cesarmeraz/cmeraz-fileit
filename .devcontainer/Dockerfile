@@ -1,2 +1,2 @@
-ARG IMAGE=dotnet:8.0-jammy
+ARG IMAGE=base:ubuntu
 FROM mcr.microsoft.com/devcontainers/${IMAGE}
