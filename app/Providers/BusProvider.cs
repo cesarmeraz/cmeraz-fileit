@@ -25,7 +25,6 @@ namespace FileIt.App.Providers
         {
             ServiceBusSender sender = _serviceBusClient.CreateSender(queueName);
             await sender.SendMessageAsync(message);
-            await sender.DisposeAsync(); // Dispose the sender when no longer needed
         }
 
         // Implement blob operations here

@@ -52,8 +52,7 @@ namespace FileIt.Api
                     services.AddAzureClients(builder =>
                     {
                         builder.AddBlobServiceClient(appConfig.BlobStorageConnectionString);
-                builder.AddServiceBusClient(
-"Endpoint=sb://emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;");
+                        builder.AddServiceBusClient(appConfig.ServiceBusConnectionString);
                     });
                 });
 
