@@ -39,10 +39,11 @@ namespace FileIt.Api
                             "Configuration is missing or invalid."
                         );
                     }
+                    Console.WriteLine("ServiceBusConnectionString: " + appConfig.ServiceBusConnectionString);
 
                     // Register your services here for dependency injection
                     // Example: services.AddSingleton<IMyService, MyService>();
-                    //services.AddScoped<App.Providers.IBusProvider, App.Providers.BusProvider>();
+                    services.AddScoped<App.Providers.IBusProvider, App.Providers.BusProvider>();
                     services.AddScoped<App.Providers.IBlobProvider, App.Providers.BlobProvider>();
                     services.AddScoped<App.Services.ISimpleService, App.Services.SimpleService>();
                     services.AddSingleton(appConfig);
@@ -51,12 +52,7 @@ namespace FileIt.Api
                     services.AddAzureClients(builder =>
                     {
                         builder.AddBlobServiceClient(appConfig.BlobStorageConnectionString);
-                        // builder.AddClient<
-                        //     Azure.Messaging.ServiceBus.ServiceBusClient,
-                        //     Azure.Messaging.ServiceBus.ServiceBusClient
-                        // >(s => new Azure.Messaging.ServiceBus.ServiceBusClient(
-                        //     appConfig.ServiceBusConnectionString
-                        // ));
+                        builder.AddServiceBusClient(appConfig.ServiceBusConnectionString);
                     });
                 });
 

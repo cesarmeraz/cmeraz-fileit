@@ -10,6 +10,8 @@
 *.userosscache
 *.sln.docstates
 *.env
+# except the env file for devcontainer
+!.devcontainer/.env
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -416,6 +418,4 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
-.vscode/launch.json
 .vscode/settings.json
-.vscode/tasks.json
