@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Azure.Messaging.ServiceBus;
 using FileIt.App.Models;
 using FileIt.App.Providers;
@@ -9,8 +8,26 @@ namespace FileIt.App.Services
 {
     public interface ISimpleService
     {
+        /// <summary>
+        /// Receives the queue message and processes its file(s)
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         Task ProcessAsync(ServiceBusReceivedMessage message);
-        Task QueueAsync(Stream stream, string name);
+
+        /// <summary>
+        /// Moves a file to the working container and queues a message
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        Task QueueAsync(string name);
+
+        /// <summary>
+        /// Performs validation on the file and its name
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         Task<bool> ValidateBlobAsync(Stream stream, string name);
     }
 
@@ -43,7 +60,7 @@ namespace FileIt.App.Services
             await _blobProvider.MoveBlobAsync(name, WORKING_CONTAINER, FINAL_CONTAINER);
         }
 
-        public async Task QueueAsync(Stream stream, string name)
+        public async Task QueueAsync(string name)
         {
             _logger.LogInformation($"blob name: {name}");
             await _blobProvider.MoveBlobAsync(name, SOURCE_CONTAINER, WORKING_CONTAINER);

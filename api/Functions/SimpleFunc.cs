@@ -1,13 +1,11 @@
+using System.Net;
+using System.Text;
 using Azure.Messaging.ServiceBus;
+using Azure.Storage.Blobs;
 using FileIt.App.Services;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using Azure.Storage.Blobs;
-using System.Text;
-using System.Net;
-using System.IO;
-using System;
 
 namespace FileIt.Api.Functions;
 
@@ -22,10 +20,18 @@ public class SimpleFunc
         _blobService = blobService;
     }
 
+    /// <summary>
+    /// A testing aid that uploads a file to the blob storage emulator
+    /// </summary>
+    /// <param name="req">the HttpRequestData</param>
+    /// <param name="executionContext">the FunctionContext</param>
+    /// <returns></returns>
     [Function(nameof(SeedSimple))]
-    public async Task<HttpResponseData> SeedSimple([
-        HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)
-    ] HttpRequestData req, FunctionContext executionContext)
+    public async Task<HttpResponseData> SeedSimple(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]
+            HttpRequestData req,
+        FunctionContext executionContext
+    )
     {
         // Create a small seeded file and upload it to the 'simple-source' container
         var name = $"seed-{Guid.NewGuid()}.txt";
@@ -58,6 +64,12 @@ public class SimpleFunc
         return resp;
     }
 
+    /// <summary>
+    /// a BlobTrigger that receives the file stream and its name
+    /// </summary>
+    /// <param name="stream">the file content</param>
+    /// <param name="name">the file name</param>
+    /// <returns></returns>
     [Function(nameof(ReceiveSimple))]
     public async Task ReceiveSimple(
         [BlobTrigger("simple-source/{name}", Connection = "AzureWebJobsStorage")] Stream stream,
@@ -75,7 +87,7 @@ public class SimpleFunc
         if (isValid)
         {
             _logger.LogInformation($"Blob {name} is valid.");
-            await _blobService.QueueAsync(stream, name);
+            await _blobService.QueueAsync(name);
         }
         else
         {
@@ -83,6 +95,11 @@ public class SimpleFunc
         }
     }
 
+    /// <summary>
+    /// A ServiceBusTrigger that processes the file ingested
+    /// </summary>
+    /// <param name="message">the ServiceBusReceivedMessage</param>
+    /// <returns></returns>
     [Function(nameof(ProcessSimple))]
     public async Task ProcessSimple(
         [ServiceBusTrigger("simple", Connection = "ServiceBusConnectionString")]
@@ -94,6 +111,5 @@ public class SimpleFunc
         _logger.LogInformation($"Message Content-Type: {message.ContentType}");
         // Process the Service Bus message here
         await _blobService.ProcessAsync(message);
-        await Task.CompletedTask;
     }
 }

@@ -1,6 +1,5 @@
 using System.Configuration;
 using FileIt.App.Models;
-using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,25 +29,19 @@ namespace FileIt.Api
                 //        .ConfigureFunctionsWorkerDefaults() // Configures default settings for the isolated worker
                 .ConfigureServices(services =>
                 {
-                    //bind Configuration to AppConfig
                     AppConfig? appConfig = config.GetRequiredSection("App").Get<AppConfig>();
-
                     if (appConfig == null)
                     {
                         throw new ConfigurationErrorsException(
                             "Configuration is missing or invalid."
                         );
                     }
-                    Console.WriteLine("ServiceBusConnectionString: " + appConfig.ServiceBusConnectionString);
 
-                    // Register your services here for dependency injection
-                    // Example: services.AddSingleton<IMyService, MyService>();
                     services.AddScoped<App.Providers.IBusProvider, App.Providers.BusProvider>();
                     services.AddScoped<App.Providers.IBlobProvider, App.Providers.BlobProvider>();
                     services.AddScoped<App.Services.ISimpleService, App.Services.SimpleService>();
                     services.AddSingleton(appConfig);
 
-                    // Add any other necessary services or configurations
                     services.AddAzureClients(builder =>
                     {
                         builder.AddBlobServiceClient(appConfig.BlobStorageConnectionString);
