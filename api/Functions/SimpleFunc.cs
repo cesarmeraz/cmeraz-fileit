@@ -9,12 +9,13 @@ using Microsoft.Extensions.Logging;
 
 namespace FileIt.Api.Functions;
 
-public class SimpleFunc
+public class SimpleFunc : BaseFunction
 {
     private readonly ILogger<SimpleFunc> _logger;
     private readonly ISimpleService _blobService;
 
     public SimpleFunc(ILogger<SimpleFunc> logger, ISimpleService blobService)
+        : base(logger)
     {
         _logger = logger;
         _blobService = blobService;
@@ -33,6 +34,7 @@ public class SimpleFunc
         FunctionContext executionContext
     )
     {
+        LogFunctionStart(nameof(SeedSimple));
         // Create a small seeded file and upload it to the 'simple-source' container
         var name = $"seed-{Guid.NewGuid()}.txt";
         var content = $"Seeded blob created at {DateTime.UtcNow:o}";
@@ -76,6 +78,8 @@ public class SimpleFunc
         string name
     )
     {
+        LogFunctionStart(nameof(ReceiveSimple));
+
         using var blobStreamReader = new StreamReader(stream);
         var content = await blobStreamReader.ReadToEndAsync();
         _logger.LogInformation(
@@ -106,6 +110,8 @@ public class SimpleFunc
             ServiceBusReceivedMessage message
     )
     {
+        LogFunctionStart(nameof(ProcessSimple));
+
         _logger.LogInformation($"Message ID: {message.MessageId}");
         _logger.LogInformation($"Message Body: {message.Body.ToString()}");
         _logger.LogInformation($"Message Content-Type: {message.ContentType}");
