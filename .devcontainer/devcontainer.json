@@ -8,14 +8,15 @@
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers/features/azure-cli:1": {},
 		"ghcr.io/devcontainers/features/dotnet:2": {
-			"version": "8.0",
-	        "additionalVersions": "lts"
+			"version": "8.0"
 		},
 		"ghcr.io/devcontainers/features/common-utils:1": {
           "installBash": true
         },
-		//"ghcr.io/devcontainers/features/node:1": {},
-		"ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {}
+		"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {
+			"version": "latest"
+		}
 	},
   "forwardPorts": [5300, 5672, 10000, 10001],
   "portsAttributes": {
