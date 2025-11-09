@@ -9,7 +9,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>Tool</RootNamespace>
+    <Configuration>Debug</Configuration>
+    <AssemblyName>FileIt.Tool</AssemblyName>
+    <RootNamespace>FileIt.Tool</RootNamespace>
     <NoWarn></NoWarn>
   </PropertyGroup>
 

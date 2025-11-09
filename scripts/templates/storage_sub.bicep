@@ -1,19 +1,26 @@
 @description('The Azure region for the deployment')
-param location string = 'eastus2'
+param location string = 'centralus'
 
 @description('A unique value, like domain')
 param stem string
+
+param group_name string
+
+param name string
+
+param deployment_name string
 
 targetScope = 'subscription'
 
 
 resource rg_storage 'Microsoft.Resources/resourceGroups@2024-11-01' = {
   location: location
-  name: 'rg-${stem}-storage'
+  name: group_name
   properties: {}
   tags: {
     stem: stem
     module: 'storage_module'
+    deployment: deployment_name
   }
 }
 
@@ -22,7 +29,7 @@ module storage_module 'storage_module.bicep' = {
   scope: resourceGroup(rg_storage.name)
   params: {
     location: location
-    storageAccountName: 'cmerazfileitstorage'
+    storageAccountName: name
     accountType: 'Standard_LRS'
     accessTier: 'Hot'
     kind: 'StorageV2'
@@ -47,5 +54,6 @@ module storage_module 'storage_module.bicep' = {
     keyTypeForTableAndQueueEncryption: 'Account'
     infrastructureEncryptionEnabled: false
     isShareSoftDeleteEnabled: true
+    deploymentName: deployment_name
   }
 }

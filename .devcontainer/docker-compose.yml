@@ -1,6 +1,6 @@
 name: fileit-devcontainer
 services:
-  app:
+  api:
     build:
       context: .
       dockerfile: Dockerfile

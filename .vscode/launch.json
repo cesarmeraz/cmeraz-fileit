@@ -60,7 +60,7 @@
             "name": "Bash",
             "cwd": "${workspaceFolder}",
             "program": "${file}",
-            "terminalKind": "integrated",
+            "terminalKind": "integrated"
         }
     ]
 }
