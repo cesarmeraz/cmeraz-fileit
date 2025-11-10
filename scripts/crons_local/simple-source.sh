@@ -16,48 +16,39 @@ fi
 CONTAINER_SOURCE="simple-source"
 CONTAINER_WORKING="simple-working"
 CONTAINER_FINAL="simple-final"
-
-DIRECTORY="$(pwd)/scripts/crons_local"
-
-if [ ! -d "$DIRECTORY" ]; then
-    echo "ERROR: Directory not found: $DIRECTORY" >&2
-    exit 3
-fi
+CONN=$AZURE_STORAGE_CONNECTION_STRING
 
 # USE AZURE_STORAGE_CONNECTION_STRING environment variable.
-
+echo "Using AZURE_STORAGE_CONNECTION_STRING: ${CONN:-<not set>}"
 
 # Ensure containers exist (create if missing)
 echo "Ensuring container '$CONTAINER_SOURCE' exists..."
 az storage container create \
     --name "$CONTAINER_SOURCE" \
-    --connection-string "$AZURE_STORAGE_CONNECTION_STRING" \
-    --only-show-errors >/dev/null
+    --connection-string "$CONN"
 
 echo "Ensuring container '$CONTAINER_WORKING' exists..."
 az storage container create \
     --name "$CONTAINER_WORKING" \
-    --connection-string "$AZURE_STORAGE_CONNECTION_STRING" \
-    --only-show-errors >/dev/null
+    --connection-string "$CONN" 
 
 echo "Ensuring container '$CONTAINER_FINAL' exists..."
 az storage container create \
     --name "$CONTAINER_FINAL" \
-    --connection-string "$AZURE_STORAGE_CONNECTION_STRING" \
-    --only-show-errors >/dev/null
+    --connection-string "$CONN" 
 
 # Create a test file to upload
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
 FILENAME="test_${TIMESTAMP}.txt"
 echo "The current working directory is: $(pwd)" >> "$FILENAME"
 
-echo "Uploading test file '$FILENAME' as blob '$BLOB_NAME' to container '$CONTAINER_SOURCE'..."
 BLOB_NAME="$(basename "$FILENAME")"
+echo "Uploading test file '$FILENAME' as blob '$BLOB_NAME' to container '$CONTAINER_SOURCE'..."
 az storage blob upload \
     --container-name "$CONTAINER_SOURCE" \
     --file "$FILENAME" \
     --name "$BLOB_NAME" \
-    --connection-string "$AZURE_STORAGE_CONNECTION_STRING" \
+    --connection-string "$CONN" \
     --overwrite \
     --only-show-errors
 
