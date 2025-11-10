@@ -3,6 +3,10 @@
     "version": "2.0.0",
     "tasks": [
         {
+        "label": "start",
+        "dependsOn": ["clean", "test", "build", "run"]
+        },
+        {
             "label": "func start",
             "type": "shell",
             "command": "func start",
@@ -21,24 +25,7 @@
             }
         },
         {
-            "label": "Build CMerazFileItTool for Development",
-            "type": "shell",
-            "command": "dotnet",
-            "args": [
-                "build",
-                "${workspaceFolder}/tool/Tool.csproj",
-                "--configuration",
-                "Debug"
-            ],
-            "problemMatcher": "$msCompile",
-            "group": "none",
-            "presentation": {
-                "reveal": "always",
-                "panel": "shared"
-            }
-        },
-        {
-            "label": "Build CMerazFileItTool for Production",
+            "label": "Build for Production",
             "type": "shell",
             "command": "dotnet",
             "args": [
@@ -55,16 +42,34 @@
             }
         },
         {
-            "label": "Build CMerazFileItTest",
+            "label": "clean",
+            "command": "dotnet",
+            "args": [
+                "clean",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "type": "process",
+            "problemMatcher": "$msCompile",
+            "options": {
+                "cwd": "${workspaceFolder}/api"
+            }
+        },
+        {
+            "label": "test",
             "type": "shell",
             "command": "dotnet",
             "args": [
-                "build",
+                "test",
                 "${workspaceFolder}/test/Test.csproj",
                 "--configuration",
                 "Debug"
             ],
+            "dependsOn": "clean",
             "problemMatcher": "$msCompile",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "group": "none",
             "presentation": {
                 "reveal": "always",
@@ -72,69 +77,32 @@
             }
         },
         {
-            "label": "Build All Projects",
-            "dependsOn": [
-                "Build CMerazFileItTool for Development",
-                "Build CMerazFileItTest"
-            ],
-            "dependsOrder": "sequence",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "presentation": {
-                "reveal": "silent",
-                "panel": "shared"
-            }
-        },
-        {
-            "label": "clean (functions)",
-            "command": "dotnet",
-            "args": [
-                "clean",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "type": "process",
-            "problemMatcher": "$msCompile",
-            "options": {
-                "cwd": "${workspaceFolder}/api"
-            }
-        },
-        {
-            "label": "build (functions)",
+            "label": "build",
             "command": "dotnet",
             "args": [
                 "build",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary",
+                "--configuration",
+                "Debug"
             ],
             "type": "process",
-            "dependsOn": "clean (functions)",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
+            "dependsOn": "test",
             "problemMatcher": "$msCompile",
             "options": {
                 "cwd": "${workspaceFolder}/api"
             }
         },
         {
-            "label": "clean release (functions)",
-            "command": "dotnet",
-            "args": [
-                "clean",
-                "--configuration",
-                "Release",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "type": "process",
-            "problemMatcher": "$msCompile",
+            "label": "run",
+            "type": "func",
+            "dependsOn": "build",
             "options": {
-                "cwd": "${workspaceFolder}/api"
-            }
+                "cwd": "${workspaceFolder}/api/bin/Debug/net8.0"
+            },
+            "command": "start",
+            "isBackground": true,
+            "problemMatcher": "$func-dotnet-watch",
         },
         {
             "label": "publish (functions)",
@@ -152,16 +120,6 @@
             "options": {
                 "cwd": "${workspaceFolder}/api"
             }
-        },
-        {
-            "type": "func",
-            "dependsOn": "build (functions)",
-            "options": {
-                "cwd": "${workspaceFolder}/api/bin/Debug/net8.0"
-            },
-            "command": "host start",
-            "isBackground": true,
-            "problemMatcher": "$func-dotnet-watch"
         }
     ]
 }

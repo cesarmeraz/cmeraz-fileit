@@ -8,7 +8,7 @@
             "name": "Func - Development",
             "type": "coreclr",
             "request": "attach",
-            "preLaunchTask": "func start",
+            "preLaunchTask": "run",
             "processId": "${command:azureFunctions.pickProcess}"
         },
         {
