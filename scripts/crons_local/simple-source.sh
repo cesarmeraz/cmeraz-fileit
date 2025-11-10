@@ -13,7 +13,10 @@ if ! command -v az >/dev/null 2>&1; then
 fi
 
 # Define the container name from filename without extension
-CONTAINER_NAME="simple-source"
+CONTAINER_SOURCE="simple-source"
+CONTAINER_WORKING="simple-working"
+CONTAINER_FINAL="simple-final"
+
 
 DIRECTORY="$(pwd)/scripts/crons_local"
 
@@ -35,28 +38,40 @@ if [ -z "$CONN" ]; then
 fi
 
 # Ensure container exists (creates if missing)
-echo "Ensuring container '$CONTAINER_NAME' exists..."
+echo "Ensuring container '$CONTAINER_SOURCE' exists..."
 az storage container create \
-    --name "$CONTAINER_NAME" \
+    --name "$CONTAINER_SOURCE" \
     --connection-string "$CONN" \
     --only-show-errors >/dev/null
 
-# Create a test file to upload
-TIMESTAMP=$(date +%Y%m%d%H%M%S)
-FILENAME="test_${TIMESTAMP}.txt"
-echo "The current working directory is: $(pwd)" >> "$FILENAME"
-
-
-BLOB_NAME="$(basename "$FILENAME")"
-
-echo "Uploading '$FILENAME' as blob '$BLOB_NAME' to container '$CONTAINER_NAME'..."
-az storage blob upload \
-    --container-name "$CONTAINER_NAME" \
-    --file "$FILENAME" \
-    --name "$BLOB_NAME" \
+echo "Ensuring container '$CONTAINER_WORKING' exists..."
+az storage container create \
+    --name "$CONTAINER_WORKING" \
     --connection-string "$CONN" \
-    --overwrite \
-    --only-show-errors
+    --only-show-errors >/dev/null
 
-echo "Upload complete: container='$CONTAINER_NAME' blob='$BLOB_NAME'"
+echo "Ensuring container '$CONTAINER_FINAL' exists..."
+az storage container create \
+    --name "$CONTAINER_FINAL" \
+    --connection-string "$CONN" \
+    --only-show-errors >/dev/null
+
+# # Create a test file to upload
+# TIMESTAMP=$(date +%Y%m%d%H%M%S)
+# FILENAME="test_${TIMESTAMP}.txt"
+# echo "The current working directory is: $(pwd)" >> "$FILENAME"
+
+
+# BLOB_NAME="$(basename "$FILENAME")"
+
+# echo "Uploading '$FILENAME' as blob '$BLOB_NAME' to container '$CONTAINER_NAME'..."
+# az storage blob upload \
+#     --container-name "$CONTAINER_NAME" \
+#     --file "$FILENAME" \
+#     --name "$BLOB_NAME" \
+#     --connection-string "$CONN" \
+#     --overwrite \
+#     --only-show-errors
+
+# echo "Upload complete: container='$CONTAINER_NAME' blob='$BLOB_NAME'"
 exit 0

@@ -10,7 +10,7 @@ services:
     command: sleep infinity
     environment:
       AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://localhost:10000/devstoreaccount1;
-
+      ServiceBusConnectionString: Endpoint=sb://emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;
 
   azurite:
     container_name: azurite
@@ -31,7 +31,6 @@ services:
       ACCEPT_EULA: ${ACCEPT_EULA}
     depends_on:
       - sqledge
-    network_mode: service:api
   sqledge:
         container_name: "sqledge"
         image: "mcr.microsoft.com/azure-sql-edge:latest"
