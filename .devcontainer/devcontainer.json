@@ -11,8 +11,7 @@
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers/features/azure-cli:1": {},
 		"ghcr.io/devcontainers/features/dotnet:2": {
-			"version": "8.0",
-	        "additionalVersions": "lts"
+			"version": "8.0"
 		},
 		"ghcr.io/devcontainers/features/common-utils:1": {
           "installBash": true
@@ -48,7 +47,7 @@
 		"ACCEPT_EULA":"Y",
 		"MSSQL_SA_PASSWORD":"123qwe!@#QWE",
 		"SQL_WAIT_INTERVAL":"30",
-		"AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHGmFOdcT0g==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
+		"AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHGmFOdcT0g==;BlobEndpoint=http://localhost:10000/devstoreaccount1;"
 	},
 	"remoteUser": "vscode"
 }
