@@ -98,7 +98,7 @@
             "type": "func",
             "dependsOn": "build",
             "options": {
-                "cwd": "${workspaceFolder}/api/bin/Debug/net8.0"
+                "cwd": "${workspaceFolder}/api"
             },
             "command": "start",
             "isBackground": true,
