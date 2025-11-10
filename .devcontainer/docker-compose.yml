@@ -9,33 +9,29 @@ services:
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
     environment:
-      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;
+      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://localhost:10000/devstoreaccount1;
 
 
   azurite:
     container_name: azurite
     image: mcr.microsoft.com/azure-storage/azurite:latest
     restart: unless-stopped
-    ports: 
-      - "10000:10000"
-      - "10001:10001"
     volumes:
       - azurite-data:/data
+    network_mode: service:api
 
   emulator:
     container_name: "servicebus-emulator"
     image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
     volumes:
       - "${CONFIG_PATH}:/ServiceBus_Emulator/ConfigFiles/Config.json"
-    ports:
-      - "5672:5672"
-      - "5300:5300"
     environment:
       SQL_SERVER: sqledge  
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
       ACCEPT_EULA: ${ACCEPT_EULA}
     depends_on:
       - sqledge
+    network_mode: service:api
   sqledge:
         container_name: "sqledge"
         image: "mcr.microsoft.com/azure-sql-edge:latest"
