@@ -60,7 +60,7 @@ public class SimpleFunc
 
     [Function(nameof(ReceiveSimple))]
     public async Task ReceiveSimple(
-        [BlobTrigger("simple-source/{name}", Connection = "AzureWebJobsStorage")] Stream stream,
+        [BlobTrigger("simple-source/{name}")] Stream stream,
         string name
     )
     {
@@ -85,7 +85,7 @@ public class SimpleFunc
 
     [Function(nameof(ProcessSimple))]
     public async Task ProcessSimple(
-        [ServiceBusTrigger("simple", Connection = "ServiceBusConnectionString")]
+        [ServiceBusTrigger("simple")]
             ServiceBusReceivedMessage message
     )
     {

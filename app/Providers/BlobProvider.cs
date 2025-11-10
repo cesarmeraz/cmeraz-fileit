@@ -11,7 +11,7 @@ namespace FileIt.App.Providers
     public interface IBlobProvider
     {
         // Define methods for blob operations
-        Task MoveBlobAsync(string name, string sOURCE_CONTAINER, string wORKING_CONTAINER);
+        Task MoveBlobAsync(string name, string sourceContainer, string destinationContainer);
     }
 
     public class BlobProvider : IBlobProvider

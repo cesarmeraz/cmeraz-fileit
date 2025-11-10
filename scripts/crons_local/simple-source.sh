@@ -24,35 +24,26 @@ if [ ! -d "$DIRECTORY" ]; then
     exit 3
 fi
 
-# Prefer AZURE_STORAGE_CONNECTION_STRING environment variable.
-# If not set, you can start Azurite with defaults and set this accordingly.
-# Example Azurite connection string (common default):
-# DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDl3qEXAMPLE==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;
-CONN="${AZURE_STORAGE_CONNECTION_STRING:-}"
+# USE AZURE_STORAGE_CONNECTION_STRING environment variable.
 
-if [ -z "$CONN" ]; then
-    echo "WARNING: AZURE_STORAGE_CONNECTION_STRING not set. Attempting common Azurite default connection string." >&2
-    CONN="DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDl3rEXAMPLEKEY==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
-    echo "If this fails, set AZURE_STORAGE_CONNECTION_STRING to your Azurite connection string." >&2
-fi
 
 # Ensure containers exist (create if missing)
 echo "Ensuring container '$CONTAINER_SOURCE' exists..."
 az storage container create \
     --name "$CONTAINER_SOURCE" \
-    --connection-string "$CONN" \
+    --connection-string "$AZURE_STORAGE_CONNECTION_STRING" \
     --only-show-errors >/dev/null
 
 echo "Ensuring container '$CONTAINER_WORKING' exists..."
 az storage container create \
     --name "$CONTAINER_WORKING" \
-    --connection-string "$CONN" \
+    --connection-string "$AZURE_STORAGE_CONNECTION_STRING" \
     --only-show-errors >/dev/null
 
 echo "Ensuring container '$CONTAINER_FINAL' exists..."
 az storage container create \
     --name "$CONTAINER_FINAL" \
-    --connection-string "$CONN" \
+    --connection-string "$AZURE_STORAGE_CONNECTION_STRING" \
     --only-show-errors >/dev/null
 
 # Create a test file to upload
@@ -66,7 +57,7 @@ az storage blob upload \
     --container-name "$CONTAINER_SOURCE" \
     --file "$FILENAME" \
     --name "$BLOB_NAME" \
-    --connection-string "$CONN" \
+    --connection-string "$AZURE_STORAGE_CONNECTION_STRING" \
     --overwrite \
     --only-show-errors
 

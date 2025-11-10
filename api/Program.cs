@@ -25,6 +25,10 @@ namespace FileIt.Api
                 .AddEnvironmentVariables()
                 .Build();
 
+            string azureFunctionsEnvironment = config["AZURE_FUNCTIONS_ENVIRONMENT"]; 
+            string azureStorageConnectionString = config["AZURE_STORAGE_CONNECTION_STRING"]; 
+            string azureServiceBusConnectionString = config["SERVICE_BUS_CONNECTION_STRING"]; 
+
             var host = new HostBuilder()
                 .ConfigureFunctionsWebApplication() // This line is crucial for ASP.NET Core Integration
                 //        .ConfigureFunctionsWorkerDefaults() // Configures default settings for the isolated worker
@@ -39,7 +43,7 @@ namespace FileIt.Api
                             "Configuration is missing or invalid."
                         );
                     }
-                    Console.WriteLine("ServiceBusConnectionString: " + appConfig.ServiceBusConnectionString);
+                    Console.WriteLine("ServiceBusConnectionString: " + azureServiceBusConnectionString);
 
                     // Register your services here for dependency injection
                     // Example: services.AddSingleton<IMyService, MyService>();
@@ -51,8 +55,8 @@ namespace FileIt.Api
                     // Add any other necessary services or configurations
                     services.AddAzureClients(builder =>
                     {
-                        builder.AddBlobServiceClient(appConfig.BlobStorageConnectionString);
-                        builder.AddServiceBusClient(appConfig.ServiceBusConnectionString);
+                        builder.AddBlobServiceClient(azureStorageConnectionString);
+                        builder.AddServiceBusClient(azureServiceBusConnectionString);
                     });
                 });
 

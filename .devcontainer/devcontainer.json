@@ -46,8 +46,7 @@
 	"containerEnv": {
 		"ACCEPT_EULA":"Y",
 		"MSSQL_SA_PASSWORD":"123qwe!@#QWE",
-		"SQL_WAIT_INTERVAL":"30",
-		"AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHGmFOdcT0g==;BlobEndpoint=http://localhost:10000/devstoreaccount1;"
+		"SQL_WAIT_INTERVAL":"30"
 	},
 	"remoteUser": "vscode"
 }
