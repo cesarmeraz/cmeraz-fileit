@@ -4,6 +4,15 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
+        {
+            "name": "Container setup",
+            "type": "bashdb",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/scripts/crons_local/simple-source.sh",
+            "terminalKind": "integrated",
+        },
         {
             "name": "Func - Development",
             "type": "coreclr",

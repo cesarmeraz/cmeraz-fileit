@@ -14,34 +14,12 @@ fi
 
 # Define the container name from filename without extension
 CONTAINER_SOURCE="simple-source"
-CONTAINER_WORKING="simple-working"
-CONTAINER_FINAL="simple-final"
 CONN=$AZURE_STORAGE_CONNECTION_STRING
 
-# USE AZURE_STORAGE_CONNECTION_STRING environment variable.
-echo "Using AZURE_STORAGE_CONNECTION_STRING: ${CONN:-<not set>}"
-
-# Ensure containers exist (create if missing)
-echo "Ensuring container '$CONTAINER_SOURCE' exists..."
-az storage container create \
-    --name "$CONTAINER_SOURCE" \
-    --connection-string "$CONN"
-
-echo "Ensuring container '$CONTAINER_WORKING' exists..."
-az storage container create \
-    --name "$CONTAINER_WORKING" \
-    --connection-string "$CONN" 
-
-echo "Ensuring container '$CONTAINER_FINAL' exists..."
-az storage container create \
-    --name "$CONTAINER_FINAL" \
-    --connection-string "$CONN" 
-
-echo "Ensuring container '$CONTAINER_FINAL' exists..."
-az storage container create \
-    --name "$CONTAINER_FINAL" \
-    --connection-string "$CONN" \
-    --only-show-errors >/dev/null
+# Create a test file to upload
+TIMESTAMP=$(date +%Y%m%d%H%M%S)
+FILENAME="test_${TIMESTAMP}.txt"
+echo "The current working directory is: $(pwd)" >> "$FILENAME"
 
 BLOB_NAME="$(basename "$FILENAME")"
 echo "Uploading test file '$FILENAME' as blob '$BLOB_NAME' to container '$CONTAINER_SOURCE'..."

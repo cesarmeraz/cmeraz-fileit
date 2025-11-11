@@ -18,16 +18,9 @@
 			"version": "latest"
 		}
 	},
-  "forwardPorts": [5300, 5672, 10000, 10001],
-  "portsAttributes": {
-    "5300": {"label": "Azure Service Bus Emulator", "onAutoForward": "silent"},
-    "5672": {"label": "Azure Service Bus Emulator", "onAutoForward": "silent"},
-    "10000": {"label": "Azurite Blob Storage Emulator", "onAutoForward": "silent"},
-    "10001": {"label": "Azurite Blob Storage Emulator HTTPS", "onAutoForward": "silent"}
-  },
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	//"postCreateCommand": ". ${NVM_DIR}/nvm.sh && nvm install --lts",
+	"postCreateCommand": "bash .devcontainer/post-create.sh",
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -41,12 +34,5 @@
 		}
 	},
 
-
-	"containerEnv": {
-		"ACCEPT_EULA":"Y",
-		"MSSQL_SA_PASSWORD":"123qwe!@#QWE",
-		"SQL_WAIT_INTERVAL":"30",
-		"AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHGmFOdcT0g==;BlobEndpoint=http://localhost:10000/devstoreaccount1;"
-	},
 	"remoteUser": "vscode"
 }

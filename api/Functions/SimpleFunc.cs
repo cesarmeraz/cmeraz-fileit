@@ -74,7 +74,7 @@ public class SimpleFunc : BaseFunction
     /// <returns></returns>
     [Function(nameof(ReceiveSimple))]
     public async Task ReceiveSimple(
-        [BlobTrigger("simple-source/{name}", Connection = "AzureWebJobsStorage")] Stream stream,
+        [BlobTrigger("simple-source/{name}")] Stream stream,
         string name
     )
     {
@@ -95,7 +95,7 @@ public class SimpleFunc : BaseFunction
         }
         else
         {
-            _logger.LogWarning($"Blob {name} is invalid.");
+            _logger.LogWarning($"Blob {name} is invalid."); 
         }
     }
 
@@ -106,7 +106,7 @@ public class SimpleFunc : BaseFunction
     /// <returns></returns>
     [Function(nameof(ProcessSimple))]
     public async Task ProcessSimple(
-        [ServiceBusTrigger("simple", Connection = "ServiceBusConnectionString")]
+        [ServiceBusTrigger("simple")]
             ServiceBusReceivedMessage message
     )
     {

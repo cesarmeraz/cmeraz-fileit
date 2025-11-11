@@ -25,6 +25,10 @@ namespace FileIt.Api
                 .AddEnvironmentVariables()
                 .Build();
 
+            string azureFunctionsEnvironment = config.GetValue<string>("AZURE_FUNCTIONS_ENVIRONMENT") ?? string.Empty;
+            string azureStorageConnectionString = config.GetValue<string>("AZURE_STORAGE_CONNECTION_STRING") ?? string.Empty;
+            string azureServiceBusConnectionString = config.GetValue<string>("ServiceBus") ?? string.Empty;
+
             var host = new HostBuilder()
                 .ConfigureFunctionsWebApplication() // This line is crucial for ASP.NET Core Integration
                 // .ConfigureLogging(logging =>
@@ -41,10 +45,7 @@ namespace FileIt.Api
                             "Configuration is missing or invalid."
                         );
                     }
-                    
-                    var configJson = JsonSerializer.Serialize(appConfig);
-                    Console.WriteLine(configJson);
-
+                    Console.WriteLine("ServiceBusConnectionString: " + azureServiceBusConnectionString);
 
                     services.AddScoped<App.Providers.IBusProvider, App.Providers.BusProvider>();
                     services.AddScoped<App.Providers.IBlobProvider, App.Providers.BlobProvider>();
@@ -53,17 +54,8 @@ namespace FileIt.Api
 
                     services.AddAzureClients(builder =>
                     {
-                        if (isProduction)
-                        {
-                            builder
-                                .AddBlobServiceClient("")
-                                .WithCredential(new DefaultAzureCredential());
-                        }
-                        else
-                        {
-                            builder.AddBlobServiceClient(appConfig.BlobStorageConnectionString);
-                            builder.AddServiceBusClient(appConfig.ServiceBusConnectionString);
-                        }
+                        builder.AddBlobServiceClient(azureStorageConnectionString);
+                        builder.AddServiceBusClient(azureServiceBusConnectionString);
                     });
                 });
 
