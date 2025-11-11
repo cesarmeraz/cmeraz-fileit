@@ -1,0 +1,76 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Container setup",
+            "type": "bashdb",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/scripts/crons_local/simple-test.sh",
+            "terminalKind": "integrated",
+        },
+        {
+            "name": "Func - Development",
+            "type": "coreclr",
+            "request": "attach",
+            "preLaunchTask": "func start",
+            "processId": "${command:azureFunctions.pickProcess}"
+        },
+        {
+            "name": "Unit Tests - Development",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build test",
+            "program": "${workspaceFolder}/test/bin/Debug/net8.0/Test.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/test/bin/Debug/net8.0",
+            "logging": {
+                "moduleLoad": false
+            }
+        },
+        {
+            "name": "Console App - Development",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build tool for Development",
+            "program": "${workspaceFolder}/tool/bin/Debug/net8.0/Tool.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/tool/bin/Debug/net8.0",
+            "logging": {
+                "moduleLoad": false
+            }
+        },
+        {
+            "name": "Console App - Production",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build tool for Production",
+            "program": "${workspaceFolder}/tool/bin/Release/net8.0/Tool.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/tool/bin/Release/net8.0",
+            "logging": {
+                "moduleLoad": false
+            }
+        },
+        {
+            "name": "Attach to .NET Functions",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:azureFunctions.pickProcess}"
+        },
+
+        {
+            "type": "bashdb",
+            "request": "launch",
+            "name": "Bash",
+            "cwd": "${workspaceFolder}",
+            "program": "${file}",
+            "terminalKind": "integrated"
+        }
+    ]
+}
+

@@ -1,5 +1,6 @@
 param location string
 param storageAccountName string
+param tagsByResource object
 param accountType string
 param kind string
 param minimumTlsVersion string
@@ -28,7 +29,7 @@ param isShareSoftDeleteEnabled bool
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: storageAccountName
   location: location
-  tags: {}
+  tags: tagsByResource
   sku: {
     name: accountType
   }

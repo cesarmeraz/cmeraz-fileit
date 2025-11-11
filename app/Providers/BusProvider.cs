@@ -5,7 +5,12 @@ namespace FileIt.App.Providers
 {
     public interface IBusProvider
     {
-        // Define methods for blob operations
+        /// <summary>
+        /// Adds a Message to the Server Bus Queue
+        /// </summary>
+        /// <param name="queueName">a string</param>
+        /// <param name="message">a ServiceBusMessage</param>
+        /// <returns></returns>
         Task SendMessageAsync(string queueName, ServiceBusMessage message);
     }
 
@@ -16,7 +21,6 @@ namespace FileIt.App.Providers
 
         public BusProvider(ILogger<BusProvider> logger, ServiceBusClient serviceBusClient)
         {
-            // Initialize any required resources
             _logger = logger;
             _serviceBusClient = serviceBusClient;
         }
@@ -25,9 +29,6 @@ namespace FileIt.App.Providers
         {
             ServiceBusSender sender = _serviceBusClient.CreateSender(queueName);
             await sender.SendMessageAsync(message);
-            await sender.DisposeAsync(); // Dispose the sender when no longer needed
         }
-
-        // Implement blob operations here
     }
 }

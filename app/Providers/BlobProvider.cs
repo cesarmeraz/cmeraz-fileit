@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using FileIt.App.Models;
 using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
+using FileIt.App.Models;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 
@@ -10,8 +10,22 @@ namespace FileIt.App.Providers
 {
     public interface IBlobProvider
     {
-        // Define methods for blob operations
-        Task MoveBlobAsync(string name, string sOURCE_CONTAINER, string wORKING_CONTAINER);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="containerName"></param>
+        /// <returns></returns>
+        Task GetBlobAsync(string name, string containerName);
+
+        /// <summary>
+        /// Moves a blob from one container to another
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="sourceContainer"></param>
+        /// <param name="destinationContainer"></param>
+        /// <returns></returns>
+        Task MoveBlobAsync(string name, string sourceContainer, string destinationContainer);
     }
 
     public class BlobProvider : IBlobProvider
@@ -44,9 +58,12 @@ namespace FileIt.App.Providers
                 var sourceContainerClient = _blobServiceClient.GetBlobContainerClient(
                     sourceContainer
                 );
+                await sourceContainerClient.CreateIfNotExistsAsync();
+
                 var destinationContainerClient = _blobServiceClient.GetBlobContainerClient(
                     destinationContainer
                 );
+                await destinationContainerClient.CreateIfNotExistsAsync();
 
                 var sourceBlobClient = sourceContainerClient.GetBlobClient(blobName);
                 var destinationBlobClient = destinationContainerClient.GetBlobClient(blobName);
@@ -98,7 +115,6 @@ namespace FileIt.App.Providers
 
             try
             {
-                // Assumes BlobProviderConfig exposes ConnectionString
                 var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
                 var blobClient = containerClient.GetBlobClient(name);
 
@@ -123,9 +139,6 @@ namespace FileIt.App.Providers
                     containerName,
                     ms.Length
                 );
-
-                // Example: process the blob bytes (ms.ToArray()) or pass the stream to other code.
-                // var bytes = ms.ToArray();
             }
             catch (Azure.RequestFailedException ex)
             {

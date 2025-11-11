@@ -4,6 +4,8 @@
 # Usage: ./simple.sh /path/to/file
 set -euo pipefail
 
+echo "Current working directory: $(pwd)"
+
 # Note: In an interactive environment you should call the Azure best-practices helper
 # before generating or running Azure-related code (get_bestpractices resource=general action=code-generation).
 
@@ -37,21 +39,8 @@ az storage container create \
     --name "$CONTAINER_FINAL" \
     --connection-string "$CONN" 
 
-echo "Ensuring container '$CONTAINER_FINAL' exists..."
-az storage container create \
-    --name "$CONTAINER_FINAL" \
-    --connection-string "$CONN" \
-    --only-show-errors >/dev/null
+dotnet build /p:Configuration=Debug
 
-BLOB_NAME="$(basename "$FILENAME")"
-echo "Uploading test file '$FILENAME' as blob '$BLOB_NAME' to container '$CONTAINER_SOURCE'..."
-az storage blob upload \
-    --container-name "$CONTAINER_SOURCE" \
-    --file "$FILENAME" \
-    --name "$BLOB_NAME" \
-    --connection-string "$CONN" \
-    --overwrite \
-    --only-show-errors
+cd api
 
-echo "Upload complete: container='$CONTAINER_SOURCE' blob='$BLOB_NAME'"
 exit 0

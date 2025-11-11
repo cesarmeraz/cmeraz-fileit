@@ -6,20 +6,24 @@ echo "Running $0"
 az version
 login_azure
 
+timestamp=$(date +"%Y%m%d-%H%M%S")
+deployment_name="${apim_group_name}-${timestamp}"
+echo "Deployment name: $deployment_name"
+
 if [[ $(az group exists --name $apim_group_name) == "true" ]]; then
     echo "Deleting $apim_group_name"
     az group delete --name $apim_group_name --yes
 fi
 
-local_dev_sp_id=$(az ad sp list --display-name "${LOCALDEV_SERVICE_PRINCIPAL}" --query "[0].id" -o tsv)
-
-
 az deployment sub create \
+    --name $deployment_name \
     --location $region \
     --template-file templates/apim_sub.bicep \
     --parameters \
+        resourceName=$apim_name \
+        resourceGroupName=$apim_group_name \
         stem=$stem \
-        location=$region
+        location=$region \
+        deploymentName=$deployment_name 
 
-# log out of owner account
-az logout
+logout_azure
