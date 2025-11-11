@@ -10,19 +10,19 @@ services:
     command: sleep infinity
     environment:
       AZURE_FUNCTIONS_ENVIRONMENT: Development
-      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
+      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;
       ServiceBus: Endpoint=sb://emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;
 
   azurite:
     container_name: azurite
     image: mcr.microsoft.com/azure-storage/azurite:latest
-    command: ["azurite", "--loose", "-l", "/data", "--blobHost", "0.0.0.0"]
     restart: unless-stopped
     ports: 
       - "10000:10000"
       - "10001:10001"
     volumes:
       - azurite-data:/data
+    network_mode: service:app
     
 
   emulator:

@@ -28,7 +28,7 @@
   },
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	//"postCreateCommand": ". ${NVM_DIR}/nvm.sh && nvm install --lts",
+	"postCreateCommand": "bash .devcontainer/post-create.sh",
 
 	// Configure tool-specific properties.
 	"customizations": {
