@@ -10,7 +10,7 @@
             "type": "bashdb",
             "request": "launch",
             "cwd": "${workspaceFolder}",
-            "program": "${workspaceFolder}/scripts/crons_local/simple-source.sh",
+            "program": "${workspaceFolder}/scripts/crons_local/simple-test.sh",
             "terminalKind": "integrated",
         },
         {
