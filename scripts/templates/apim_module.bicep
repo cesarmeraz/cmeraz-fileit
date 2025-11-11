@@ -1,23 +1,22 @@
-param apimName string
-param zones array
+@description('The Azure region for the deployment')
 param location string
+
+@description('The resource name')
+param resourceName string
+
+@description('Tags applied to the resource')
+param tagsByResource object
+
 param tier string
 param capacity int
 param adminEmail string
 param organizationName string
-param virtualNetworkType string
-param tagsByResource object
-param vnet object
 param customProperties object
 param identity object
-param appInsightsObject object
-param privateDnsDeploymentName string
-param subnetDeploymentName string
-
-var apimNsgName = 'apimnsg${uniqueString(resourceGroup().id)}${apimName}'
+param zones array
 
 resource apim 'Microsoft.ApiManagement/service@2022-09-01-preview' = {
-  name: apimName
+  name: resourceName
   location: location
   tags: tagsByResource
   sku: {

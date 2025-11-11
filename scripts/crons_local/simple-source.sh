@@ -37,10 +37,11 @@ az storage container create \
     --name "$CONTAINER_FINAL" \
     --connection-string "$CONN" 
 
-# Create a test file to upload
-TIMESTAMP=$(date +%Y%m%d%H%M%S)
-FILENAME="test_${TIMESTAMP}.txt"
-echo "The current working directory is: $(pwd)" >> "$FILENAME"
+echo "Ensuring container '$CONTAINER_FINAL' exists..."
+az storage container create \
+    --name "$CONTAINER_FINAL" \
+    --connection-string "$CONN" \
+    --only-show-errors >/dev/null
 
 BLOB_NAME="$(basename "$FILENAME")"
 echo "Uploading test file '$FILENAME' as blob '$BLOB_NAME' to container '$CONTAINER_SOURCE'..."

@@ -1,11 +1,8 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
+// For format details, see https://aka.ms/devcontainer.json. 
 {
 	"name": "CMeraz-FileIt",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	//"image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0",
     "dockerComposeFile": "docker-compose.yml",
-    "service": "app",
+    "service": "api",
     "workspaceFolder": "/workspaces/cmeraz-fileit",
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
@@ -17,7 +14,9 @@
           "installBash": true
         },
 		//"ghcr.io/devcontainers/features/node:1": {},
-		"ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {}
+		"ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {
+			"version": "latest"
+		}
 	},
 
 	// Use 'postCreateCommand' to run commands after the container is created.

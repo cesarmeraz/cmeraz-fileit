@@ -70,9 +70,10 @@ storage_local_connection_string="${STORAGE_LOCAL_CONNECTION_STRING}"
 web_name="$stem-web"
 apim_name="$stem-apim"
 function_name="$stem-function"
-storage_name+="cmerazfileitstorage"
+storage_name+="cmerazfileitstorage2"
 keyvault_name="$stem-keyvault"
 cosmos_name="$stem-cosmos"
+bus_name="$stem-bus"
 
 # create resource group names
 web_group_name="rg-$web_name"
@@ -81,6 +82,7 @@ function_group_name="rg-$function_name"
 keyvault_group_name="rg-$keyvault_name"
 storage_group_name="rg-cmeraz-filesit-storage"
 cosmos_group_name="rg-$cosmos_name"
+bus_group_name="rg-$bus_name"
 
 # authenticating with the devops service principal
 # and its certificate
@@ -99,6 +101,9 @@ login_azure(){
             exit 1
         fi
     fi
+}
+logout_azure(){
+    az logout --username $devops_spn
 }
 
 create_spn(){
