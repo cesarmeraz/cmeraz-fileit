@@ -17,9 +17,7 @@ services:
     container_name: azurite
     image: mcr.microsoft.com/azure-storage/azurite:latest
     restart: unless-stopped
-    ports: 
-      - "10000:10000"
-      - "10001:10001"
+    command: azurite --loose -l /data --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0
     volumes:
       - azurite-data:/data
     network_mode: service:app

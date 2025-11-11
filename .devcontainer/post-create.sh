@@ -39,20 +39,8 @@ az storage container create \
     --name "$CONTAINER_FINAL" \
     --connection-string "$CONN" 
 
-# Create a test file to upload
-TIMESTAMP=$(date +%Y%m%d%H%M%S)
-FILENAME="test_${TIMESTAMP}.txt"
-echo "The current working directory is: $(pwd)" >> "$FILENAME"
+dotnet build /p:Configuration=Debug
 
-BLOB_NAME="$(basename "$FILENAME")"
-echo "Uploading test file '$FILENAME' as blob '$BLOB_NAME' to container '$CONTAINER_SOURCE'..."
-az storage blob upload \
-    --container-name "$CONTAINER_SOURCE" \
-    --file "$FILENAME" \
-    --name "$BLOB_NAME" \
-    --connection-string "$CONN" \
-    --overwrite \
-    --only-show-errors
+cd api
 
-echo "Upload complete: container='$CONTAINER_SOURCE' blob='$BLOB_NAME'"
 exit 0
