@@ -79,7 +79,7 @@ public class SimpleFunc
         }
         else
         {
-            _logger.LogWarning($"Blob {name} is invalid.");
+            _logger.LogWarning($"Blob {name} is invalid."); 
         }
     }
 

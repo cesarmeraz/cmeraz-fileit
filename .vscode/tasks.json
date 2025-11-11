@@ -4,7 +4,7 @@
     "tasks": [
         {
         "label": "start",
-        "dependsOn": ["clean", "test", "build", "run"]
+        "dependsOn": ["clean", "test", "build", "func start"]
         },
         {
             "label": "func start",
@@ -12,6 +12,7 @@
             "command": "func start",
             "isBackground": true,
             "problemMatcher": "$func-watch",
+            "dependsOn": "build",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -45,9 +46,7 @@
             "label": "clean",
             "command": "dotnet",
             "args": [
-                "clean",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "clean"
             ],
             "type": "process",
             "problemMatcher": "$msCompile",
@@ -81,8 +80,6 @@
             "command": "dotnet",
             "args": [
                 "build",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary",
                 "--configuration",
                 "Debug"
             ],
@@ -90,7 +87,7 @@
             "dependsOn": "test",
             "problemMatcher": "$msCompile",
             "options": {
-                "cwd": "${workspaceFolder}/api"
+                "cwd": "${workspaceFolder}"
             }
         },
         {

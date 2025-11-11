@@ -16,12 +16,14 @@ services:
   azurite:
     container_name: azurite
     image: mcr.microsoft.com/azure-storage/azurite:latest
+    command: ["azurite", "--loose", "-l", "/data", "--blobHost", "0.0.0.0"]
     restart: unless-stopped
     ports: 
       - "10000:10000"
       - "10001:10001"
     volumes:
       - azurite-data:/data
+    
 
   emulator:
     container_name: "servicebus-emulator"

@@ -25,9 +25,9 @@ namespace FileIt.Api
                 .AddEnvironmentVariables()
                 .Build();
 
-            string azureFunctionsEnvironment = config["AZURE_FUNCTIONS_ENVIRONMENT"]; 
-            string azureStorageConnectionString = config["AZURE_STORAGE_CONNECTION_STRING"]; 
-            string azureServiceBusConnectionString = config["ServiceBus"]; 
+            string azureFunctionsEnvironment = config.GetValue<string>("AZURE_FUNCTIONS_ENVIRONMENT") ?? string.Empty;
+            string azureStorageConnectionString = config.GetValue<string>("AZURE_STORAGE_CONNECTION_STRING") ?? string.Empty;
+            string azureServiceBusConnectionString = config.GetValue<string>("ServiceBus") ?? string.Empty;
 
             var host = new HostBuilder()
                 .ConfigureFunctionsWebApplication() // This line is crucial for ASP.NET Core Integration
