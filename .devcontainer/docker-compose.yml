@@ -17,7 +17,7 @@ services:
     container_name: azurite
     image: mcr.microsoft.com/azure-storage/azurite:latest
     restart: unless-stopped
-    command: azurite --loose -l /data --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0
+    command: azurite --loose -l /data --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --silent
     volumes:
       - azurite-data:/data
     network_mode: service:api
