@@ -17,10 +17,10 @@ services:
     container_name: azurite
     image: mcr.microsoft.com/azure-storage/azurite:latest
     restart: unless-stopped
-    command: azurite --loose -l /data --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --silent
-    volumes:
-      - azurite-data:/data
+    command: azurite --loose -l /data --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --silent --inMemoryPersistence
     network_mode: service:api
+    # volumes:
+    #   - azurite-data:/data
     
 
   emulator:
@@ -42,5 +42,5 @@ services:
           ACCEPT_EULA: "Y"
           MSSQL_SA_PASSWORD: "123qwe!@#QWE"
 
-volumes:
-  azurite-data:
+# volumes:
+#   azurite-data:

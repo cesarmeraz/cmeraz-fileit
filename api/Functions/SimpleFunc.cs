@@ -12,13 +12,13 @@ namespace FileIt.Api.Functions;
 public class SimpleFunc : BaseFunction
 {
     private readonly ILogger<SimpleFunc> _logger;
-    private readonly ISimpleService _blobService;
+    private readonly ISimpleService _simpleService;
 
-    public SimpleFunc(ILogger<SimpleFunc> logger, ISimpleService blobService)
+    public SimpleFunc(ILogger<SimpleFunc> logger, ISimpleService simpleService)
         : base(logger)
     {
         _logger = logger;
-        _blobService = blobService;
+        _simpleService = simpleService;
     }
 
     /// <summary>
@@ -87,16 +87,17 @@ public class SimpleFunc : BaseFunction
             name,
             content
         );
-        var isValid = await _blobService.ValidateBlobAsync(stream, name);
+        var isValid = await _simpleService.ValidateBlobAsync(stream, name);
         if (isValid)
         {
             _logger.LogInformation($"Blob {name} is valid.");
-            await _blobService.QueueAsync(name);
+            await _simpleService.QueueAsync(name);
         }
         else
         {
-            _logger.LogWarning($"Blob {name} is invalid."); 
+            _logger.LogWarning($"Blob {name} is invalid.");
         }
+        LogFunctionEnd(nameof(ReceiveSimple));
     }
 
     /// <summary>
@@ -105,10 +106,7 @@ public class SimpleFunc : BaseFunction
     /// <param name="message">the ServiceBusReceivedMessage</param>
     /// <returns></returns>
     [Function(nameof(ProcessSimple))]
-    public async Task ProcessSimple(
-        [ServiceBusTrigger("simple")]
-            ServiceBusReceivedMessage message
-    )
+    public async Task ProcessSimple([ServiceBusTrigger("simple")] ServiceBusReceivedMessage message)
     {
         LogFunctionStart(nameof(ProcessSimple));
 
@@ -116,6 +114,7 @@ public class SimpleFunc : BaseFunction
         _logger.LogInformation($"Message Body: {message.Body.ToString()}");
         _logger.LogInformation($"Message Content-Type: {message.ContentType}");
         // Process the Service Bus message here
-        await _blobService.ProcessAsync(message);
+        await _simpleService.ProcessAsync(message);
+        LogFunctionEnd(nameof(ProcessSimple));
     }
 }
