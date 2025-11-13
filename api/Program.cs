@@ -2,6 +2,7 @@ using System.Configuration;
 using System.Text.Json;
 using Azure.Identity;
 using FileIt.App.Models;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,9 +26,12 @@ namespace FileIt.Api
                 .AddEnvironmentVariables()
                 .Build();
 
-            string azureFunctionsEnvironment = config.GetValue<string>("AZURE_FUNCTIONS_ENVIRONMENT") ?? string.Empty;
-            string azureStorageConnectionString = config.GetValue<string>("AZURE_STORAGE_CONNECTION_STRING") ?? string.Empty;
-            string azureServiceBusConnectionString = config.GetValue<string>("ServiceBus") ?? string.Empty;
+            string azureFunctionsEnvironment =
+                config.GetValue<string>("AZURE_FUNCTIONS_ENVIRONMENT") ?? string.Empty;
+            string azureStorageConnectionString =
+                config.GetValue<string>("AZURE_STORAGE_CONNECTION_STRING") ?? string.Empty;
+            string azureServiceBusConnectionString =
+                config.GetValue<string>("ServiceBus") ?? string.Empty;
 
             var host = new HostBuilder()
                 .ConfigureFunctionsWebApplication() // This line is crucial for ASP.NET Core Integration
@@ -45,12 +49,20 @@ namespace FileIt.Api
                             "Configuration is missing or invalid."
                         );
                     }
-                    Console.WriteLine("ServiceBusConnectionString: " + azureServiceBusConnectionString);
+                    Console.WriteLine(
+                        "ServiceBusConnectionString: " + azureServiceBusConnectionString
+                    );
 
                     services.AddScoped<App.Providers.IBusProvider, App.Providers.BusProvider>();
                     services.AddScoped<App.Providers.IBlobProvider, App.Providers.BlobProvider>();
                     services.AddScoped<App.Services.ISimpleService, App.Services.SimpleService>();
                     services.AddSingleton(appConfig);
+
+                    if (isProduction)
+                    {
+                        services.AddApplicationInsightsTelemetryWorkerService();
+                        services.ConfigureFunctionsApplicationInsights();
+                    }
 
                     services.AddAzureClients(builder =>
                     {
