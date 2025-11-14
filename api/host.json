@@ -3,12 +3,12 @@
   "logging": {
     "logLevel": {
       "default": "Information",
-      "Azure.Core": "Warning", 
+      "Azure.Core": "Warning",
       "Azure.Messaging.ServiceBus": "Warning"
     },
     "applicationInsights": {
       "samplingSettings": {
-        "isEnabled": true,
+        "isEnabled": false,
         "excludedTypes": "Request"
       },
       "enableLiveMetricsFilters": true

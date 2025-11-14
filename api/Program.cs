@@ -3,6 +3,7 @@ using System.Text.Json;
 using Azure.Identity;
 using FileIt.App.Models;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,45 +34,51 @@ namespace FileIt.Api
             string azureServiceBusConnectionString =
                 config.GetValue<string>("ServiceBus") ?? string.Empty;
 
-            var host = new HostBuilder()
-                .ConfigureFunctionsWebApplication() // This line is crucial for ASP.NET Core Integration
-                // .ConfigureLogging(logging =>
-                // {
-                //     logging.AddConsole();
-                //     logging.AddApplicationInsights();
-                // })
-                .ConfigureServices(services =>
+            var builder = FunctionsApplication.CreateBuilder(args);
+            builder.ConfigureFunctionsWebApplication();
+                                
+            if (isProduction)
+            {
+                builder.Services
+                    .AddApplicationInsightsTelemetryWorkerService()
+                    .ConfigureFunctionsApplicationInsights();
+            } 
+
+            builder.Logging.Services.Configure<LoggerFilterOptions>(options =>
                 {
-                    AppConfig? appConfig = config.GetRequiredSection("App").Get<AppConfig>();
-                    if (appConfig == null)
+                    // The Application Insights SDK adds a default logging filter that instructs ILogger to capture only Warning and more severe logs. Application Insights requires an explicit override.
+                    // Log levels can also be configured using appsettings.json. For more information, see https://learn.microsoft.com/azure/azure-monitor/app/worker-service#ilogger-logs
+                    LoggerFilterRule? defaultRule = options.Rules.FirstOrDefault(rule => rule.ProviderName
+                        == "Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider");
+                    if (defaultRule is not null)
                     {
-                        throw new ConfigurationErrorsException(
-                            "Configuration is missing or invalid."
-                        );
+                        options.Rules.Remove(defaultRule);
                     }
-                    Console.WriteLine(
-                        "ServiceBusConnectionString: " + azureServiceBusConnectionString
-                    );
-
-                    services.AddScoped<App.Providers.IBusProvider, App.Providers.BusProvider>();
-                    services.AddScoped<App.Providers.IBlobProvider, App.Providers.BlobProvider>();
-                    services.AddScoped<App.Services.ISimpleService, App.Services.SimpleService>();
-                    services.AddSingleton(appConfig);
-
-                    if (isProduction)
-                    {
-                        services.AddApplicationInsightsTelemetryWorkerService();
-                        services.ConfigureFunctionsApplicationInsights();
-                    }
-
-                    services.AddAzureClients(builder =>
-                    {
-                        builder.AddBlobServiceClient(azureStorageConnectionString);
-                        builder.AddServiceBusClient(azureServiceBusConnectionString);
-                    });
                 });
+            AppConfig? appConfig = config.GetRequiredSection("App").Get<AppConfig>();
+            if (appConfig == null)
+            {
+                throw new ConfigurationErrorsException(
+                    "Configuration is missing or invalid."
+                );
+            }
+            Console.WriteLine(
+                "ServiceBusConnectionString: " + azureServiceBusConnectionString
+            );
 
-            var app = host.Build();
+            builder.Services.AddScoped<App.Providers.IBusProvider, App.Providers.BusProvider>();
+            builder.Services.AddScoped<App.Providers.IBlobProvider, App.Providers.BlobProvider>();
+            builder.Services.AddScoped<App.Services.ISimpleService, App.Services.SimpleService>();
+            builder.Services.AddSingleton(appConfig);
+            
+
+            builder.Services.AddAzureClients(builder =>
+            {
+                builder.AddBlobServiceClient(azureStorageConnectionString);
+                builder.AddServiceBusClient(azureServiceBusConnectionString);
+            });
+
+            var app = builder.Build();
             app.Run();
         }
     }
