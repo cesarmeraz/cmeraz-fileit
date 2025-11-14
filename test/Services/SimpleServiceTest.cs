@@ -83,11 +83,12 @@ namespace FileIt.Tests.Services
             );
 
             var blobName = "blob name";
+            var clientRequestId = Guid.NewGuid().ToString();
             _busProviderMock.Setup(x =>
                 x.SendMessageAsync(It.IsAny<string>(), It.IsAny<ServiceBusMessage>())
             );
 
-            await target.QueueAsync(blobName);
+            await target.QueueAsync(blobName, clientRequestId);
 
             _blobProviderMock.Verify();
             _busProviderMock.Verify();

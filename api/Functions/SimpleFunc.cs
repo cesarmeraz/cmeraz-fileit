@@ -74,29 +74,27 @@ public class SimpleFunc : BaseFunction
     /// <returns></returns>
     [Function(nameof(ReceiveSimple))]
     public async Task ReceiveSimple(
-        [BlobTrigger("simple-source/{name}")] Stream stream,
+        [BlobTrigger("simple-source/{name}")] BlobClient blobClient,
         string name
     )
     {
         LogFunctionStart(nameof(ReceiveSimple));
-
-        using var blobStreamReader = new StreamReader(stream);
-        var content = await blobStreamReader.ReadToEndAsync();
-        _logger.LogInformation(
-            "C# Blob trigger function Processed blob\n Name: {name} \n Data: {content}",
-            name,
-            content
-        );
-        var isValid = await _simpleService.ValidateBlobAsync(stream, name);
-        if (isValid)
+        blobClient = blobClient ?? throw new ArgumentNullException(nameof(blobClient));
+        
+        // use the blobClient to get the x-ms-client-request-id property from the original request header
+        var propsResponse = await blobClient.GetPropertiesAsync();
+        var rawResponse = propsResponse.GetRawResponse();
+        if (rawResponse.Headers.TryGetValue("x-ms-client-request-id", out var clientRequestId))
         {
-            _logger.LogInformation($"Blob {name} is valid.");
-            await _simpleService.QueueAsync(name);
+            _logger.LogInformation("x-ms-client-request-id: {ClientRequestId}", clientRequestId);
         }
         else
         {
-            _logger.LogWarning($"Blob {name} is invalid.");
+            _logger.LogInformation("x-ms-client-request-id header not found on GetProperties response.");
+            clientRequestId= Guid.NewGuid().ToString();
         }
+
+        await _simpleService.QueueAsync(name, clientRequestId);
         LogFunctionEnd(nameof(ReceiveSimple));
     }
 

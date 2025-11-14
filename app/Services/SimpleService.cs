@@ -20,7 +20,7 @@ namespace FileIt.App.Services
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        Task QueueAsync(string name);
+        Task QueueAsync(string name, string clientRequestId);
 
         /// <summary>
         /// Performs validation on the file and its name
@@ -56,11 +56,22 @@ namespace FileIt.App.Services
         public async Task ProcessAsync(ServiceBusReceivedMessage message)
         {
             var name = message.ApplicationProperties["BLOB_NAME"].ToString();
+            string? clientRequestId = null;
+            if (message.ApplicationProperties.ContainsKey("CLIENT_REQUEST_ID"))
+            {
+                clientRequestId = message.ApplicationProperties["CLIENT_REQUEST_ID"].ToString();
+                _logger.LogInformation(
+                    $"Processing blob '{name}' for client request ID '{clientRequestId}'"
+                );
+            }else
+            {
+                _logger.LogInformation($"Processing blob '{name}' with no client request ID");
+            }
             //Process the file then
             await _blobProvider.MoveBlobAsync(name, WORKING_CONTAINER, FINAL_CONTAINER);
         }
 
-        public async Task QueueAsync(string name)
+        public async Task QueueAsync(string name, string clientRequestId)
         {
             _logger.LogInformation($"blob name: {name}");
             await _blobProvider.MoveBlobAsync(name, SOURCE_CONTAINER, WORKING_CONTAINER);
@@ -70,6 +81,7 @@ namespace FileIt.App.Services
             ServiceBusMessage message = new ServiceBusMessage(
                 JsonSerializer.Serialize(messageObject)
             );
+            message.ApplicationProperties.Add("CLIENT_REQUEST_ID", clientRequestId);
             message.ApplicationProperties.Add("BLOB_NAME", name);
             message.ApplicationProperties.Add("SOURCE", WORKING_CONTAINER);
             message.ApplicationProperties.Add("DESTINATION", FINAL_CONTAINER);
