@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace FileIt.App.Models
 {
     public class SimpleRequestLog
@@ -9,5 +11,10 @@ namespace FileIt.App.Models
         public string? BlobName { get; set; }
         public string? Comment { get; set; }
         public DateTime CreatedOn { get; set; }
+
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 }

@@ -1,4 +1,4 @@
-CREATE TABLE [fileit].[SimpleRequestLog]
+CREATE TABLE [dbo].[SimpleRequestLog]
 (
   [Id] INT NOT NULL PRIMARY KEY,
   Environment NVARCHAR(100) NOT NULL,

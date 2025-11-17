@@ -1,11 +1,13 @@
 using FileIt.App.Data;
 using FileIt.App.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FileIt.App.Repositories
 {
     public interface ISimpleRequestLogRepo : IRepository<SimpleRequestLog>
     {
         Task AddLogAsync(string blobName, string clientRequestId);
+        Task<SimpleRequestLog?> GetLogByClientRequestIdAsync(string? clientRequestId);
     }
 
     public class SimpleRequestLogRepo : BaseRepository<SimpleRequestLog>, ISimpleRequestLogRepo
@@ -27,6 +29,13 @@ namespace FileIt.App.Repositories
 
             dbContext.SimpleRequestLogs.Add(log);
             await dbContext.SaveChangesAsync();
+        }
+
+        public Task<SimpleRequestLog?> GetLogByClientRequestIdAsync(string? clientRequestId)
+        {
+            return dbContext.SimpleRequestLogs.FirstOrDefaultAsync(log =>
+                log.Comment == clientRequestId && log.Environment == this.appConfig.Environment
+            );
         }
     }
 }

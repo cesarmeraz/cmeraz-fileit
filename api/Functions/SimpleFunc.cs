@@ -2,6 +2,7 @@ using System.Net;
 using System.Text;
 using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
+using FileIt.App.Models;
 using FileIt.App.Services;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -121,6 +122,8 @@ public class SimpleFunc : BaseFunction
         _logger.LogInformation($"Message ClientRequestId: {clientRequestId}");
         // Process the Service Bus message here
         await _simpleService.ProcessAsync(message);
+        SimpleRequestLog? entry = await _simpleService.GetLogRequestAsync(clientRequestId);
+        _logger.LogInformation($"Processed Simple Request Log: {entry}");
         LogFunctionEnd(nameof(ProcessSimple));
     }
 }

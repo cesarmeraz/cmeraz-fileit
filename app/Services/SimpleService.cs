@@ -31,6 +31,7 @@ namespace FileIt.App.Services
         /// <returns></returns>
         Task<bool> ValidateBlobAsync(Stream stream, string name);
         Task LogRequestAsync(string blobName, string clientRequestId);
+        Task<SimpleRequestLog?> GetLogRequestAsync(string? clientRequestId);
     }
 
     public class SimpleService : ISimpleService
@@ -58,9 +59,14 @@ namespace FileIt.App.Services
             _requestLogRepo = requestLogRepo;
         }
 
-        public Task LogRequestAsync(string blobName, string clientRequestId)
+        public Task<SimpleRequestLog?> GetLogRequestAsync(string? clientRequestId)
         {
-            return Task.CompletedTask;
+            return _requestLogRepo.GetLogByClientRequestIdAsync(clientRequestId);
+        }
+
+        public async Task LogRequestAsync(string blobName, string clientRequestId)
+        {
+            await _requestLogRepo.AddLogAsync(blobName, clientRequestId);
         }
 
         public async Task ProcessAsync(ServiceBusReceivedMessage message)

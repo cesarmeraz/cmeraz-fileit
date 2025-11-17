@@ -35,5 +35,9 @@
 		}
 	},
 
+	"containerEnv": {
+		"DB_PASSWORD": "123qwe!@#QWE"
+	},
+
 	"remoteUser": "vscode"
 }

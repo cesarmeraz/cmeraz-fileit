@@ -42,8 +42,6 @@ namespace FileIt.Api
                 config.GetValue<string>("AZURE_STORAGE_CONNECTION_STRING") ?? string.Empty;
             string azureServiceBusConnectionString =
                 config.GetValue<string>("ServiceBus") ?? string.Empty;
-            string databaseConnectionString =
-                config.GetValue<string>("DATABASE_CONNECTION_STRING") ?? string.Empty;
 
             var builder = FunctionsApplication.CreateBuilder(args);
             builder.ConfigureFunctionsWebApplication();
@@ -90,10 +88,8 @@ namespace FileIt.Api
 
             // Get the connection string
             var connectionString =
-                builder.Configuration.GetConnectionString("DATABASE_CONNECTION_STRING")
-                ?? throw new InvalidOperationException(
-                    "Connection string 'DATABASE_CONNECTION_STRING' not found."
-                );
+                builder.Configuration.GetConnectionString("Database")
+                ?? throw new InvalidOperationException("Connection string 'Database' not found.");
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(connectionString).EnableDetailedErrors(true)

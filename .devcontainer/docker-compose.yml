@@ -12,7 +12,6 @@ services:
       AZURE_FUNCTIONS_ENVIRONMENT: Development
       AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;
       ServiceBus: Endpoint=sb://emulator;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;
-      DATABASE_CONNECTION_STRING: "Server=sqledge;Database=FileItDb;User Id=sa;Password=123qwe!@#QWE;"
 
   azurite:
     container_name: azurite
@@ -42,6 +41,34 @@ services:
         environment:
           ACCEPT_EULA: "Y"
           MSSQL_SA_PASSWORD: "123qwe!@#QWE"
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-CU12-ubuntu-22.04
+    restart: no
+    hostname: scratch-mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${DB_PASSWORD}
+      - MSSQL_PID=Developer
+      - MSSQL_BACKUP_DIR=/var/opt/mssql/backups
+      - MSSQL_LCID=1033
+      - TZ=America/Chicago
+    ports:
+      - 14330:1433
+    volumes:
+      - ./data/mssql/backups:/var/opt/mssql/backups
+      - ./data/mssql/data:/var/opt/mssql/data
+      - ./data/mssql/log:/var/opt/mssql/log
+
+  mssql-tools:
+    image: mcr.microsoft.com/mssql-tools:latest
+    restart: no
+    command: "/opt/mssql-tools/bin/sqlcmd -S scratch-mssql -l 60 -U sa -P '${DB_PASSWORD}' -d master -i /tmp/mssql-init.sql"
+    depends_on:
+      - mssql
+    volumes:
+      - ./mssql-init.sql:/tmp/mssql-init.sql
+
 
 # volumes:
 #   azurite-data:
