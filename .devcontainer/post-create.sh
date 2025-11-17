@@ -39,8 +39,8 @@ az storage container create \
     --name "$CONTAINER_FINAL" \
     --connection-string "$CONN" 
 
-dotnet build /p:Configuration=Debug
-
-cd api
+#dotnet build /p:Configuration=Debug
+ 
+# cd api
 
 exit 0

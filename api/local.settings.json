@@ -4,7 +4,6 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_EXTENSION_VERSION": "~4",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "WEBSITE_HOSTNAME": "Codespace",
     "AzureWebJobsSecretStorageType": "files"
   }
 }

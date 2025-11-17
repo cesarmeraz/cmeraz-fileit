@@ -45,25 +45,23 @@ services:
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-CU12-ubuntu-22.04
     restart: no
-    hostname: scratch-mssql
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=${DB_PASSWORD}
+      - MSSQL_SA_PASSWORD="123qwe!@#QWE"
       - MSSQL_PID=Developer
       - MSSQL_BACKUP_DIR=/var/opt/mssql/backups
       - MSSQL_LCID=1033
       - TZ=America/Chicago
-    ports:
-      - 14330:1433
     volumes:
       - ./data/mssql/backups:/var/opt/mssql/backups
       - ./data/mssql/data:/var/opt/mssql/data
       - ./data/mssql/log:/var/opt/mssql/log
+    network_mode: service:api
 
   mssql-tools:
     image: mcr.microsoft.com/mssql-tools:latest
-    restart: no
-    command: "/opt/mssql-tools/bin/sqlcmd -S scratch-mssql -l 60 -U sa -P '${DB_PASSWORD}' -d master -i /tmp/mssql-init.sql"
+    restart: unless-stopped
+    command: "/opt/mssql-tools/bin/sqlcmd -S localhost -l 60 -U sa -P '123qwe!@#QWE' -d master -i /tmp/mssql-init.sql"
     depends_on:
       - mssql
     volumes:
