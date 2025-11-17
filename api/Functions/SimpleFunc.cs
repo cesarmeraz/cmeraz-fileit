@@ -67,9 +67,9 @@ public class SimpleFunc : BaseFunction
     }
 
     /// <summary>
-    /// a BlobTrigger that receives the file stream and its name
+    /// a BlobTrigger that receives the BlobClient and its name
     /// </summary>
-    /// <param name="stream">the file content</param>
+    /// <param name="blobClient">the BlobClient</param>
     /// <param name="name">the file name</param>
     /// <returns></returns>
     [Function(nameof(ReceiveSimple))]
@@ -80,19 +80,23 @@ public class SimpleFunc : BaseFunction
     {
         LogFunctionStart(nameof(ReceiveSimple));
         blobClient = blobClient ?? throw new ArgumentNullException(nameof(blobClient));
-        
+
         // use the blobClient to get the x-ms-client-request-id property from the original request header
         var propsResponse = await blobClient.GetPropertiesAsync();
         var rawResponse = propsResponse.GetRawResponse();
-        if (rawResponse.Headers.TryGetValue("x-ms-client-request-id", out var clientRequestId))
+        if (rawResponse.Headers.TryGetValue("x-ms-client-request-id", out string? clientRequestId))
         {
             _logger.LogInformation("x-ms-client-request-id: {ClientRequestId}", clientRequestId);
         }
         else
         {
-            _logger.LogInformation("x-ms-client-request-id header not found on GetProperties response.");
-            clientRequestId= Guid.NewGuid().ToString();
+            _logger.LogInformation(
+                "x-ms-client-request-id header not found on GetProperties response."
+            );
+            clientRequestId = Guid.NewGuid().ToString();
         }
+
+        await _simpleService.LogRequestAsync(name, clientRequestId);
 
         await _simpleService.QueueAsync(name, clientRequestId);
         LogFunctionEnd(nameof(ReceiveSimple));
@@ -107,10 +111,14 @@ public class SimpleFunc : BaseFunction
     public async Task ProcessSimple([ServiceBusTrigger("simple")] ServiceBusReceivedMessage message)
     {
         LogFunctionStart(nameof(ProcessSimple));
-
+        string? clientRequestId =
+            message.ApplicationProperties["CLIENT_REQUEST_ID"] != null
+                ? message.ApplicationProperties["CLIENT_REQUEST_ID"]?.ToString()
+                : null;
         _logger.LogInformation($"Message ID: {message.MessageId}");
         _logger.LogInformation($"Message Body: {message.Body.ToString()}");
         _logger.LogInformation($"Message Content-Type: {message.ContentType}");
+        _logger.LogInformation($"Message ClientRequestId: {clientRequestId}");
         // Process the Service Bus message here
         await _simpleService.ProcessAsync(message);
         LogFunctionEnd(nameof(ProcessSimple));
