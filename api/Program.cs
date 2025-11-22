@@ -18,7 +18,7 @@ namespace FileIt.Api
 {
     public class Program
     {
-        public async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var env =
                 Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT") ?? "Production";
@@ -108,7 +108,7 @@ namespace FileIt.Api
             app.Run();
         }
 
-        async Task<List<string>> GetQueueNames(
+        public static async Task<List<string>> GetQueueNames(
             DefaultAzureCredential credential,
             string serviceBusNamespace
         )
@@ -122,6 +122,7 @@ namespace FileIt.Api
             // do so results in an error with the services collection.
             await foreach (QueueProperties queue in adminClient.GetQueuesAsync())
             {
+                Console.WriteLine($"Found queue: {queue.Name}");
                 queueNames.Add(queue.Name);
             }
 
