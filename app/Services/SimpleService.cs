@@ -56,6 +56,14 @@ namespace FileIt.App.Services
         public async Task ProcessAsync(ServiceBusReceivedMessage message)
         {
             var name = message.ApplicationProperties["BLOB_NAME"].ToString();
+            _logger.LogInformation($"Processing blob: {name}");
+
+            if (string.IsNullOrEmpty(name))
+            {
+                _logger.LogError("Blob name is missing in the message properties.");
+                return;
+            }
+
             //Process the file then
             await _blobProvider.MoveBlobAsync(name, WORKING_CONTAINER, FINAL_CONTAINER);
         }
