@@ -8,7 +8,7 @@
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers/features/azure-cli:1": {},
 		"ghcr.io/devcontainers/features/dotnet:2": {
-			"version": "8.0"
+			"version": "10.0"
 		},
 		"ghcr.io/devcontainers/features/common-utils:1": {
           "installBash": true

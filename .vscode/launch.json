@@ -25,9 +25,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build test",
-            "program": "${workspaceFolder}/test/bin/Debug/net8.0/Test.dll",
+            "program": "${workspaceFolder}/test/bin/Debug/net10.0/Test.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/test/bin/Debug/net8.0",
+            "cwd": "${workspaceFolder}/test/bin/Debug/net10.0",
             "logging": {
                 "moduleLoad": false
             }
@@ -37,9 +37,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build tool for Development",
-            "program": "${workspaceFolder}/tool/bin/Debug/net8.0/Tool.dll",
+            "program": "${workspaceFolder}/tool/bin/Debug/net10.0/Tool.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/tool/bin/Debug/net8.0",
+            "cwd": "${workspaceFolder}/tool/bin/Debug/net10.0",
             "logging": {
                 "moduleLoad": false
             }
@@ -49,9 +49,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build tool for Production",
-            "program": "${workspaceFolder}/tool/bin/Release/net8.0/Tool.dll",
+            "program": "${workspaceFolder}/tool/bin/Release/net10.0/Tool.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/tool/bin/Release/net8.0",
+            "cwd": "${workspaceFolder}/tool/bin/Release/net10.0",
             "logging": {
                 "moduleLoad": false
             }
