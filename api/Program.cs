@@ -1,7 +1,10 @@
 using System.Configuration;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Azure.Identity;
 using FileIt.App.Data;
+using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using FileIt.App.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
@@ -16,7 +19,7 @@ namespace FileIt.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var env =
                 Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT") ?? "Production";
@@ -77,32 +80,62 @@ namespace FileIt.Api
 
             Console.WriteLine("ServiceBusConnectionString: " + azureServiceBusConnectionString);
 
-            builder.Services.AddScoped<
-                App.Repositories.ISimpleRequestLogRepo,
-                App.Repositories.SimpleRequestLogRepo
-            >();
             builder.Services.AddScoped<App.Providers.IBusProvider, App.Providers.BusProvider>();
             builder.Services.AddScoped<App.Providers.IBlobProvider, App.Providers.BlobProvider>();
             builder.Services.AddScoped<App.Services.ISimpleService, App.Services.SimpleService>();
             builder.Services.AddSingleton(appConfig);
 
-            // Get the connection string
-            var connectionString =
-                builder.Configuration.GetConnectionString("Database")
-                ?? throw new InvalidOperationException("Connection string 'Database' not found.");
-
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(connectionString).EnableDetailedErrors(true)
-            );
-
-            builder.Services.AddAzureClients(builder =>
+            builder.Services.AddAzureClients(async clientBuilder =>
             {
-                builder.AddBlobServiceClient(azureStorageConnectionString);
-                builder.AddServiceBusClient(azureServiceBusConnectionString);
+                clientBuilder.AddBlobServiceClient(azureStorageConnectionString);
+                clientBuilder.AddServiceBusClient(azureServiceBusConnectionString);
+                clientBuilder.AddServiceBusAdministrationClientWithNamespace(
+                    appConfig.ServiceBusNamespace
+                );
+
+                // Set a credential for all clients to use by default
+                DefaultAzureCredential credential = new();
+                clientBuilder.UseCredential(credential);
+
+                // Register a subclient for each Service Bus Queue
+                List<string> queueNames = await GetQueueNames(
+                    credential,
+                    appConfig.ServiceBusNamespace
+                );
+                foreach (string queue in queueNames)
+                {
+                    _ = clientBuilder
+                        .AddClient<ServiceBusSender, ServiceBusClientOptions>(
+                            (_, _, provider) =>
+                                provider.GetRequiredService<ServiceBusClient>().CreateSender(queue)
+                        )
+                        .WithName(queue);
+                }
             });
 
             var app = builder.Build();
             app.Run();
+        }
+
+        public static async Task<List<string>> GetQueueNames(
+            DefaultAzureCredential credential,
+            string serviceBusNamespace
+        )
+        {
+            // Query the available queues for the Service Bus namespace.
+            var adminClient = new ServiceBusAdministrationClient(serviceBusNamespace, credential);
+            var queueNames = new List<string>();
+
+            // Because the result is async, the queue names need to be captured
+            // to a standard list to avoid async calls when registering. Failure to
+            // do so results in an error with the services collection.
+            await foreach (QueueProperties queue in adminClient.GetQueuesAsync())
+            {
+                Console.WriteLine($"Found queue: {queue.Name}");
+                queueNames.Add(queue.Name);
+            }
+
+            return queueNames;
         }
     }
 }
