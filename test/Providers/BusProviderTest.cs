@@ -1,19 +1,21 @@
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using FileIt.App.Providers;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace FileIt.Tests.Providers
+namespace FileIt.Test.Providers
 {
     [TestClass]
     public class BusProviderTest
     {
-        private Mock<ILogger<BusProvider>> _loggerMock;
-        private Mock<ServiceBusClient> _serviceBusClientMock;
-        private Mock<ServiceBusSender> _serviceBusSenderMock;
-        private BusProvider _busProvider;
+        public required Mock<ILogger<BusProvider>> _loggerMock;
+        public required Mock<ServiceBusClient> _serviceBusClientMock;
+        public required Mock<ServiceBusSender> _serviceBusSenderMock;
+        public required Mock<IAzureClientFactory<ServiceBusSender>> _senderFactoryMock;
+        public required BusProvider _busProvider;
 
         [TestInitialize]
         public void Setup()
@@ -21,12 +23,15 @@ namespace FileIt.Tests.Providers
             _loggerMock = new Mock<ILogger<BusProvider>>();
             _serviceBusClientMock = new Mock<ServiceBusClient>();
             _serviceBusSenderMock = new Mock<ServiceBusSender>();
-
+            _senderFactoryMock = new Mock<IAzureClientFactory<ServiceBusSender>>();
+            _senderFactoryMock
+                .Setup(x => x.CreateClient(It.IsAny<string>()))
+                .Returns(_serviceBusSenderMock.Object);
             _serviceBusClientMock
                 .Setup(client => client.CreateSender(It.IsAny<string>()))
                 .Returns(_serviceBusSenderMock.Object);
 
-            _busProvider = new BusProvider(_loggerMock.Object, _serviceBusClientMock.Object);
+            _busProvider = new BusProvider(_loggerMock.Object, _senderFactoryMock.Object);
         }
 
         [TestMethod]
@@ -60,8 +65,6 @@ namespace FileIt.Tests.Providers
             await Assert.ThrowsExceptionAsync<System.Exception>(
                 () => _busProvider.SendMessageAsync(queueName, message)
             );
-
-            
         }
     }
 }
