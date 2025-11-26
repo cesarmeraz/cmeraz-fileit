@@ -2,6 +2,7 @@ using System.Configuration;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Azure.Identity;
+using FileIt.App.Data;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using FileIt.App.Models;
@@ -46,7 +47,15 @@ namespace FileIt.Api
                 config.GetValue<string>("ServiceBus") ?? string.Empty;
 
             var builder = FunctionsApplication.CreateBuilder(args);
-            builder.ConfigureFunctionsWebApplication(); // This line is crucial for ASP.NET Core Integration
+            builder.ConfigureFunctionsWebApplication();
+
+            if (isProduction)
+            {
+                builder
+                    .Services.AddApplicationInsightsTelemetryWorkerService()
+                    .ConfigureFunctionsApplicationInsights();
+            }
+
             builder.Logging.Services.Configure<LoggerFilterOptions>(options =>
             {
                 // The Application Insights SDK adds a default logging filter that instructs ILogger to capture only Warning and more severe logs. Application Insights requires an explicit override.

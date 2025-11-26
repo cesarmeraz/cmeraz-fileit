@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using FileIt.App.Providers;
+using FileIt.App.Repositories;
 using FileIt.App.Services;
 using Microsoft.Azure.Amqp.Framing;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,7 @@ namespace FileIt.Tests.Services
         private Mock<ILogger<SimpleService>> _loggerMock;
         private Mock<IBlobProvider> _blobProviderMock;
         private Mock<IBusProvider> _busProviderMock;
+        private Mock<ISimpleRequestLogRepo> _simpleRequestLogRepoMock;
 
         private SimpleService target;
 
@@ -24,11 +26,13 @@ namespace FileIt.Tests.Services
             _loggerMock = new Mock<ILogger<SimpleService>>();
             _blobProviderMock = new Mock<IBlobProvider>();
             _busProviderMock = new Mock<IBusProvider>();
+            _simpleRequestLogRepoMock = new Mock<ISimpleRequestLogRepo>();
 
             target = new SimpleService(
                 _loggerMock.Object,
                 _blobProviderMock.Object,
-                _busProviderMock.Object
+                _busProviderMock.Object,
+                _simpleRequestLogRepoMock.Object
             );
         }
 
@@ -83,11 +87,12 @@ namespace FileIt.Tests.Services
             );
 
             var blobName = "blob name";
+            var clientRequestId = Guid.NewGuid().ToString();
             _busProviderMock.Setup(x =>
                 x.SendMessageAsync(It.IsAny<string>(), It.IsAny<ServiceBusMessage>())
             );
 
-            await target.QueueAsync(blobName);
+            await target.QueueAsync(blobName, clientRequestId);
 
             _blobProviderMock.Verify();
             _busProviderMock.Verify();

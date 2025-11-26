@@ -2,6 +2,7 @@ using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using FileIt.App.Models;
 using FileIt.App.Providers;
+using FileIt.App.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace FileIt.App.Services
@@ -20,7 +21,7 @@ namespace FileIt.App.Services
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        Task QueueAsync(string name);
+        Task QueueAsync(string name, string clientRequestId);
 
         /// <summary>
         /// Performs validation on the file and its name
@@ -29,6 +30,8 @@ namespace FileIt.App.Services
         /// <param name="name"></param>
         /// <returns></returns>
         Task<bool> ValidateBlobAsync(Stream stream, string name);
+        Task LogRequestAsync(string blobName, string clientRequestId);
+        Task<SimpleRequestLog?> GetLogRequestAsync(string? clientRequestId);
     }
 
     public class SimpleService : ISimpleService
@@ -41,16 +44,29 @@ namespace FileIt.App.Services
         private readonly ILogger<SimpleService> _logger;
         private readonly IBlobProvider _blobProvider;
         private readonly IBusProvider _busProvider;
+        private readonly ISimpleRequestLogRepo _requestLogRepo;
 
         public SimpleService(
             ILogger<SimpleService> logger,
             IBlobProvider blobProvider,
-            IBusProvider busProvider
+            IBusProvider busProvider,
+            ISimpleRequestLogRepo requestLogRepo
         )
         {
             _blobProvider = blobProvider;
             _busProvider = busProvider;
             _logger = logger;
+            _requestLogRepo = requestLogRepo;
+        }
+
+        public Task<SimpleRequestLog?> GetLogRequestAsync(string? clientRequestId)
+        {
+            return _requestLogRepo.GetLogByClientRequestIdAsync(clientRequestId);
+        }
+
+        public async Task LogRequestAsync(string blobName, string clientRequestId)
+        {
+            await _requestLogRepo.AddLogAsync(blobName, clientRequestId);
         }
 
         public async Task ProcessAsync(ServiceBusReceivedMessage message)
@@ -63,12 +79,24 @@ namespace FileIt.App.Services
                 _logger.LogError("Blob name is missing in the message properties.");
                 return;
             }
+            string? clientRequestId = null;
+            if (message.ApplicationProperties.ContainsKey("CLIENT_REQUEST_ID"))
+            {
+                clientRequestId = message.ApplicationProperties["CLIENT_REQUEST_ID"].ToString();
+                _logger.LogInformation(
+                    $"Processing blob '{name}' for client request ID '{clientRequestId}'"
+                );
+            }
+            else
+            {
+                _logger.LogInformation($"Processing blob '{name}' with no client request ID");
+            }
 
             //Process the file then
             await _blobProvider.MoveBlobAsync(name, WORKING_CONTAINER, FINAL_CONTAINER);
         }
 
-        public async Task QueueAsync(string name)
+        public async Task QueueAsync(string name, string clientRequestId)
         {
             _logger.LogInformation($"blob name: {name}");
             await _blobProvider.MoveBlobAsync(name, SOURCE_CONTAINER, WORKING_CONTAINER);
@@ -78,6 +106,7 @@ namespace FileIt.App.Services
             ServiceBusMessage message = new ServiceBusMessage(
                 JsonSerializer.Serialize(messageObject)
             );
+            message.ApplicationProperties.Add("CLIENT_REQUEST_ID", clientRequestId);
             message.ApplicationProperties.Add("BLOB_NAME", name);
             message.ApplicationProperties.Add("SOURCE", WORKING_CONTAINER);
             message.ApplicationProperties.Add("DESTINATION", FINAL_CONTAINER);

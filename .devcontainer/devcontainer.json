@@ -29,9 +29,14 @@
 				"ms-dotnettools.csdevkit",
 				"ms-azuretools.vscode-containers",
 				"rogalmic.bash-debug",
-				"csharpier.csharpier-vscode"
+				"csharpier.csharpier-vscode",
+				"ms-mssql.sql-database-projects-vscode"
 			]
 		}
+	},
+
+	"containerEnv": {
+		"DB_PASSWORD": "123qwe!@#QWE"
 	},
 
 	"remoteUser": "vscode"
