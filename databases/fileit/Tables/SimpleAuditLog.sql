@@ -1,0 +1,6 @@
+CREATE TABLE [dbo].[SimpleAuditLog]
+(
+  [Id] INT NOT NULL PRIMARY KEY,
+  [Message] NVARCHAR(100) NOT NULL,
+  CreatedOn DATETIME NOT NULL CONSTRAINT DF_SimpleAuditLog_CreatedOn DEFAULT GETDATE()
+)
