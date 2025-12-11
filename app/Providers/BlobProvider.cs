@@ -11,7 +11,7 @@ namespace FileIt.App.Providers
     public interface IBlobProvider
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="name"></param>
         /// <param name="containerName"></param>
@@ -26,6 +26,8 @@ namespace FileIt.App.Providers
         /// <param name="destinationContainer"></param>
         /// <returns></returns>
         Task MoveBlobAsync(string name, string sourceContainer, string destinationContainer);
+
+        Task Upload(Stream content, string blobName, string containerName);
     }
 
     public class BlobProvider : IBlobProvider
@@ -58,12 +60,16 @@ namespace FileIt.App.Providers
                 var sourceContainerClient = _blobServiceClient.GetBlobContainerClient(
                     sourceContainer
                 );
-                await sourceContainerClient.CreateIfNotExistsAsync();
+                var sourceExists = await sourceContainerClient.ExistsAsync();
+                if (!sourceExists)
+                    await sourceContainerClient.CreateIfNotExistsAsync();
 
                 var destinationContainerClient = _blobServiceClient.GetBlobContainerClient(
                     destinationContainer
                 );
-                await destinationContainerClient.CreateIfNotExistsAsync();
+                var destExists = await sourceContainerClient.ExistsAsync();
+                if (!destExists)
+                    await destinationContainerClient.CreateIfNotExistsAsync();
 
                 var sourceBlobClient = sourceContainerClient.GetBlobClient(blobName);
                 var destinationBlobClient = destinationContainerClient.GetBlobClient(blobName);
@@ -155,6 +161,12 @@ namespace FileIt.App.Providers
                 throw;
             }
             await Task.CompletedTask;
+        }
+
+        public async Task Upload(Stream content, string blobName, string containerName)
+        {
+            var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+            await containerClient.UploadBlobAsync(blobName, content);
         }
     }
 }

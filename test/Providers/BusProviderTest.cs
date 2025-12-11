@@ -62,8 +62,8 @@ namespace FileIt.Test.Providers
                 .ThrowsAsync(new System.Exception("Send failed"));
 
             // Act
-            await Assert.ThrowsExceptionAsync<System.Exception>(
-                () => _busProvider.SendMessageAsync(queueName, message)
+            await Assert.ThrowsExceptionAsync<System.Exception>(() =>
+                _busProvider.SendMessageAsync(queueName, message)
             );
         }
     }

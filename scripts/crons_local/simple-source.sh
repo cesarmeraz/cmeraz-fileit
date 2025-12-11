@@ -16,7 +16,8 @@ fi
 CONTAINER_SOURCE="simple-source"
 CONTAINER_WORKING="simple-working"
 CONTAINER_FINAL="simple-final"
-CONN=$AZURE_STORAGE_CONNECTION_STRING
+CONN="DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
+# CONN=$AZURE_STORAGE_CONNECTION_STRING
 
 # USE AZURE_STORAGE_CONNECTION_STRING environment variable.
 echo "Using AZURE_STORAGE_CONNECTION_STRING: ${CONN:-<not set>}"
@@ -42,6 +43,12 @@ az storage container create \
     --name "$CONTAINER_FINAL" \
     --connection-string "$CONN" \
     --only-show-errors >/dev/null
+
+
+# Create a test file to upload
+TIMESTAMP=$(date +%Y%m%d%H%M%S)
+FILENAME="test_${TIMESTAMP}.txt"
+echo "The current working directory is: $(pwd)" >> "$FILENAME"
 
 BLOB_NAME="$(basename "$FILENAME")"
 echo "Uploading test file '$FILENAME' as blob '$BLOB_NAME' to container '$CONTAINER_SOURCE'..."

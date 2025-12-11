@@ -1,9 +1,10 @@
-CREATE TABLE [dbo].[SimpleAuditLog]
+CREATE TABLE [dbo].[ApiLog]
 (
   [Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-  SimpleRequestLogId INT NOT NULL,
   ClientRequestId NVARCHAR(100) NOT NULL,
-  [Message] NVARCHAR(100) NOT NULL,
+  RequestBody NVARCHAR(100) NULL,
+  ResponseBody NVARCHAR(100) NULL,
+  [Status] NVARCHAR(100) NULL,
   CreatedOn DATETIME2 NOT NULL,
   ModifiedOn DATETIME2 NOT NULL
 )

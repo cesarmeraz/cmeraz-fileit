@@ -9,10 +9,10 @@ namespace FileIt.App.Providers
         /// <summary>
         /// Adds a Message to the Server Bus Queue
         /// </summary>
-        /// <param name="queueName">a string</param>
+        /// <param name="queueOrTopicName">a string</param>
         /// <param name="message">a ServiceBusMessage</param>
         /// <returns></returns>
-        Task SendMessageAsync(string queueName, ServiceBusMessage message);
+        Task SendMessageAsync(string queueOrTopicName, ServiceBusMessage message);
     }
 
     public class BusProvider : IBusProvider
@@ -29,14 +29,14 @@ namespace FileIt.App.Providers
             _senderFactory = senderFactory;
         }
 
-        public async Task SendMessageAsync(string queueName, ServiceBusMessage message)
+        public async Task SendMessageAsync(string queueOrTopicName, ServiceBusMessage message)
         {
-            if (string.IsNullOrEmpty(queueName))
+            if (string.IsNullOrEmpty(queueOrTopicName))
             {
                 _logger.LogError("Queue name cannot be null or empty.");
                 throw new ArgumentException(
                     "Queue name cannot be null or empty.",
-                    nameof(queueName)
+                    nameof(queueOrTopicName)
                 );
             }
             if (message == null)
@@ -47,7 +47,7 @@ namespace FileIt.App.Providers
                     "ServiceBusMessage cannot be null."
                 );
             }
-            ServiceBusSender sender = _senderFactory.CreateClient(queueName);
+            ServiceBusSender sender = _senderFactory.CreateClient(queueOrTopicName);
             await sender.SendMessageAsync(message);
         }
     }

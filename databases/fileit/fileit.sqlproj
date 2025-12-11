@@ -9,9 +9,16 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include=".vscode\tasks.json" />
+    <None Include="fileit_local.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Tables" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Remove="fileit.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="FileItDev.sql" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />

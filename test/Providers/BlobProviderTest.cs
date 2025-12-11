@@ -116,7 +116,7 @@ public class BlobProviderTest
                 It.IsAny<EventId>(),
                 It.IsAny<It.IsAnyType>(), // Represents the state object, often an anonymous type for structured logging
                 It.IsAny<Exception>(),
-                (Func<It.IsAnyType, Exception, string>)It.IsAny<object>() // The formatter function
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>() // The formatter function
             )
         );
 

@@ -14,7 +14,8 @@ fi
 
 # Define the container name from filename without extension
 CONTAINER_SOURCE="simple-source"
-CONN=$AZURE_STORAGE_CONNECTION_STRING
+# CONN=$AZURE_STORAGE_CONNECTION_STRING
+CONN="DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://localhost:10000/devstoreaccount1;"
 
 # Create a test file to upload
 TIMESTAMP=$(date +%Y%m%d%H%M%S)

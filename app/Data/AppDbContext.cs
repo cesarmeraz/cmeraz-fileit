@@ -1,4 +1,6 @@
+using FileIt.App.Api;
 using FileIt.App.Models;
+using FileIt.App.Simple;
 using Microsoft.EntityFrameworkCore;
 
 namespace FileIt.App.Data
@@ -10,12 +12,22 @@ namespace FileIt.App.Data
 
         // Register your DbSet<TEntity> properties here, for example:
         public DbSet<SimpleRequestLog> SimpleRequestLogs { get; set; }
+        public DbSet<ApiLog> ApiLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<SimpleRequestLog>().HasKey(p => p.Id);
-            // Configure entity mappings, keys, relationships, indexes, etc.
+            modelBuilder.HasDefaultSchema("dbo");
+
+            modelBuilder
+                .Entity<ApiLog>()
+                .ToTable("ApiLog")
+                .Property(s => s.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder
+                .Entity<SimpleRequestLog>()
+                .ToTable("SimpleRequestLog")
+                .Property(s => s.Id)
+                .ValueGeneratedOnAdd();
         }
     }
 }

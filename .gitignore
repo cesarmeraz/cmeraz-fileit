@@ -3,6 +3,20 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Azurite files
+__blobstorage__
+__queuestorage__
+__azurite_db_blob__.json
+__azurite_db_blob_extent__.json
+__azurite_db_queue__.json
+__azurite_db_queue_extent__.json
+__azurite_db_blob__.json
+__azurite_db_table__.json
+
+# Serilog log files
+log.txt
+serilog.txt
+
 # User-specific files
 *.rsuser
 *.suo
