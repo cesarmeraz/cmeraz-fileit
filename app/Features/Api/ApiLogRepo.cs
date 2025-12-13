@@ -1,7 +1,7 @@
 using FileIt.App.Api;
 using FileIt.App.Data;
-using FileIt.App.Models;
 using FileIt.App.Repositories;
+using FileIt.App.Tools;
 using Microsoft.EntityFrameworkCore;
 
 namespace FileIt.App.Repositories
@@ -19,8 +19,11 @@ namespace FileIt.App.Repositories
 
     public class ApiLogRepo : BaseRepository<ApiLog>, IApiLogRepo
     {
-        public ApiLogRepo(IDbContextFactory<AppDbContext> dbContextFactory, AppConfig appConfig)
-            : base(dbContextFactory, appConfig) { }
+        public ApiLogRepo(
+            IDbContextFactory<AppDbContext> dbContextFactory,
+            CommonConfig commonConfig
+        )
+            : base(dbContextFactory, commonConfig) { }
 
         public async Task<ApiLog?> AddAsync(
             string clientRequestId,

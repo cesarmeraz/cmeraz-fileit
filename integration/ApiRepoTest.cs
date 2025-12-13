@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FileIt.App.Api;
-using FileIt.App.Models;
 using FileIt.App.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 

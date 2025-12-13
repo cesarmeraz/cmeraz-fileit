@@ -1,13 +1,14 @@
 using System.Configuration;
+using System.Text;
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using FileIt.App.Api;
 using FileIt.App.Data;
-using FileIt.App.Models;
+using FileIt.App.Features.Simple;
 using FileIt.App.Providers;
 using FileIt.App.Repositories;
-using FileIt.App.Simple;
+using FileIt.App.Tools;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -16,8 +17,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.SqlServer.Server;
 using Serilog;
 using Serilog.Events;
+using Serilog.Formatting.Compact;
 
 namespace FileIt.App
 {
@@ -60,42 +63,48 @@ namespace FileIt.App
                     .ConfigureFunctionsApplicationInsights();
             }
 
-            AppConfig? appConfig = config.GetRequiredSection("App").Get<AppConfig>();
-            if (appConfig == null)
+            ConfigTool? configTool = config.GetRequiredSection("App").Get<ConfigTool>();
+            if (configTool == null)
             {
                 throw new ConfigurationErrorsException("Configuration is missing or invalid.");
             }
-            appConfig.Environment = azureFunctionsEnvironment;
-            appConfig.Host = hostName;
-            appConfig.Agent = agent;
+            if (configTool.Common == null)
+            {
+                throw new ConfigurationErrorsException(
+                    "Common configuration is missing or invalid."
+                );
+            }
+            configTool.Common.Agent = agent;
+            configTool.Common.Environment = env;
+            configTool.Common.Host = hostName;
 
             Console.WriteLine("ServiceBusConnectionString: " + azureServiceBusConnectionString);
-
-            builder.Services.AddScoped<IBusProvider, BusProvider>();
-            builder.Services.AddScoped<IBlobProvider, BlobProvider>();
-            builder.Services.AddSingleton(appConfig);
+            // wire up common items
+            builder.Services.AddScoped<IBusTool, BusTool>();
+            builder.Services.AddScoped<IBlobTool, BlobTool>();
             string connstring =
                 config.GetConnectionString("FileItDb")
                 ?? throw new ConfigurationErrorsException("FileItDb Connection string is missing.");
 
-            // Register your application's services here for testing
-            // services.AddTransient<IMyService, MyService>();
-            builder.Services.AddSingleton(appConfig);
+            // FEATURES
             builder.Services.AddSingleton<IApiLogRepo, ApiLogRepo>();
             builder.Services.AddSingleton<ISimpleRequestLogRepo, SimpleRequestLogRepo>();
+            builder.Services.AddSingleton(configTool.Api);
+            builder.Services.AddSingleton(configTool.Common);
+            builder.Services.AddSingleton(configTool.Simple);
+
             builder.Services.AddDbContextFactory<AppDbContext>(options =>
                 options.UseSqlServer(connstring)
             );
             builder.Services.AddSingleton<ILoggerProvider>(
                 new Serilog.Extensions.Logging.SerilogLoggerProvider(Log.Logger)
             );
-
             builder.Services.AddAzureClients(async clientBuilder =>
             {
                 clientBuilder.AddBlobServiceClient(azureStorageConnectionString);
                 clientBuilder.AddServiceBusClient(azureServiceBusConnectionString);
                 clientBuilder.AddServiceBusAdministrationClientWithNamespace(
-                    appConfig.ServiceBusNamespace
+                    configTool.Common.BusNamespace
                 );
                 clientBuilder
                     .AddClient<ServiceBusSender, ServiceBusClientOptions>(
@@ -114,9 +123,9 @@ namespace FileIt.App
                         (_, _, provider) =>
                             provider
                                 .GetRequiredService<ServiceBusClient>()
-                                .CreateSender("api-add-simple")
+                                .CreateSender("api-add-topic")
                     )
-                    .WithName("api-add-simple");
+                    .WithName("api-add-topic");
 
                 // Set a credential for all clients to use by default
                 // DefaultAzureCredential credential = new();
@@ -138,13 +147,28 @@ namespace FileIt.App
                 // }
             });
 
+            var temp = new StringBuilder();
+            temp.Append("{{");
+            temp.Append("\n\t\"@t\":\"{Timestamp:o}\",");
+            temp.Append("\n\t\"@l\":\"{Level}\",");
+            temp.Append("\n\t\"Message\":\"{Message:lj}\",");
+            temp.Append("\n\t\"MachineName\":\"{MachineName}\",");
+            temp.Append("\n\t\"ApplicationName\":\"{ApplicationName}\",");
+            temp.Append("\n\t\"Version\":\"{Version}\",");
+            temp.Append("\n\t\"Feature\":\"{Feature}\",");
+            temp.Append("\n\t\"SourceContext\":\"{SourceContext}\",");
+            temp.Append("\n\t\"ClientRequestId\":\"{ClientRequestId}\",");
+            temp.Append("\n\t\"EventId\": {EventId}");
+            temp.Append("\n}}{NewLine}{Exception}");
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Azure", LogEventLevel.Warning)
                 .MinimumLevel.Override("Azure.Storage.Blobs", LogEventLevel.Warning)
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning) // Optional: control noise from built-in Microsoft logging
                 .MinimumLevel.Debug()
                 .WriteTo.File("/home/cesar/repos/cmeraz-fileit/app/log.txt")
-                .WriteTo.Console()
+                .WriteTo.Console(outputTemplate: temp.ToString())
+                //.WriteTo.Console()
                 .WriteTo.MSSqlServer(
                     connectionString: builder.Configuration.GetConnectionString("FileItDb"),
                     sinkOptionsSection: builder.Configuration.GetSection("sinkOptionsSection"),

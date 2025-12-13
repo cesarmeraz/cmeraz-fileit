@@ -2,13 +2,12 @@ using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
-using FileIt.App.Models;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 
 namespace FileIt.App.Providers
 {
-    public interface IBlobProvider
+    public interface IBlobTool
     {
         /// <summary>
         ///
@@ -30,12 +29,12 @@ namespace FileIt.App.Providers
         Task Upload(Stream content, string blobName, string containerName);
     }
 
-    public class BlobProvider : IBlobProvider
+    public class BlobTool : IBlobTool
     {
-        private readonly ILogger<BlobProvider> _logger;
+        private readonly ILogger<BlobTool> _logger;
         private readonly BlobServiceClient _blobServiceClient;
 
-        public BlobProvider(ILogger<BlobProvider> logger, BlobServiceClient blobServiceClient)
+        public BlobTool(ILogger<BlobTool> logger, BlobServiceClient blobServiceClient)
         {
             // Initialize any required resources
             _logger = logger;

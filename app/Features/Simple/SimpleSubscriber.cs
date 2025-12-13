@@ -2,33 +2,32 @@ using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using FileIt.App.Api;
 using FileIt.App.Functions;
-using FileIt.App.Models;
 using FileIt.App.Providers;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.App.Simple;
+namespace FileIt.App.Features.Simple;
 
 public class SimpleSubscriber : BaseFunction
 {
-    private const int EventId = 2000;
-    private const string WORKING_CONTAINER = "simple-working";
-    private const string FINAL_CONTAINER = "simple-final";
     private readonly ISimpleRequestLogRepo _requestLogRepo;
-    private readonly IBlobProvider _blobProvider;
-    private readonly IBusProvider _busProvider;
+    private readonly IBlobTool _blobTool;
+    private readonly IBusTool _busTool;
+    private readonly SimpleConfig _config;
 
     public SimpleSubscriber(
         ILogger<SimpleSubscriber> logger,
-        IBlobProvider blobProvider,
-        IBusProvider busProvider,
-        ISimpleRequestLogRepo requestLogRepo
+        IBlobTool blobTool,
+        IBusTool busTool,
+        ISimpleRequestLogRepo requestLogRepo,
+        SimpleConfig config
     )
         : base(logger, nameof(SimpleSubscriber))
     {
-        _blobProvider = blobProvider;
-        _busProvider = busProvider;
+        _blobTool = blobTool;
+        _busTool = busTool;
         _requestLogRepo = requestLogRepo;
+        _config = config;
     }
 
     /// <summary>
@@ -38,8 +37,7 @@ public class SimpleSubscriber : BaseFunction
     /// <returns></returns>
     [Function(nameof(SimpleSubscriber))]
     public async Task Run(
-        [ServiceBusTrigger("api-add-simple", "api-add-simple-sub")]
-            ServiceBusReceivedMessage message
+        [ServiceBusTrigger("api-add-topic", "api-add-simple-sub")] ServiceBusReceivedMessage message
     )
     {
         string clientRequestId = message.CorrelationId ?? string.Empty;
@@ -49,8 +47,8 @@ public class SimpleSubscriber : BaseFunction
                 new Dictionary<string, object>()
                 {
                     { "ClientRequestId", clientRequestId ?? string.Empty },
-                    { "EventId", EventId },
-                    { "Module", MODULE_NAME },
+                    { "EventId", _config.SimpleSubscriberEventId },
+                    { "Feature", _config.FeatureName },
                 }
             )
         )
@@ -82,11 +80,15 @@ public class SimpleSubscriber : BaseFunction
                 throw new Exception("SimpleRequestLog entry not found");
             }
             //Process the file then
-            await _blobProvider.MoveBlobAsync(entry.BlobName, WORKING_CONTAINER, FINAL_CONTAINER);
+            await _blobTool.MoveBlobAsync(
+                entry.BlobName,
+                _config.WorkingContainer,
+                _config.FinalContainer
+            );
 
             entry.ApiId = apiLog?.Id ?? 0;
             await _requestLogRepo.UpdateAsync(entry);
-            logger.LogInformation($"Processed Simple Request Log: {entry}");
+            logger.LogInformation("Processed Simple Request Log: {@entry}", entry);
             LogFunctionEnd(nameof(SimpleSubscriber));
         }
     }

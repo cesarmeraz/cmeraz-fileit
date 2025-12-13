@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using FileIt.App.Data;
 
-namespace FileIt.App.Simple
+namespace FileIt.App.Features.Simple
 {
     public class SimpleRequestLog : IAuditable
     {

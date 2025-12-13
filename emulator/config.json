@@ -35,7 +35,7 @@
                 ],
                 "Topics": [
                     {
-                        "Name": "api-add-simple",
+                        "Name": "api-add-topic",
                         "Properties": {
                             "DefaultMessageTimeToLive": "PT1H",
                             "DuplicateDetectionHistoryTimeWindow": "PT20S",

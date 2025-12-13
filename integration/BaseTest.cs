@@ -1,8 +1,8 @@
 using System.Configuration;
 using FileIt.App.Data;
-using FileIt.App.Models;
+using FileIt.App.Features.Simple;
 using FileIt.App.Repositories;
-using FileIt.App.Simple;
+using FileIt.App.Tools;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +25,7 @@ namespace FileIt.Integration.Test
                 .Build();
             var services = new ServiceCollection();
 
-            AppConfig? appConfig = _configuration.GetRequiredSection("App").Get<AppConfig>();
+            ConfigTool? appConfig = _configuration.GetRequiredSection("App").Get<ConfigTool>();
             if (appConfig == null)
             {
                 throw new ConfigurationErrorsException("Configuration is missing or invalid.");
@@ -35,7 +35,9 @@ namespace FileIt.Integration.Test
                 ?? throw new ConfigurationErrorsException("FileItDb Connection string is missing.");
             Console.WriteLine($"Using connection string: {connstring}");
             // Register services here
-            services.AddSingleton(appConfig);
+            services.AddSingleton(appConfig.Api);
+            services.AddSingleton(appConfig.Common);
+            services.AddSingleton(appConfig.Simple);
             services.AddSingleton<IApiLogRepo, ApiLogRepo>();
             services.AddSingleton<ISimpleRequestLogRepo, SimpleRequestLogRepo>();
             services.AddDbContextFactory<AppDbContext>(options => options.UseSqlServer(connstring));

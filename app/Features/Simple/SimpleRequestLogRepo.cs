@@ -1,9 +1,9 @@
 using FileIt.App.Data;
-using FileIt.App.Models;
 using FileIt.App.Repositories;
+using FileIt.App.Tools;
 using Microsoft.EntityFrameworkCore;
 
-namespace FileIt.App.Simple
+namespace FileIt.App.Features.Simple
 {
     public interface ISimpleRequestLogRepo : IRepository<SimpleRequestLog>
     {
@@ -15,7 +15,7 @@ namespace FileIt.App.Simple
     {
         public SimpleRequestLogRepo(
             IDbContextFactory<AppDbContext> dbContextFactory,
-            AppConfig appConfig
+            CommonConfig appConfig
         )
             : base(dbContextFactory, appConfig) { }
 

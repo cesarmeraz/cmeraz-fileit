@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FileIt.App.Providers
 {
-    public interface IBusProvider
+    public interface IBusTool
     {
         /// <summary>
         /// Adds a Message to the Server Bus Queue
@@ -15,15 +15,12 @@ namespace FileIt.App.Providers
         Task SendMessageAsync(string queueOrTopicName, ServiceBusMessage message);
     }
 
-    public class BusProvider : IBusProvider
+    public class BusTool : IBusTool
     {
-        private readonly ILogger<BusProvider> _logger;
+        private readonly ILogger<BusTool> _logger;
         private readonly IAzureClientFactory<ServiceBusSender> _senderFactory;
 
-        public BusProvider(
-            ILogger<BusProvider> logger,
-            IAzureClientFactory<ServiceBusSender> senderFactory
-        )
+        public BusTool(ILogger<BusTool> logger, IAzureClientFactory<ServiceBusSender> senderFactory)
         {
             _logger = logger;
             _senderFactory = senderFactory;

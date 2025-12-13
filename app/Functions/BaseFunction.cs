@@ -5,13 +5,14 @@ namespace FileIt.App.Functions;
 
 public partial class BaseFunction
 {
-    public readonly string MODULE_NAME;
+    private readonly int EventId = 1000;
+    public readonly string FeatureName;
     public ILogger logger;
 
-    public BaseFunction(ILogger logger, string moduleName)
+    public BaseFunction(ILogger logger, string featureName)
     {
         this.logger = logger;
-        MODULE_NAME = moduleName;
+        FeatureName = featureName;
     }
 
     [LoggerMessage(
@@ -31,23 +32,33 @@ public partial class BaseFunction
     protected async Task<string> GetClientRequestIdFromHeaderAsync(BlobClient blobClient)
     {
         string? clientRequestId;
-        var propsResponse = await blobClient.GetPropertiesAsync();
-        var rawResponse = propsResponse.GetRawResponse();
-        if (rawResponse.Headers.TryGetValue("x-ms-client-request-id", out clientRequestId))
+        using (
+            logger!.BeginScope(
+                new Dictionary<string, object>()
+                {
+                    { "EventId", EventId },
+                    { "Feature", FeatureName },
+                }
+            )
+        )
         {
-            this.logger.LogInformation(
-                "x-ms-client-request-id: {ClientRequestId}",
-                clientRequestId
-            );
+            var propsResponse = await blobClient.GetPropertiesAsync();
+            var rawResponse = propsResponse.GetRawResponse();
+            if (rawResponse.Headers.TryGetValue("x-ms-client-request-id", out clientRequestId))
+            {
+                this.logger.LogInformation(
+                    "x-ms-client-request-id: {ClientRequestId}",
+                    clientRequestId
+                );
+            }
+            else
+            {
+                this.logger.LogInformation(
+                    "x-ms-client-request-id header not found on GetProperties response."
+                );
+                clientRequestId = Guid.NewGuid().ToString();
+            }
         }
-        else
-        {
-            this.logger.LogInformation(
-                "x-ms-client-request-id header not found on GetProperties response."
-            );
-            clientRequestId = Guid.NewGuid().ToString();
-        }
-
         return clientRequestId!;
     }
 }

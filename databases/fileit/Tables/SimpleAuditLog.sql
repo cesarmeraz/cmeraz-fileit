@@ -1,9 +1,0 @@
-CREATE TABLE [dbo].[SimpleAuditLog]
-(
-  [Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-  SimpleRequestLogId INT NOT NULL,
-  ClientRequestId NVARCHAR(100) NOT NULL,
-  [Message] NVARCHAR(100) NOT NULL,
-  CreatedOn DATETIME2 NOT NULL,
-  ModifiedOn DATETIME2 NOT NULL
-)

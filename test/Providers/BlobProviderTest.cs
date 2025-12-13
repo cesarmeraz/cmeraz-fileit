@@ -26,8 +26,8 @@ public class BlobProviderTest
         );
 
         var mockBlobServiceClient = new Mock<BlobServiceClient>();
-        var mockLogger = new Mock<ILogger<BlobProvider>>();
-        IBlobProvider target = new BlobProvider(mockLogger.Object, mockBlobServiceClient.Object);
+        var mockLogger = new Mock<ILogger<BlobTool>>();
+        IBlobTool target = new BlobTool(mockLogger.Object, mockBlobServiceClient.Object);
 
         var mockSourceBlobContainerClient = new Mock<BlobContainerClient>();
         mockBlobServiceClient

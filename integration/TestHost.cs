@@ -4,9 +4,9 @@ using System.Configuration;
 using System.Data;
 using System.Threading.Tasks;
 using FileIt.App.Data;
-using FileIt.App.Models;
+using FileIt.App.Features.Simple;
 using FileIt.App.Repositories;
-using FileIt.App.Simple;
+using FileIt.App.Tools;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -100,7 +100,6 @@ public static class TestHost
                     .WriteTo.MSSqlServer(
                         connectionString: _configuration.GetConnectionString("FileItDb"),
                         sinkOptionsSection: _configuration.GetSection("sinkOptionsSection"),
-                        //columnOptions: columnOpts,
                         columnOptionsSection: _configuration.GetSection("columnOptionsSection"),
                         restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose
                     )
@@ -121,9 +120,9 @@ public static class TestHost
             .ConfigureServices(
                 (hostContext, services) =>
                 {
-                    AppConfig? appConfig = _configuration
+                    ConfigTool? appConfig = _configuration
                         .GetRequiredSection("App")
-                        .Get<AppConfig>();
+                        .Get<ConfigTool>();
                     if (appConfig == null)
                     {
                         throw new ConfigurationErrorsException(
@@ -137,7 +136,9 @@ public static class TestHost
                         );
 
                     // Register your application's services here for testing
-                    services.AddSingleton(appConfig);
+                    services.AddSingleton(appConfig.Api);
+                    services.AddSingleton(appConfig.Common);
+                    services.AddSingleton(appConfig.Simple);
                     services.AddSingleton<IApiLogRepo, ApiLogRepo>();
                     services.AddSingleton<ISimpleRequestLogRepo, SimpleRequestLogRepo>();
                     services.AddDbContextFactory<AppDbContext>(options =>

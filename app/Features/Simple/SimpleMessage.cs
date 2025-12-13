@@ -1,4 +1,4 @@
-namespace FileIt.App.Simple
+namespace FileIt.App.Features.Simple
 {
     public class SimpleMessage
     {

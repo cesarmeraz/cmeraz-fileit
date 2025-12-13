@@ -4,38 +4,33 @@ using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
 using FileIt.App.Functions;
-using FileIt.App.Models;
 using FileIt.App.Providers;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 
-namespace FileIt.App.Simple;
+namespace FileIt.App.Features.Simple;
 
 public class SimpleIntake : BaseFunction
 {
-    private const int EventId = 2000;
-    private const string API_QUEUE_NAME = "api-add";
-    private const string API_TOPIC_NAME = "api-add-simple";
-    private const string QUEUE_NAME = "simple";
-    private const string SOURCE_CONTAINER = "simple-source";
-    private const string WORKING_CONTAINER = "simple-working";
-    private const string FINAL_CONTAINER = "simple-final";
-    private readonly IBlobProvider _blobProvider;
-    private readonly IBusProvider _busProvider;
+    private readonly IBlobTool _blobProvider;
+    private readonly IBusTool _busProvider;
+    private readonly SimpleConfig _config;
     private readonly ISimpleRequestLogRepo _requestLogRepo;
 
     public SimpleIntake(
         ILogger<SimpleIntake> logger,
-        IBlobProvider blobProvider,
-        IBusProvider busProvider,
-        ISimpleRequestLogRepo requestLogRepo
+        IBlobTool blobProvider,
+        IBusTool busProvider,
+        ISimpleRequestLogRepo requestLogRepo,
+        SimpleConfig config
     )
-        : base(logger, nameof(SimpleIntake))
+        : base(logger, config.FeatureName)
     {
         _blobProvider = blobProvider;
         _busProvider = busProvider;
+        _config = config;
         _requestLogRepo = requestLogRepo;
     }
 
@@ -61,8 +56,8 @@ public class SimpleIntake : BaseFunction
                 new Dictionary<string, object>()
                 {
                     { "ClientRequestId", clientRequestId ?? string.Empty },
-                    { "EventId", EventId },
-                    { "Module", MODULE_NAME },
+                    { "EventId", _config.SimpleIntakeEventId },
+                    { "Feature", _config.FeatureName },
                 }
             )
         )
@@ -76,7 +71,11 @@ public class SimpleIntake : BaseFunction
 
             await _requestLogRepo.AddAsync(blobName, clientRequestId ?? string.Empty);
 
-            await _blobProvider.MoveBlobAsync(blobName, SOURCE_CONTAINER, WORKING_CONTAINER);
+            await _blobProvider.MoveBlobAsync(
+                blobName,
+                _config.SourceContainer,
+                _config.WorkingContainer
+            );
             // Get record from Blob storage to parse metadata and properties
             // _busProvider.
             var messageObject = new SimpleMessage { BlobName = blobName };
@@ -84,14 +83,14 @@ public class SimpleIntake : BaseFunction
                 JsonSerializer.Serialize(messageObject)
             );
             message.MessageId = clientRequestId;
-            message.ReplyTo = API_TOPIC_NAME;
-            message.Subject = MODULE_NAME;
+            message.ReplyTo = _config.ApiAddTopicName;
+            message.Subject = _config.FeatureName;
             message.ContentType = "application/json";
             message.ApplicationProperties.Add("CLIENT_REQUEST_ID", clientRequestId);
             message.ApplicationProperties.Add("BLOB_NAME", blobName);
-            message.ApplicationProperties.Add("SOURCE", WORKING_CONTAINER);
-            message.ApplicationProperties.Add("DESTINATION", FINAL_CONTAINER);
-            await _busProvider.SendMessageAsync(API_QUEUE_NAME, message);
+            message.ApplicationProperties.Add("SOURCE", _config.WorkingContainer);
+            message.ApplicationProperties.Add("DESTINATION", _config.FinalContainer);
+            await _busProvider.SendMessageAsync(_config.ApiAddQueueName, message);
             LogFunctionEnd(nameof(SimpleIntake));
         }
     }

@@ -1,9 +1,8 @@
 using System.Diagnostics;
 using System.Text.Json;
 using System.Threading.Tasks;
-using FileIt.App.Models;
+using FileIt.App.Features.Simple;
 using FileIt.App.Repositories;
-using FileIt.App.Simple;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FileIt.Integration.Test;

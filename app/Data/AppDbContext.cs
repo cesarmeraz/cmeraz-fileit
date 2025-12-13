@@ -1,6 +1,5 @@
 using FileIt.App.Api;
-using FileIt.App.Models;
-using FileIt.App.Simple;
+using FileIt.App.Features.Simple;
 using Microsoft.EntityFrameworkCore;
 
 namespace FileIt.App.Data

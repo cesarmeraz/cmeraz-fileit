@@ -2,6 +2,7 @@ using System.Text;
 using Azure.Messaging.ServiceBus;
 using Castle.Core.Logging;
 using FileIt.App.Api;
+using FileIt.App.Features.Api;
 using FileIt.App.Functions.Api;
 using FileIt.App.Repositories;
 using Microsoft.Extensions.Azure;
@@ -38,7 +39,7 @@ namespace FileIt.Test.Api
             _serviceBusSenderMock = new Mock<ServiceBusSender>();
             _senderFactoryMock = new Mock<IAzureClientFactory<ServiceBusSender>>();
             _apiLogRepoMock = new Mock<IApiLogRepo>();
-
+            var config = new ApiConfig() { AddEventId = 1 };
             _senderFactoryMock
                 .Setup(x => x.CreateClient(It.IsAny<string>()))
                 .Returns(_serviceBusSenderMock.Object);
@@ -48,7 +49,8 @@ namespace FileIt.Test.Api
             target = new ApiFunc(
                 _loggerMock.Object,
                 _senderFactoryMock.Object,
-                _apiLogRepoMock.Object
+                _apiLogRepoMock.Object,
+                config
             );
         }
 

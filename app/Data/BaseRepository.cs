@@ -2,7 +2,7 @@ using System.Collections.Specialized;
 using System.Reflection;
 using System.Threading.Tasks;
 using FileIt.App.Data;
-using FileIt.App.Models;
+using FileIt.App.Tools;
 using Microsoft.EntityFrameworkCore;
 
 namespace FileIt.App.Data
@@ -22,9 +22,12 @@ namespace FileIt.App.Data
     {
         protected IDbContextFactory<AppDbContext> Factory { get; set; }
 
-        protected readonly AppConfig appConfig;
+        protected readonly CommonConfig appConfig;
 
-        public BaseRepository(IDbContextFactory<AppDbContext> dbContextFactory, AppConfig appConfig)
+        public BaseRepository(
+            IDbContextFactory<AppDbContext> dbContextFactory,
+            CommonConfig appConfig
+        )
         {
             this.Factory = dbContextFactory;
             this.appConfig = appConfig;

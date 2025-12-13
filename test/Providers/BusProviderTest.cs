@@ -11,16 +11,16 @@ namespace FileIt.Test.Providers
     [TestClass]
     public class BusProviderTest
     {
-        public required Mock<ILogger<BusProvider>> _loggerMock;
+        public required Mock<ILogger<BusTool>> _loggerMock;
         public required Mock<ServiceBusClient> _serviceBusClientMock;
         public required Mock<ServiceBusSender> _serviceBusSenderMock;
         public required Mock<IAzureClientFactory<ServiceBusSender>> _senderFactoryMock;
-        public required BusProvider _busProvider;
+        public required BusTool _busProvider;
 
         [TestInitialize]
         public void Setup()
         {
-            _loggerMock = new Mock<ILogger<BusProvider>>();
+            _loggerMock = new Mock<ILogger<BusTool>>();
             _serviceBusClientMock = new Mock<ServiceBusClient>();
             _serviceBusSenderMock = new Mock<ServiceBusSender>();
             _senderFactoryMock = new Mock<IAzureClientFactory<ServiceBusSender>>();
@@ -31,7 +31,7 @@ namespace FileIt.Test.Providers
                 .Setup(client => client.CreateSender(It.IsAny<string>()))
                 .Returns(_serviceBusSenderMock.Object);
 
-            _busProvider = new BusProvider(_loggerMock.Object, _senderFactoryMock.Object);
+            _busProvider = new BusTool(_loggerMock.Object, _senderFactoryMock.Object);
         }
 
         [TestMethod]
