@@ -29,7 +29,7 @@ public class SimpleTest : BaseFunction
     /// <param name="executionContext">the FunctionContext</param>
     /// <returns></returns>
     [Function(nameof(SimpleTest))]
-    public async Task Run([TimerTrigger("0 */2 * * * *")] TimerInfo myTimer)
+    public async Task Run([TimerTrigger("%SimpleTestCron%")] TimerInfo myTimer)
     {
         using (
             logger!.BeginScope(

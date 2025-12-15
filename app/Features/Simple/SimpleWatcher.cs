@@ -12,24 +12,24 @@ using Microsoft.Net.Http.Headers;
 
 namespace FileIt.App.Features.Simple;
 
-public class SimpleIntake : BaseFunction
+public class SimpleWatcher : BaseFunction
 {
-    private readonly IBlobTool _blobProvider;
-    private readonly IBusTool _busProvider;
+    private readonly IBlobTool _blobTool;
+    private readonly IBusTool _busTool;
     private readonly SimpleConfig _config;
     private readonly ISimpleRequestLogRepo _requestLogRepo;
 
-    public SimpleIntake(
-        ILogger<SimpleIntake> logger,
-        IBlobTool blobProvider,
-        IBusTool busProvider,
+    public SimpleWatcher(
+        ILogger<SimpleWatcher> logger,
+        IBlobTool blobTool,
+        IBusTool busTool,
         ISimpleRequestLogRepo requestLogRepo,
         SimpleConfig config
     )
         : base(logger, config.FeatureName)
     {
-        _blobProvider = blobProvider;
-        _busProvider = busProvider;
+        _blobTool = blobTool;
+        _busTool = busTool;
         _config = config;
         _requestLogRepo = requestLogRepo;
     }
@@ -40,7 +40,7 @@ public class SimpleIntake : BaseFunction
     /// <param name="blobClient">the BlobClient</param>
     /// <param name="blobName">the file name</param>
     /// <returns></returns>
-    [Function(nameof(SimpleIntake))]
+    [Function(nameof(SimpleWatcher))]
     public async Task Run(
         [BlobTrigger("simple-source/{blobName}")] BlobClient blobClient,
         string blobName
@@ -62,7 +62,7 @@ public class SimpleIntake : BaseFunction
             )
         )
         {
-            LogFunctionStart(nameof(SimpleIntake));
+            LogFunctionStart(nameof(SimpleWatcher));
             logger.LogInformation(
                 "Received blob trigger for blob: {BlobName} with ClientRequestId: {ClientRequestId}",
                 blobName,
@@ -71,7 +71,7 @@ public class SimpleIntake : BaseFunction
 
             await _requestLogRepo.AddAsync(blobName, clientRequestId ?? string.Empty);
 
-            await _blobProvider.MoveBlobAsync(
+            await _blobTool.MoveBlobAsync(
                 blobName,
                 _config.SourceContainer,
                 _config.WorkingContainer
@@ -88,10 +88,8 @@ public class SimpleIntake : BaseFunction
             message.ContentType = "application/json";
             message.ApplicationProperties.Add("CLIENT_REQUEST_ID", clientRequestId);
             message.ApplicationProperties.Add("BLOB_NAME", blobName);
-            message.ApplicationProperties.Add("SOURCE", _config.WorkingContainer);
-            message.ApplicationProperties.Add("DESTINATION", _config.FinalContainer);
-            await _busProvider.SendMessageAsync(_config.ApiAddQueueName, message);
-            LogFunctionEnd(nameof(SimpleIntake));
+            await _busTool.SendMessageAsync(_config.ApiAddQueueName, message);
+            LogFunctionEnd(nameof(SimpleWatcher));
         }
     }
 }

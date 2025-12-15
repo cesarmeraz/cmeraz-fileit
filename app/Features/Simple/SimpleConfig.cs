@@ -6,12 +6,12 @@ namespace FileIt.App.Features.Simple
         public int SimpleSubscriberEventId { get; set; }
         public int SimpleTestEventId { get; set; }
 
-        public string ApiAddQueueName { get; set; }
-        public string ApiAddTopicName { get; set; }
-        public string FeatureName { get; set; }
-        public string QueueName { get; set; }
-        public string SourceContainer { get; set; }
-        public string WorkingContainer { get; set; }
-        public string FinalContainer { get; set; }
+        public required string ApiAddQueueName { get; set; }
+        public required string ApiAddTopicName { get; set; }
+        public required string FeatureName { get; set; }
+        public required string QueueName { get; set; }
+        public required string SourceContainer { get; set; }
+        public required string WorkingContainer { get; set; }
+        public required string FinalContainer { get; set; }
     }
 }

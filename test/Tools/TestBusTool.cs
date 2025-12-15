@@ -9,7 +9,7 @@ using Moq;
 namespace FileIt.Test.Providers
 {
     [TestClass]
-    public class BusProviderTest
+    public class TestBusTool
     {
         public required Mock<ILogger<BusTool>> _loggerMock;
         public required Mock<ServiceBusClient> _serviceBusClientMock;

@@ -8,7 +8,7 @@ using Moq;
 namespace FileIt.Test.Providers;
 
 [TestClass]
-public class BlobProviderTest
+public class TestBlobTool
 {
     [TestMethod]
     public void TestMoveBlobAsync()

@@ -56,7 +56,6 @@ public class SimpleSubscriber : BaseFunction
             LogFunctionStart(nameof(SimpleSubscriber));
             logger.LogInformation("Processing {@message}", message);
             string messageBody = message.Body.ToString();
-            logger.LogInformation("Deserializing {messageBody}", messageBody);
             ApiLog? apiLog;
             try
             {
@@ -78,6 +77,14 @@ public class SimpleSubscriber : BaseFunction
                     clientRequestId
                 );
                 throw new Exception("SimpleRequestLog entry not found");
+            }
+            if (string.IsNullOrWhiteSpace(entry.BlobName))
+            {
+                logger.LogError(
+                    "No BlobName found for ClientRequestId: {ClientRequestId}",
+                    clientRequestId
+                );
+                throw new Exception("SimpleRequestLog entry is missing BlobName");
             }
             //Process the file then
             await _blobTool.MoveBlobAsync(

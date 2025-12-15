@@ -99,7 +99,7 @@ namespace FileIt.App
             builder.Services.AddSingleton<ILoggerProvider>(
                 new Serilog.Extensions.Logging.SerilogLoggerProvider(Log.Logger)
             );
-            builder.Services.AddAzureClients(async clientBuilder =>
+            builder.Services.AddAzureClients(clientBuilder =>
             {
                 clientBuilder.AddBlobServiceClient(azureStorageConnectionString);
                 clientBuilder.AddServiceBusClient(azureServiceBusConnectionString);
