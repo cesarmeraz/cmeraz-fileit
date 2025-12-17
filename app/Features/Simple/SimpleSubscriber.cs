@@ -2,7 +2,7 @@ using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using FileIt.App.Api;
 using FileIt.App.Functions;
-using FileIt.App.Providers;
+using FileIt.App.Common.Tools;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 

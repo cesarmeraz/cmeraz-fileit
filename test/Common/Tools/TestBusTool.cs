@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using FileIt.App.Providers;
+using FileIt.App.Common.Tools;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -1,7 +1,7 @@
 using FileIt.App.Features.Api;
 using FileIt.App.Features.Simple;
 
-namespace FileIt.App.Tools
+namespace FileIt.App.Common.Tools
 {
     public class ConfigTool
     {

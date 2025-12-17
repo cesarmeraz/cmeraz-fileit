@@ -4,7 +4,7 @@ using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
 using FileIt.App.Functions;
-using FileIt.App.Providers;
+using FileIt.App.Common.Tools;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;

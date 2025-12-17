@@ -2,7 +2,7 @@ using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.App.Providers
+namespace FileIt.App.Common.Tools
 {
     public interface IBusTool
     {
