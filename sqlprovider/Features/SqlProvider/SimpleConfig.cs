@@ -1,4 +1,4 @@
-namespace FileIt.App.Features.Simple
+namespace FileIt.SqlProvider.Features.Simple
 {
     public class SimpleConfig
     {

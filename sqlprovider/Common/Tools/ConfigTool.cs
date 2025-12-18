@@ -1,12 +1,11 @@
-using FileIt.App.Features.Api;
+using FileIt.SqlProvider.Features.Simple;
 
-namespace FileIt.App.Common.Tools
+namespace FileIt.SqlProvider.Common.Tools
 {
     public class ConfigTool
     {
-        public required ApiConfig Api { get; set; }
         public required CommonConfig Common { get; set; }
-
+        public required SimpleConfig Simple { get; set; }
     }
 
     public class CommonConfig

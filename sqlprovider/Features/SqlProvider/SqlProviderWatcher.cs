@@ -3,24 +3,25 @@ using System.Text;
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
-using FileIt.App.Functions;
-using FileIt.App.Common.Tools;
+using FileIt.SqlProvider.Common.Tools;
+using FileIt.SqlProvider.Features.Simple;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
+using FileIt.SqlProvider.Functions;
 
-namespace FileIt.App.Features.Simple;
+namespace FileIt.SqlProvider.Features.Simple;
 
-public class SimpleWatcher : BaseFunction
+public class SqlProviderWatcher : BaseFunction
 {
     private readonly IBlobTool _blobTool;
     private readonly IBusTool _busTool;
     private readonly SimpleConfig _config;
     private readonly ISimpleRequestLogRepo _requestLogRepo;
 
-    public SimpleWatcher(
-        ILogger<SimpleWatcher> logger,
+    public SqlProviderWatcher(
+        ILogger<SqlProviderWatcher> logger,
         IBlobTool blobTool,
         IBusTool busTool,
         ISimpleRequestLogRepo requestLogRepo,
@@ -40,7 +41,7 @@ public class SimpleWatcher : BaseFunction
     /// <param name="blobClient">the BlobClient</param>
     /// <param name="blobName">the file name</param>
     /// <returns></returns>
-    [Function(nameof(SimpleWatcher))]
+    [Function(nameof(SqlProviderWatcher))]
     public async Task Run(
         [BlobTrigger("simple-source/{blobName}")] BlobClient blobClient,
         string blobName
@@ -62,7 +63,7 @@ public class SimpleWatcher : BaseFunction
             )
         )
         {
-            LogFunctionStart(nameof(SimpleWatcher));
+            LogFunctionStart(nameof(SqlProviderWatcher));
             logger.LogInformation(
                 "Received blob trigger for blob: {BlobName} with ClientRequestId: {ClientRequestId}",
                 blobName,
@@ -89,7 +90,7 @@ public class SimpleWatcher : BaseFunction
             message.ApplicationProperties.Add("CLIENT_REQUEST_ID", clientRequestId);
             message.ApplicationProperties.Add("BLOB_NAME", blobName);
             await _busTool.SendMessageAsync(_config.ApiAddQueueName, message);
-            LogFunctionEnd(nameof(SimpleWatcher));
+            LogFunctionEnd(nameof(SqlProviderWatcher));
         }
     }
 }

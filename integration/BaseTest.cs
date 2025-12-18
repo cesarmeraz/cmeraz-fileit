@@ -1,7 +1,6 @@
 using System.Configuration;
 using FileIt.App.Common.Tools;
 using FileIt.App.Data;
-using FileIt.App.Features.Simple;
 using FileIt.App.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -37,9 +36,7 @@ namespace FileIt.Integration.Test
             // Register services here
             services.AddSingleton(appConfig.Api);
             services.AddSingleton(appConfig.Common);
-            services.AddSingleton(appConfig.Simple);
             services.AddSingleton<IApiLogRepo, ApiLogRepo>();
-            services.AddSingleton<ISimpleRequestLogRepo, SimpleRequestLogRepo>();
             services.AddDbContextFactory<AppDbContext>(options => options.UseSqlServer(connstring));
             ServiceProvider = services.BuildServiceProvider();
         }

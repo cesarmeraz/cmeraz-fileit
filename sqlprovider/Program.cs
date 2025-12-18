@@ -3,10 +3,9 @@ using System.Text;
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
-using FileIt.App.Api;
-using FileIt.App.Common.Tools;
-using FileIt.App.Data;
-using FileIt.App.Repositories;
+using FileIt.SqlProvider.Common.Tools;
+using FileIt.SqlProvider.Data;
+using FileIt.SqlProvider.Features.Simple;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +19,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
 
-namespace FileIt.App
+namespace FileIt.SqlProvider
 {
     public class Program
     {
@@ -85,9 +84,9 @@ namespace FileIt.App
                 ?? throw new ConfigurationErrorsException("FileItDb Connection string is missing.");
 
             // FEATURES
-            builder.Services.AddSingleton<IApiLogRepo, ApiLogRepo>();
-            builder.Services.AddSingleton(configTool.Api);
+            builder.Services.AddSingleton<ISimpleRequestLogRepo, SimpleRequestLogRepo>();
             builder.Services.AddSingleton(configTool.Common);
+            builder.Services.AddSingleton(configTool.Simple);
 
             builder.Services.AddDbContextFactory<AppDbContext>(options =>
                 options.UseSqlServer(connstring)

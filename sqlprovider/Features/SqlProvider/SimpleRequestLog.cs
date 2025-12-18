@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
-using FileIt.App.Data;
+using FileIt.SqlProvider.Data;
 
-namespace FileIt.App.Features.Simple
+namespace FileIt.SqlProvider.Features.Simple
 {
     public class SimpleRequestLog : IAuditable
     {

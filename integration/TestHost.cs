@@ -5,7 +5,6 @@ using System.Data;
 using System.Threading.Tasks;
 using FileIt.App.Common.Tools;
 using FileIt.App.Data;
-using FileIt.App.Features.Simple;
 using FileIt.App.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -138,9 +137,7 @@ public static class TestHost
                     // Register your application's services here for testing
                     services.AddSingleton(appConfig.Api);
                     services.AddSingleton(appConfig.Common);
-                    services.AddSingleton(appConfig.Simple);
                     services.AddSingleton<IApiLogRepo, ApiLogRepo>();
-                    services.AddSingleton<ISimpleRequestLogRepo, SimpleRequestLogRepo>();
                     services.AddDbContextFactory<AppDbContext>(options =>
                         options.UseSqlServer(connstring)
                     );

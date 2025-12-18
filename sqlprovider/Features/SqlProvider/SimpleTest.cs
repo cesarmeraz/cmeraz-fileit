@@ -1,10 +1,10 @@
 using System.Text;
 using Azure.Storage.Blobs;
-using FileIt.App.Functions;
+using FileIt.SqlProvider.Functions;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.App.Features.Simple;
+namespace FileIt.SqlProvider.Features.Simple;
 
 public class SimpleTest : BaseFunction
 {

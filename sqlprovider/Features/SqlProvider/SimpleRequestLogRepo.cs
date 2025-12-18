@@ -1,9 +1,8 @@
-using FileIt.App.Common.Tools;
-using FileIt.App.Data;
-using FileIt.App.Repositories;
+using FileIt.SqlProvider.Common.Tools;
+using FileIt.SqlProvider.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FileIt.App.Features.Simple
+namespace FileIt.SqlProvider.Features.Simple
 {
     public interface ISimpleRequestLogRepo : IRepository<SimpleRequestLog>
     {

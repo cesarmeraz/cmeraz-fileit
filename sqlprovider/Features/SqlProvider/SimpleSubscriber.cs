@@ -1,12 +1,11 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
-using FileIt.App.Api;
-using FileIt.App.Functions;
-using FileIt.App.Common.Tools;
+using FileIt.SqlProvider.Common.Tools;
+using FileIt.SqlProvider.Functions;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.App.Features.Simple;
+namespace FileIt.SqlProvider.Features.Simple;
 
 public class SimpleSubscriber : BaseFunction
 {

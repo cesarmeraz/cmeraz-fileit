@@ -1,7 +1,7 @@
-using FileIt.App.Api;
+using FileIt.SqlProvider.Features.Simple;
 using Microsoft.EntityFrameworkCore;
 
-namespace FileIt.App.Data
+namespace FileIt.SqlProvider.Data
 {
     public class AppDbContext : DbContext
     {
@@ -9,15 +9,15 @@ namespace FileIt.App.Data
             : base(options) { }
 
         // Register your DbSet<TEntity> properties here, for example:
-        public DbSet<ApiLog> ApiLogs { get; set; }
+        public DbSet<SimpleRequestLog> SimpleRequestLogs { get; set;} 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("dbo");
 
             modelBuilder
-                .Entity<ApiLog>()
-                .ToTable("ApiLog")
+                .Entity<SimpleRequestLog>()
+                .ToTable("SimpleRequestLog")
                 .Property(s => s.Id)
                 .ValueGeneratedOnAdd();
         }
