@@ -69,3 +69,158 @@ ReplyTo (reply-to)	This optional and application-defined value is a standard way
 To (to)	This property is reserved for future use in routing scenarios and currently ignored by the broker itself. Applications can use this value in rule-driven autoforward chaining scenarios to indicate the intended logical destination of the message.
 
 SequenceNumber	The sequence number is a unique 64-bit integer assigned to a message as it is accepted and stored by the broker and functions as its true identifier. For partitioned entities, the topmost 16 bits reflect the partition identifier. Sequence numbers monotonically increase and are gapless. They roll over to 0 when the 48-64 bit range is exhausted. This property is read-only.
+
+
+Install a local nuget
+sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu jammy main universe" > /etc/apt/sources.list.d/jammy.list'
+sudo apt-get update
+sudo apt-get install mono-complete
+sudo apt-get install nuget
+
+Configuration
+host.json is for function settings
+appsettings.json is for non-sensitive application settings
+Application Settings in Azure Portal overrides appsettings.json and handles sensitive values
+local.settings.json works like the Portal overrides in a non-Azure/local environment
+
+The Service Bus Namespace 
+
+Commands
+
+
+mkdir FileIt.Common
+cd FileIt.Common
+dotnet new classlib --name FileIt.Common --framework net8.0
+dotnet new mstest --name FileIt.Common.Test --framework net8.0
+dotnet new mstest --name FileIt.Common.Integration --framework net8.0
+dotnet new sln --name FileIt.Common
+dotnet sln FileIt.Common.sln add ./FileIt.Common/FileIt.Common.csproj
+dotnet sln FileIt.Common.sln add ./FileIt.Common.Test/FileIt.Common.Test.csproj
+dotnet sln FileIt.Common.sln add ./FileIt.Common.Integration/FileIt.Common.Integration.csproj
+
+cd FileIt.Common
+dotnet add package Azure.Messaging.ServiceBus
+dotnet add package Azure.Storage.Blobs --framework net8.0
+dotnet add package Microsoft.Azure.Functions.Worker
+dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0 --framework net8.0
+dotnet add package Microsoft.EntityFrameworkCore.Relational --version 8.0.0 --framework net8.0
+dotnet add package Microsoft.Extensions.Configuration
+dotnet add package Microsoft.Extensions.Configuration.Json
+dotnet add package Microsoft.Extensions.Logging
+dotnet add package Microsoft.Extensions.Azure
+dotnet add package Serilog
+dotnet add package Serilog.Enrichers.Environment
+dotnet add package Serilog.Sinks.Console
+dotnet add package Serilog.Sinks.File
+
+cd ./FileIt.Common/bin/Debug
+files=( FileIt.Common.*.nupkg )
+nuget_file="${files[${#files[@]}-1]}"
+nuget push $nuget_file -Source ~/nuget_local
+
+
+
+cd ../
+dotnet new sln --name FileIt.All
+dotnet sln FileIt.All.sln add ./FileIt.Common/FileIt.Common/FileIt.Common.csproj
+dotnet sln FileIt.All.sln add ./FileIt.Common/FileIt.Common.Test/FileIt.Common.Test.csproj
+dotnet sln FileIt.All.sln add ./FileIt.Common/FileIt.Common.Integration/FileIt.Common.Integration.csproj
+
+
+mkdir FileIt.App
+cd FileIt.App
+func init FileIt.App --worker-runtime dotnet-isolated --target-framework net8.0
+dotnet new mstest --name FileIt.App.Test --framework net8.0
+dotnet new sln --name FileIt.App
+dotnet sln FileIt.App.sln add ./FileIt.App/FileIt_App.csproj
+dotnet sln FileIt.App.sln add ./FileIt.App.Test/FileIt.App.Test.csproj
+dotnet add package Azure.Messaging.ServiceBus
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.ServiceBus
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Timer
+dotnet add package Microsoft.Azure.Functions.Worker.Sdk
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.0
+dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0
+dotnet add package Serilog
+dotnet add package Serilog.Enrichers.Environment
+dotnet add package Serilog.Extensions.Logging
+dotnet add package Serilog.Formatting.Compact
+dotnet add package Serilog.Settings.Configuration
+dotnet add package Serilog.Sinks.ApplicationInsights
+dotnet add package Serilog.Sinks.Console
+dotnet add package Serilog.Sinks.File
+
+
+
+dotnet add package System.Configuration.ConfigurationManager
+
+
+cd FileIt.App
+dotnet nuget add source ~/nuget_local -n LocalFeed
+dotnet add package FileIt.Common
+
+
+cd ~/repos/cmeraz-fileit/
+dotnet sln FileIt.All.sln add ./FileIt.App/FileIt.App/FileIt_App.csproj
+dotnet sln FileIt.All.sln add ./FileIt.App/FileIt.App.Test/FileIt.App.Test.csproj
+
+mkdir FileIt.CsvProvider
+cd FileIt.CsvProvider
+func init FileIt.CsvProvider --worker-runtime dotnet-isolated --target-framework net8.0
+dotnet new mstest --name FileIt.CsvProvider.Test --framework net8.0
+dotnet new sln --name FileIt.CsvProvider
+dotnet sln FileIt.CsvProvider.sln add ./FileIt.CsvProvider/FileIt_CsvProvider.csproj
+dotnet sln FileIt.CsvProvider.sln add ./FileIt.CsvProvider.Test/FileIt.CsvProvider.Test.csproj
+
+cd ../
+dotnet sln FileIt.All.sln add ./FileIt.CsvProvider/FileIt.CsvProvider/FileIt_CsvProvider.csproj
+dotnet sln FileIt.All.sln add ./FileIt.CsvProvider/FileIt.CsvProvider.Test/FileIt.CsvProvider.Test.csproj
+
+
+mkdir FileIt.SimpleProvider
+cd FileIt.SimpleProvider
+func init FileIt.SimpleProvider --worker-runtime dotnet-isolated --target-framework net8.0
+dotnet new mstest --name FileIt.SimpleProvider.Test --framework net8.0
+dotnet new sln --name FileIt.SimpleProvider
+dotnet sln FileIt.SimpleProvider.sln add ./FileIt.SimpleProvider/FileIt_SimpleProvider.csproj
+dotnet sln FileIt.SimpleProvider.sln add ./FileIt.SimpleProvider.Test/FileIt.SimpleProvider.Test.csproj
+
+cd ./FileIt.SimpleProvider
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Timer
+dotnet add package Microsoft.Extensions.Hosting
+dotnet add package Microsoft.Extensions.Hosting.Abstractions
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.0
+dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0
+dotnet add package Serilog
+dotnet add package Serilog.Enrichers.Environment
+dotnet add package Serilog.Extensions.Logging
+dotnet add package Serilog.Formatting.Compact
+dotnet add package Serilog.Settings.Configuration
+dotnet add package Serilog.Sinks.ApplicationInsights
+dotnet add package Serilog.Sinks.Console
+dotnet add package Serilog.Sinks.File
+dotnet add package System.Configuration.ConfigurationManager
+
+
+dotnet remove package FileIt.Common
+dotnet add package FileIt.Common
+
+
+cd ../../
+dotnet sln FileIt.All.sln add ./FileIt.SimpleProvider/FileIt.SimpleProvider/FileIt_SimpleProvider.csproj
+dotnet sln FileIt.All.sln add ./FileIt.SimpleProvider/FileIt.SimpleProvider.Test/FileIt.SimpleProvider.Test.csproj
+
+
+
+
+rm -r FileIt.All
+rm -r FileIt.App
+rm -r FileIt.CsvProvider
+rm -r FileIt.SimpleProvider
+
+rm FileIt.All.sln
+rm FileIt.App.sln
+rm FileIt.CsvProvider.sln
+rm FileIt.SimpleProvider.sln

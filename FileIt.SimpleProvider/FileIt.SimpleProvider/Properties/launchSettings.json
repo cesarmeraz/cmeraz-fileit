@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "FileIt_SimpleProvider": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7085",
+      "launchBrowser": false
+    }
+  }
+}
