@@ -1,25 +1,25 @@
 using System.Text;
 using Azure.Storage.Blobs;
-using FileIt.Common.Functions;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.SimpleProvider;
+namespace FileIt.SimpleProvider.App;
 
-public class SimpleTest : BaseFunction
+public class SimpleTest
 {
     private readonly BlobServiceClient _blobServiceClient;
     private readonly SimpleConfig _config;
+    private readonly ILogger<SimpleTest> _logger;
 
     public SimpleTest(
         ILogger<SimpleTest> logger,
         BlobServiceClient blobServiceClient,
         SimpleConfig config
     )
-        : base(logger, nameof(SimpleTest))
     {
         _blobServiceClient = blobServiceClient;
         _config = config;
+        _logger = logger;
     }
 
     /// <summary>
@@ -32,16 +32,15 @@ public class SimpleTest : BaseFunction
     public async Task Run([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer)
     {
         using (
-            logger!.BeginScope(
+            _logger!.BeginScope(
                 new Dictionary<string, object>()
                 {
                     { "EventId", _config.SimpleTestEventId },
-                    { "Feature", _config.Feature },
+                    { "Feature", _config.Feature! },
                 }
             )
         )
         {
-            LogFunctionStart(nameof(SimpleTest));
             var name = $"test-{Guid.NewGuid()}.txt";
             var content = $"Seeded blob created at {DateTime.Now}";
 
@@ -55,8 +54,7 @@ public class SimpleTest : BaseFunction
             using var ms = new MemoryStream(bytes);
             await blobClient.UploadAsync(ms, overwrite: true);
 
-            logger.LogInformation("Seeded blob '{name}' into container 'simple-source'.", name);
-            LogFunctionEnd(nameof(SimpleTest));
+            _logger.LogInformation("Seeded blob '{name}' into container 'simple-source'.", name);
         }
     }
 }

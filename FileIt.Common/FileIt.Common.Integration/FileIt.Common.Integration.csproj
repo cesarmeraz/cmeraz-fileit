@@ -19,7 +19,5 @@
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\FileIt.Common\FileIt.Common.csproj" />
-  </ItemGroup>
+  <ItemGroup></ItemGroup>
 </Project>

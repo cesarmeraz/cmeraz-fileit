@@ -1,34 +1,28 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
-using FileIt.Common.Domain;
-using FileIt.Common.Functions;
-using FileIt.Common.Tools;
-using FileIt.SimpleProvider;
+using FileIt.Domain.Entities.Api;
+using FileIt.SimpleProvider.App;
+using FileIt.SimpleProvider.App.WaitOnApiUpload;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace FileIt.SimpleProvider;
 
-public class SimpleSubscriber : BaseFunction
+public class SimpleSubscriber
 {
-    private readonly ISimpleRequestLogRepo _requestLogRepo;
-    private readonly IBlobTool _blobTool;
-    private readonly IBusTool _busTool;
     private readonly SimpleConfig _config;
+    private readonly ILogger<SimpleSubscriber> _logger;
+    private readonly IBasicApiAddHandler _responseHandler;
 
     public SimpleSubscriber(
         ILogger<SimpleSubscriber> logger,
-        IBlobTool blobTool,
-        IBusTool busTool,
-        ISimpleRequestLogRepo requestLogRepo,
-        SimpleConfig config
+        SimpleConfig config,
+        IBasicApiAddHandler responseHandler
     )
-        : base(logger, nameof(SimpleSubscriber))
     {
-        _blobTool = blobTool;
-        _busTool = busTool;
-        _requestLogRepo = requestLogRepo;
         _config = config;
+        _logger = logger;
+        _responseHandler = responseHandler;
     }
 
     /// <summary>
@@ -44,7 +38,7 @@ public class SimpleSubscriber : BaseFunction
         string clientRequestId = message.CorrelationId ?? string.Empty;
 
         using (
-            logger!.BeginScope(
+            _logger!.BeginScope(
                 new Dictionary<string, object>()
                 {
                     { "CorrelationId", clientRequestId ?? string.Empty },
@@ -53,50 +47,17 @@ public class SimpleSubscriber : BaseFunction
             )
         )
         {
-            LogFunctionStart(nameof(SimpleSubscriber));
-            logger.LogInformation("Processing {@message}", message);
-            string messageBody = message.Body.ToString();
-            ApiLog? apiLog;
-            try
-            {
-                apiLog = JsonSerializer.Deserialize<ApiLog>(messageBody);
-                logger.LogInformation("Deserialized ApiLog: {@ApiLog}", apiLog);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Failed to deserialize message body to ApiLog");
-                throw;
-            }
-            SimpleRequestLog? entry = await _requestLogRepo.GetByClientRequestIdAsync(
-                clientRequestId
-            );
-            if (entry == null)
-            {
-                logger.LogError(
-                    "No SimpleRequestLog found for ClientRequestId: {CorrelationId}",
-                    clientRequestId
-                );
-                throw new Exception("SimpleRequestLog entry not found");
-            }
-            if (string.IsNullOrWhiteSpace(entry.BlobName))
-            {
-                logger.LogError(
-                    "No BlobName found for ClientRequestId: {CorrelationId}",
-                    clientRequestId
-                );
-                throw new Exception("SimpleRequestLog entry is missing BlobName");
-            }
-            //Process the file then
-            await _blobTool.MoveBlobAsync(
-                entry.BlobName,
-                _config.WorkingContainer,
-                _config.FinalContainer
-            );
+            //LogFunctionStart(nameof(SimpleSubscriber));
+            _logger.LogInformation("Processing {@message}", message);
 
-            entry.ApiId = apiLog?.Id ?? 0;
-            await _requestLogRepo.UpdateAsync(entry);
-            logger.LogInformation("Processed Simple Request Log: {@entry}", entry);
-            LogFunctionEnd(nameof(SimpleSubscriber));
+            var response = JsonSerializer.Deserialize<ApiAddResponse>(message.Body.ToString());
+            if (response == null)
+            {
+                _logger.LogWarning("Failed to deserialize ApiAddResponse!");
+                throw new ApplicationException("Failed to deserialize ApiAddResponse!");
+            }
+            await _responseHandler.RunAsync(response);
+            //LogFunctionEnd(nameof(SimpleSubscriber));
         }
     }
 }
