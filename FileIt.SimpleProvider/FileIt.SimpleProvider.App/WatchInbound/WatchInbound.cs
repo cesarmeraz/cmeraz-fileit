@@ -62,7 +62,12 @@ public class WatchInbound : IWatchInbound
             );
             await _requestLogRepo.AddAsync(blobName, clientRequestId);
 
-            await _blobTool.MoveAsync(blobName, _config.SourceContainer, _config.WorkingContainer);
+            await _blobTool.MoveAsync(
+                blobName,
+                _config.SourceContainer,
+                _config.WorkingContainer,
+                clientRequestId
+            );
 
             string messageId = Guid.NewGuid().ToString();
 
@@ -73,7 +78,6 @@ public class WatchInbound : IWatchInbound
                     MessageId = messageId,
                     ReplyTo = _config.ApiAddTopicName,
                     CorrelationId = clientRequestId,
-                    Subject = _config.Feature,
                     QueueName = _config.ApiAddQueueName,
                 }
             );

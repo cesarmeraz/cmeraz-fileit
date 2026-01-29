@@ -1,6 +1,9 @@
 using System.Text;
 using FileIt.Domain.Interfaces;
+using FileIt.Domain.Logging;
 using FileIt.Infrastructure.Logging;
+using Microsoft.Azure.Functions.Worker.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
@@ -8,12 +11,49 @@ using Serilog;
 using Serilog.Events;
 
 // A static class to hold the extension method
-public static class CommonLoggerExtensions
+public static class CommonLogExtensions
 {
     // Extension method for ILoggingBuilder
-    public static ILoggingBuilder AddCommonLogger(
+    public static ICommonLogConfig GetCommonLogConfig(this FunctionsApplicationBuilder builder)
+    {
+        ICommonLogConfig config = new CommonLogConfig();
+        if (string.IsNullOrWhiteSpace(config.Environment))
+        {
+            string? azure_env = builder.Configuration.GetValue<string>(
+                "AZURE_FUNCTIONS_ENVIRONMENT"
+            );
+            config.Environment = azure_env ?? config.Environment;
+        }
+        config.Host = Environment.MachineName;
+        config.Agent = Environment.UserName;
+        config.Environment = builder.Environment.EnvironmentName;
+        config.Feature = builder.Environment.ApplicationName;
+        config.DbConnectionString =
+            builder.Configuration.GetValue<string>("DB_CONNECTION_STRING")
+            ?? throw new ApplicationException(
+                "Application settings is missing DB_CONNECTION_STRING."
+            );
+
+        string? logFilePath = builder.Configuration.GetValue<string>("LOG_FILE_PATH");
+        if (!string.IsNullOrWhiteSpace(logFilePath))
+        {
+            config.LogFilePath = logFilePath;
+        }
+
+        string? serilogFilePath = builder.Configuration.GetValue<string>(
+            "SERILOG_SELFLOG_FILE_PATH"
+        );
+        if (!string.IsNullOrWhiteSpace(serilogFilePath))
+        {
+            config.SerilogSelfLogFilePath = serilogFilePath;
+        }
+        builder.Services.AddSingleton(config);
+        return config;
+    }
+
+    public static ILoggingBuilder AddCommonLog(
         this ILoggingBuilder builder,
-        IFeatureConfig featureConfig,
+        ICommonLogConfig featureConfig,
         string? selfLogFilePath = null
     )
     {

@@ -1,4 +1,3 @@
-using FileIt.Domain.Entities;
 using FileIt.Domain.Entities.Api;
 using FileIt.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;

@@ -2,9 +2,12 @@
 using Azure.Messaging.ServiceBus;
 using FileIt.Domain.Interfaces;
 using FileIt.Infrastructure.Data;
+using FileIt.Infrastructure.DependencyInjection;
 using FileIt.Infrastructure.Tools;
+using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -14,9 +17,42 @@ namespace FileIt.Infrastructure.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    public static IInfrastructureConfig GetInfrastructureConfig(
+        this FunctionsApplicationBuilder builder
+    )
+    {
+        IInfrastructureConfig config = new InfrastructureConfig();
+
+        config.DbConnectionString =
+            builder.Configuration.GetValue<string>("DB_CONNECTION_STRING")
+            ?? throw new ApplicationException(
+                "Application settings is missing DB_CONNECTION_STRING."
+            );
+        config.BusConnectionString =
+            builder.Configuration.GetValue<string>("SERVICEBUS_CONNECTION_STRING")
+            ?? throw new ApplicationException(
+                "Application settings is missing SERVICEBUS_CONNECTION_STRING."
+            );
+        config.BlobConnectionString =
+            builder.Configuration.GetValue<string>("STORAGE_CONNECTION_STRING")
+            ?? throw new ApplicationException(
+                "Application settings is missing STORAGE_CONNECTION_STRING."
+            );
+        config.AppInsightsConnectionString = builder.Configuration.GetValue<string>(
+            "APPLICATIONINSIGHTS_CONNECTION_STRING"
+        );
+        config.BusNamespace =
+            builder.Configuration.GetValue<string>("SERVICEBUS_NAMESPACE")
+            ?? throw new ApplicationException(
+                "Application settings is missing SERVICEBUS_NAMESPACE."
+            );
+
+        return config;
+    }
+
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IFeatureConfig config
+        IInfrastructureConfig config
     )
     {
         if (config == null)
@@ -29,6 +65,7 @@ public static class ServiceCollectionExtensions
         }
 
         // Register your services here
+        services.AddSingleton(config);
         services.AddScoped<ITalkToApi, BusTool>();
         services.AddScoped<IHandleFiles, BlobTool>();
         services.AddScoped<IApiLogRepo, ApiLogRepo>();
@@ -42,18 +79,6 @@ public static class ServiceCollectionExtensions
             clientBuilder.AddBlobServiceClient(config.BlobConnectionString);
             clientBuilder.AddServiceBusClient(config.BusConnectionString);
             clientBuilder.AddServiceBusAdministrationClientWithNamespace(config.BusNamespace);
-
-            foreach (var queueOrTopicName in config.QueueOrTopicNames)
-            {
-                clientBuilder
-                    .AddClient<ServiceBusSender, ServiceBusClientOptions>(
-                        (_, _, provider) =>
-                            provider
-                                .GetRequiredService<ServiceBusClient>()
-                                .CreateSender(queueOrTopicName)
-                    )
-                    .WithName(queueOrTopicName);
-            }
 
             clientBuilder
                 .AddClient<ServiceBusSender, ServiceBusClientOptions>(
@@ -73,21 +98,6 @@ public static class ServiceCollectionExtensions
             // Set a credential for all clients to use by default
             // DefaultAzureCredential credential = new();
             // clientBuilder.UseCredential(credential);
-
-            // // Register a subclient for each Service Bus Queue
-            // List<string> queueNames = await GetQueueNames(
-            //     credential,
-            //     appConfig.ServiceBusNamespace
-            // );
-            // foreach (string queue in queueNames)
-            // {
-            //     _ = clientBuilder
-            //         .AddClient<ServiceBusSender, ServiceBusClientOptions>(
-            //             (_, _, provider) =>
-            //                 provider.GetRequiredService<ServiceBusClient>().CreateSender(queue)
-            //         )
-            //         .WithName(queue);
-            // }
         });
 
         services.AddSingleton<ILoggerProvider>(new SerilogLoggerProvider(Log.Logger));

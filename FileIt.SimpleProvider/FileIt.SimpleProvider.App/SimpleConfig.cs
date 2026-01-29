@@ -3,7 +3,7 @@ using FileIt.Domain.Interfaces;
 
 namespace FileIt.SimpleProvider.App;
 
-public class SimpleConfig : FeatureConfig, IFeatureConfig
+public class SimpleConfig
 {
     public int SimpleIntakeEventId { get; set; }
     public int SimpleSubscriberEventId { get; set; }

@@ -1,34 +1,52 @@
-using System;
-using System.Threading.Tasks;
-using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
 using FileIt.Domain.Interfaces;
-using Microsoft.Extensions.Azure;
+using FileIt.Infrastructure.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.Infrastructure.Tools
-{
-    public class BlobTool : IHandleFiles
-    {
-        private readonly ILogger<BlobTool> _logger;
-        private readonly BlobServiceClient _blobServiceClient;
+namespace FileIt.Infrastructure.Tools;
 
-        public BlobTool(ILogger<BlobTool> logger, BlobServiceClient blobServiceClient)
+public class BlobTool : IHandleFiles
+{
+    private readonly ILogger<BlobTool> _logger;
+    private readonly BlobServiceClient _blobServiceClient;
+
+    public BlobTool(ILogger<BlobTool> logger, BlobServiceClient blobServiceClient)
+    {
+        _logger = logger;
+        _blobServiceClient = blobServiceClient;
+    }
+
+    public async Task MoveAsync(
+        string filename,
+        string source,
+        string destination,
+        string? correlationId
+    )
+    {
+        // Placeholder for moving a blob
+        if (string.IsNullOrWhiteSpace(filename))
         {
-            _logger = logger;
-            _blobServiceClient = blobServiceClient;
+            throw new ArgumentException("Blob name must be provided", nameof(filename));
         }
 
-        public async Task MoveAsync(string filename, string source, string destination)
+        using (
+            _logger!.BeginScope(
+                new Dictionary<string, object>()
+                {
+                    { "CorrelationId", correlationId ?? string.Empty },
+                }
+            )
+        )
         {
-            // Placeholder for moving a blob
-            if (string.IsNullOrWhiteSpace(filename))
-            {
-                throw new ArgumentException("Blob name must be provided", nameof(filename));
-            }
-
             try
             {
+                _logger.LogInformation(
+                    InfrastructureEvents.BlobToolMoveStart,
+                    "Moving Blob '{BlobName}' from {source} to {destination}",
+                    filename,
+                    source,
+                    destination
+                );
                 var sourceContainerClient = _blobServiceClient.GetBlobContainerClient(source);
                 var sourceExists = await sourceContainerClient.ExistsAsync();
                 if (!sourceExists)
@@ -48,6 +66,7 @@ namespace FileIt.Infrastructure.Tools
                 if (!existsResponse.Value)
                 {
                     _logger.LogWarning(
+                        InfrastructureEvents.BlobToolBlobNotFound,
                         "Blob '{BlobName}' not found in container '{SourceContainer}'",
                         filename,
                         source
@@ -59,6 +78,7 @@ namespace FileIt.Infrastructure.Tools
                 await sourceBlobClient.DeleteAsync();
 
                 _logger.LogInformation(
+                    InfrastructureEvents.BlobToolMoved,
                     "Moved blob '{BlobName}' from '{SourceContainer}' to '{DestinationContainer}'",
                     filename,
                     source,
@@ -68,6 +88,7 @@ namespace FileIt.Infrastructure.Tools
             catch (Azure.RequestFailedException ex)
             {
                 _logger.LogError(
+                    InfrastructureEvents.BlobToolMoveFailed,
                     ex,
                     "Azure Storage request failed while moving blob '{BlobName}'",
                     filename
@@ -76,30 +97,51 @@ namespace FileIt.Infrastructure.Tools
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error while moving blob '{BlobName}'", filename);
+                _logger.LogError(
+                    InfrastructureEvents.BlobToolUnexpected,
+                    ex,
+                    "Unexpected error while moving blob '{BlobName}'",
+                    filename
+                );
                 throw;
             }
         }
+    }
 
-        public async Task GetFileAsync(string name, string location)
+    public async Task GetFileAsync(string filename, string location, string? correlationId)
+    {
+        // Placeholder for getting a blob
+        if (string.IsNullOrWhiteSpace(filename))
         {
-            // Placeholder for getting a blob
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException("Blob name must be provided", nameof(name));
-            }
+            throw new ArgumentException("Blob name must be provided", nameof(filename));
+        }
 
+        using (
+            _logger!.BeginScope(
+                new Dictionary<string, object>()
+                {
+                    { "CorrelationId", correlationId ?? string.Empty },
+                }
+            )
+        )
+        {
+            _logger.LogInformation(
+                InfrastructureEvents.BlobToolGetFile,
+                "Getting '{FileName}' from {Location}",
+                filename,
+                location
+            );
             try
             {
                 var containerClient = _blobServiceClient.GetBlobContainerClient(location);
-                var blobClient = containerClient.GetBlobClient(name);
+                var blobClient = containerClient.GetBlobClient(filename);
 
                 var existsResponse = await blobClient.ExistsAsync();
                 if (!existsResponse.Value)
                 {
                     _logger.LogWarning(
                         "Blob '{BlobName}' not found in container '{Container}'",
-                        name,
+                        filename,
                         location
                     );
                     return;
@@ -111,7 +153,7 @@ namespace FileIt.Infrastructure.Tools
 
                 _logger.LogInformation(
                     "Downloaded blob '{BlobName}' from container '{Container}' ({Length} bytes)",
-                    name,
+                    filename,
                     location,
                     ms.Length
                 );
@@ -121,22 +163,60 @@ namespace FileIt.Infrastructure.Tools
                 _logger.LogError(
                     ex,
                     "Azure Storage request failed while retrieving blob '{BlobName}'",
-                    name
+                    filename
                 );
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error while retrieving blob '{BlobName}'", name);
+                _logger.LogError(
+                    ex,
+                    "Unexpected error while retrieving blob '{BlobName}'",
+                    filename
+                );
                 throw;
             }
-            await Task.CompletedTask;
         }
+        await Task.CompletedTask;
+    }
 
-        public async Task UploadAsync(Stream content, string filename, string location)
+    public async Task UploadAsync(
+        Stream content,
+        string filename,
+        string location,
+        string? correlationId
+    )
+    {
+        using (
+            _logger!.BeginScope(
+                new Dictionary<string, object>()
+                {
+                    { "CorrelationId", correlationId ?? string.Empty },
+                }
+            )
+        )
         {
-            var containerClient = _blobServiceClient.GetBlobContainerClient(location);
-            await containerClient.UploadBlobAsync(filename, content);
+            _logger.LogInformation(
+                InfrastructureEvents.BlobToolUploadStart,
+                "Uploading '{FileName}' from {Location}",
+                filename,
+                location
+            );
+            try
+            {
+                var containerClient = _blobServiceClient.GetBlobContainerClient(location);
+                await containerClient.UploadBlobAsync(filename, content);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    InfrastructureEvents.BlobToolUploadError,
+                    ex,
+                    "Error uploading {FileName}",
+                    filename
+                );
+            }
+            ;
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Configuration;
 using FileIt.Domain.Interfaces;
+using FileIt.Domain.Logging;
 using FileIt.Infrastructure.Extensions;
 using FileIt.Infrastructure.Tools;
 using FileIt.SimpleProvider.App;
@@ -19,25 +20,27 @@ builder
     .Services.AddApplicationInsightsTelemetryWorkerService()
     .ConfigureFunctionsApplicationInsights();
 
-var programTool = new ProgramTool();
-SimpleConfig? featureConfig = programTool.GetFeatureConfig<SimpleConfig>(builder);
-if (featureConfig == null)
-    throw new ConfigurationErrorsException(
-        "Error parsing SimpleConfig. Possible cause: appSettings.json is missing a Feature section."
-    );
-featureConfig.FeatureVersion = System
-    .Reflection.Assembly.GetExecutingAssembly()
-    .GetName()
-    .Version?.ToString();
+var sectionName = builder.Configuration.GetValue<string>("FeatureSection") ?? "Feature";
+SimpleConfig? config = builder.Configuration.GetSection(sectionName).Get<SimpleConfig>();
+if (config == null)
+{
+    throw new ApplicationException("Appsettings.json is missing Feature config.");
+}
 
-builder.Services.AddSingleton(featureConfig);
-builder.Services.AddSingleton<IFeatureConfig>(featureConfig);
-builder.Services.AddInfrastructure(featureConfig);
+builder.Services.AddSingleton(config);
 builder.Services.AddScoped<IWatchInbound, WatchInbound>();
 builder.Services.AddScoped<IBasicApiAddHandler, BasicApiAddHandler>();
 
+IInfrastructureConfig infrastructureConfig = builder.GetInfrastructureConfig();
+builder.Services.AddInfrastructure(infrastructureConfig);
+
 // Configure logging
 builder.Logging.ClearProviders(); // Remove default logging providers
-builder.Logging.AddCommonLogger(featureConfig);
+ICommonLogConfig logConfig = builder.GetCommonLogConfig();
+logConfig.FeatureVersion = System
+    .Reflection.Assembly.GetExecutingAssembly()
+    .GetName()
+    .Version?.ToString();
+builder.Logging.AddCommonLog(logConfig);
 
 builder.Build().Run();

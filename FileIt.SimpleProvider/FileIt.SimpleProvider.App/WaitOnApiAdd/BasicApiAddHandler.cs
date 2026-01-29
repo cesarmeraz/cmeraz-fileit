@@ -78,7 +78,8 @@ public class BasicApiAddHandler : IBasicApiAddHandler
             await _blobTool.MoveAsync(
                 entry.BlobName,
                 _config.WorkingContainer,
-                _config.FinalContainer
+                _config.FinalContainer,
+                clientRequestId
             );
 
             entry.ApiId = message.NodeId;

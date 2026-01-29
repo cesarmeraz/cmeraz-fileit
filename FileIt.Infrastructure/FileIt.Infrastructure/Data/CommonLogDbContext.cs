@@ -1,5 +1,4 @@
 using FileIt.Domain.Entities;
-using FileIt.Domain.Entities.Api;
 using Microsoft.EntityFrameworkCore;
 
 namespace FileIt.Infrastructure.Data

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using FileIt.Domain.Entities;
 using FileIt.Domain.Interfaces;
+using FileIt.Domain.Logging;
 using FileIt.Infrastructure.Logging;
 using Microsoft.Data.SqlClient;
 using Serilog.Events;
@@ -19,11 +20,10 @@ public class DatabaseSinkTest
         string correlationId = Guid.NewGuid().ToString();
         string connString =
             "Data Source=localhost;Initial Catalog=FileIt;User ID=FileItDev;Password=123qwe!@#QWE;TrustServerCertificate=True;Encrypt=True;";
-        IFeatureConfig featureConfig = new TestConfig()
+        ICommonLogConfig featureConfig = new CommonLogConfig()
         {
             Agent = "Integration",
             Feature = "FileIt.Common.Integration",
-            BusNamespace = "emulator",
             Environment = "LocalDev",
             Host = "cesario",
             DbConnectionString = connString,
@@ -105,6 +105,4 @@ public class DatabaseSinkTest
             }
         }
     }
-
-    public class TestConfig : FeatureConfig { }
 }

@@ -2,6 +2,7 @@ using System.Configuration;
 using FileIt.Common.App;
 using FileIt.Common.App.ApiAdd;
 using FileIt.Domain.Interfaces;
+using FileIt.Domain.Logging;
 using FileIt.Infrastructure.Extensions;
 using FileIt.Infrastructure.Tools;
 using Microsoft.Azure.Functions.Worker;
@@ -19,33 +20,27 @@ builder
     .Services.AddApplicationInsightsTelemetryWorkerService()
     .ConfigureFunctionsApplicationInsights();
 
-// IConfigurationRoot config = builder
-//     .Configuration.SetBasePath(Directory.GetCurrentDirectory())
-//     .AddJsonFile("appsettings.json")
-//     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-//     .AddEnvironmentVariables()
-//     .AddJsonFile("local.settings.json", true, false)
-//     .Build();
+var sectionName = builder.Configuration.GetValue<string>("FeatureSection") ?? "Feature";
+CommonConfig? config = builder.Configuration.GetSection(sectionName).Get<CommonConfig>();
+if (config == null)
+{
+    throw new ApplicationException("Appsettings.json is missing Feature config.");
+}
 
-var programTool = new ProgramTool();
-CommonConfig? featureConfig = programTool.GetFeatureConfig<CommonConfig>(builder);
-if (featureConfig == null)
-    throw new ConfigurationErrorsException(
-        "Error parsing SimpleConfig. Possible cause: appSettings.json is missing a Feature section."
-    );
-featureConfig.FeatureVersion = System
-    .Reflection.Assembly.GetExecutingAssembly()
-    .GetName()
-    .Version?.ToString();
-
-builder.Services.AddSingleton(featureConfig);
-builder.Services.AddSingleton<IFeatureConfig>(featureConfig);
-builder.Services.AddInfrastructure(featureConfig);
+builder.Services.AddSingleton(config);
 builder.Services.AddScoped<IApiAddCommand, ApiAddCommand>();
 builder.Services.AddScoped<IBroadcastResponses, PublishTool>();
 
+IInfrastructureConfig infrastructureConfig = builder.GetInfrastructureConfig();
+builder.Services.AddInfrastructure(infrastructureConfig);
+
 // Configure logging
 builder.Logging.ClearProviders(); // Remove default logging providers
-builder.Logging.AddCommonLogger(featureConfig);
+ICommonLogConfig logConfig = builder.GetCommonLogConfig();
+logConfig.FeatureVersion = System
+    .Reflection.Assembly.GetExecutingAssembly()
+    .GetName()
+    .Version?.ToString();
+builder.Logging.AddCommonLog(logConfig);
 
 builder.Build().Run();

@@ -33,11 +33,7 @@ public class SimpleTest
     {
         using (
             _logger!.BeginScope(
-                new Dictionary<string, object>()
-                {
-                    { "EventId", _config.SimpleTestEventId },
-                    { "Feature", _config.Feature! },
-                }
+                new Dictionary<string, object>() { { "EventId", _config.SimpleTestEventId } }
             )
         )
         {

@@ -69,7 +69,7 @@ public class ApiAddCommand : IApiAddCommand
                 TopicName = request.ReplyTo!,
             };
 
-            await _broadcaster.Emit(response);
+            await _broadcaster.EmitAsync(response);
         }
     }
 }

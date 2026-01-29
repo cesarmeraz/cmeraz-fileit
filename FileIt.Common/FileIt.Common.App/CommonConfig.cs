@@ -3,7 +3,7 @@ using FileIt.Domain.Interfaces;
 
 namespace FileIt.Common.App;
 
-public class CommonConfig : FeatureConfig, IFeatureConfig
+public class CommonConfig
 {
     public int AddEventId { get; set; }
     public string? ApiAddTopicName { get; set; }

@@ -1,17 +1,35 @@
-2026-01-27 19:47:00.007 -06:00 [INF] Start of function SimpleTest execution.
-2026-01-27 19:47:00.020 -06:00 [INF] Seeded blob 'test-93e763bc-1426-4178-8efc-d9dafe712193.txt' into container 'simple-source'.
-2026-01-27 19:47:00.023 -06:00 [INF] End of function SimpleTest execution.
-2026-01-27 19:47:00.880 -06:00 [INF] Start of function SimpleWatcher execution.
-2026-01-27 19:47:00.888 -06:00 [INF] Received blob trigger for blob: test-93e763bc-1426-4178-8efc-d9dafe712193.txt
-2026-01-27 19:47:00.892 -06:00 [INF] Received blob trigger for blob: test-93e763bc-1426-4178-8efc-d9dafe712193.txt with ClientRequestId: 8ac2e3ef-966c-48a9-838c-9bedb5909745
-2026-01-27 19:47:00.907 -06:00 [INF] Moved blob 'test-93e763bc-1426-4178-8efc-d9dafe712193.txt' from 'simple-source' to 'simple-working'
-2026-01-27 19:47:00.911 -06:00 [INF] Received message e0b94d71-60cf-41d6-8298-978f0bc1e627 for api-add queue
-2026-01-27 19:47:00.929 -06:00 [INF] Enqueued message e0b94d71-60cf-41d6-8298-978f0bc1e627 to api-add queue
-2026-01-27 19:47:00.933 -06:00 [INF] Message e0b94d71-60cf-41d6-8298-978f0bc1e627 sent.
-2026-01-27 19:47:00.937 -06:00 [INF] End of function SimpleWatcher execution.
-2026-01-27 19:47:00.984 -06:00 [INF] Start of function SimpleSubscriber execution.
-2026-01-27 19:47:00.989 -06:00 [INF] Processing {"Body":{"Length":148,"IsEmpty":false,"MediaType":null,"$type":"BinaryData"},"MessageId":"fbc7e93acec946d7859832fab290ce44","PartitionKey":null,"TransactionPartitionKey":null,"SessionId":null,"ReplyToSessionId":null,"TimeToLive":"01:00:00","CorrelationId":"8ac2e3ef-966c-48a9-838c-9bedb5909745","Subject":null,"To":null,"ContentType":"application/json","ReplyTo":null,"ScheduledEnqueueTime":"0001-01-01T00:00:00.0000000+00:00","ApplicationProperties":{"Diagnostic-Id":"00-3024225e199bf4f15f4bb1bc2230fe16-5c93f306c21d26c0-00"},"LockToken":"68cb727d-ebc7-457a-87de-5e1530fcfb76","DeliveryCount":1,"LockedUntil":"2026-01-28T01:48:00.9780000+00:00","SequenceNumber":6,"DeadLetterSource":null,"EnqueuedSequenceNumber":6,"EnqueuedTime":"2026-01-28T01:47:00.9640000+00:00","ExpiresAt":"2026-01-28T02:47:00.9810000+00:00","DeadLetterReason":null,"DeadLetterErrorDescription":null,"State":"Active","$type":"ServiceBusReceivedMessage"}
-2026-01-27 19:47:00.993 -06:00 [INF] Processing {"Exception":null,"StatusCode":null,"NodeId":1085,"CorrelationId":"8ac2e3ef-966c-48a9-838c-9bedb5909745","TopicName":"api-add-topic","Subject":null,"$type":"ApiAddResponse"}
-2026-01-27 19:47:01.016 -06:00 [INF] Moved blob 'test-93e763bc-1426-4178-8efc-d9dafe712193.txt' from 'simple-working' to 'simple-final'
-2026-01-27 19:47:01.025 -06:00 [INF] Processed Simple Request Log: {"Id":2096,"Environment":"LocalDev","Host":"cesario","Agent":"cesar","BlobName":"test-93e763bc-1426-4178-8efc-d9dafe712193.txt","ClientRequestId":"8ac2e3ef-966c-48a9-838c-9bedb5909745","Comment":null,"ApiId":1085,"Status":"New","CreatedOn":"2026-01-27T19:47:00.8955098","ModifiedOn":"2026-01-27T19:47:00.8955102","$type":"SimpleRequestLog"}
-2026-01-27 19:47:01.028 -06:00 [INF] End of function SimpleSubscriber execution.
+2026-01-28 15:47:58.484 -06:00 [INF] Start of function ApiAdd execution.
+2026-01-28 15:47:59.022 -06:00 [DBG] The ApiAdd log item was created:
+{"Id":1088,"ClientRequestId":"667eaab0-520c-4f8b-8adb-64543ef1280c","RequestBody":"Request body","ResponseBody":"Response body","Status":"Imaginary","CreatedOn":"2026-01-28T15:47:58.9630924-06:00","ModifiedOn":"2026-01-28T15:47:58.9631283-06:00","$type":"ApiLog"}
+2026-01-28 15:47:59.196 -06:00 [INF] Returning response from Api
+2026-01-28 15:47:59.205 -06:00 [INF] End of function ApiAdd execution.
+2026-01-28 15:48:00.185 -06:00 [INF] Start of function ApiAdd execution.
+2026-01-28 15:48:00.231 -06:00 [DBG] The ApiAdd log item was created:
+{"Id":1089,"ClientRequestId":"2fbe7f43-8d1a-429c-93e8-700ea378ef64","RequestBody":"Request body","ResponseBody":"Response body","Status":"Imaginary","CreatedOn":"2026-01-28T15:48:00.1939297-06:00","ModifiedOn":"2026-01-28T15:48:00.1939432-06:00","$type":"ApiLog"}
+2026-01-28 15:48:00.246 -06:00 [INF] Returning response from Api
+2026-01-28 15:48:00.249 -06:00 [INF] End of function ApiAdd execution.
+sent.
+2026-01-28 15:47:58.414 -06:00 [INF] End of function SimpleWatcher execution.
+2026-01-28 15:47:59.229 -06:00 [INF] Start of function SimpleSubscriber execution.
+2026-01-28 15:47:59.245 -06:00 [INF] Processing {"Body":{"Length":148,"IsEmpty":false,"MediaType":null,"$type":"BinaryData"},"MessageId":"c064d5148b0a4483ad49e89000b22e37","PartitionKey":null,"TransactionPartitionKey":null,"SessionId":null,"ReplyToSessionId":null,"TimeToLive":"01:00:00","CorrelationId":"667eaab0-520c-4f8b-8adb-64543ef1280c","Subject":null,"To":null,"ContentType":"application/json","ReplyTo":null,"ScheduledEnqueueTime":"0001-01-01T00:00:00.0000000+00:00","ApplicationProperties":{"Diagnostic-Id":"00-3805e6aad6ddb897ca0af8b17f1e8396-2f12e4f0f915a380-00"},"LockToken":"01a559dd-595a-4909-af34-90e714418502","DeliveryCount":1,"LockedUntil":"2026-01-28T21:48:59.1990000+00:00","SequenceNumber":9,"DeadLetterSource":null,"EnqueuedSequenceNumber":9,"EnqueuedTime":"2026-01-28T21:47:59.1920000+00:00","ExpiresAt":"2026-01-28T22:47:59.2190000+00:00","DeadLetterReason":null,"DeadLetterErrorDescription":null,"State":"Active","$type":"ServiceBusReceivedMessage"}
+2026-01-28 15:47:59.256 -06:00 [INF] Processing {"Exception":null,"StatusCode":null,"NodeId":1088,"CorrelationId":"667eaab0-520c-4f8b-8adb-64543ef1280c","TopicName":"api-add-topic","Subject":null,"$type":"ApiAddResponse"}
+2026-01-28 15:47:59.379 -06:00 [INF] Moved blob 'test-fcd29148-2cd6-4f50-861b-90c4ac15fbc7.txt' from 'simple-working' to 'simple-final'
+2026-01-28 15:47:59.418 -06:00 [INF] Processed Simple Request Log: {"Id":2099,"Environment":"LocalDev","Host":"cesario","Agent":"cesar","BlobName":"test-fcd29148-2cd6-4f50-861b-90c4ac15fbc7.txt","ClientRequestId":"667eaab0-520c-4f8b-8adb-64543ef1280c","Comment":null,"ApiId":1088,"Status":"New","CreatedOn":"2026-01-28T15:47:58.1815952","ModifiedOn":"2026-01-28T15:47:58.1816284","$type":"SimpleRequestLog"}
+2026-01-28 15:47:59.421 -06:00 [INF] End of function SimpleSubscriber execution.
+2026-01-28 15:48:00.004 -06:00 [INF] Start of function SimpleTest execution.
+2026-01-28 15:48:00.025 -06:00 [INF] Seeded blob 'test-b72460a7-dda0-4ae0-a359-1527393797a3.txt' into container 'simple-source'.
+2026-01-28 15:48:00.029 -06:00 [INF] End of function SimpleTest execution.
+2026-01-28 15:48:00.139 -06:00 [INF] Start of function SimpleWatcher execution.
+2026-01-28 15:48:00.145 -06:00 [INF] Received blob trigger for blob: test-b72460a7-dda0-4ae0-a359-1527393797a3.txt
+2026-01-28 15:48:00.149 -06:00 [INF] Received blob trigger for blob: test-b72460a7-dda0-4ae0-a359-1527393797a3.txt with ClientRequestId: 2fbe7f43-8d1a-429c-93e8-700ea378ef64
+2026-01-28 15:48:00.162 -06:00 [INF] Moved blob 'test-b72460a7-dda0-4ae0-a359-1527393797a3.txt' from 'simple-source' to 'simple-working'
+2026-01-28 15:48:00.165 -06:00 [INF] Received message d0ad3d53-1681-41ca-b315-1850bb3638a2 for api-add queue
+2026-01-28 15:48:00.178 -06:00 [INF] Enqueued message d0ad3d53-1681-41ca-b315-1850bb3638a2 to api-add queue
+2026-01-28 15:48:00.182 -06:00 [INF] Message d0ad3d53-1681-41ca-b315-1850bb3638a2 sent.
+2026-01-28 15:48:00.185 -06:00 [INF] End of function SimpleWatcher execution.
+2026-01-28 15:48:00.261 -06:00 [INF] Start of function SimpleSubscriber execution.
+2026-01-28 15:48:00.265 -06:00 [INF] Processing {"Body":{"Length":148,"IsEmpty":false,"MediaType":null,"$type":"BinaryData"},"MessageId":"c9370d397b1247d3b0b5aed2e6a7d331","PartitionKey":null,"TransactionPartitionKey":null,"SessionId":null,"ReplyToSessionId":null,"TimeToLive":"01:00:00","CorrelationId":"2fbe7f43-8d1a-429c-93e8-700ea378ef64","Subject":null,"To":null,"ContentType":"application/json","ReplyTo":null,"ScheduledEnqueueTime":"0001-01-01T00:00:00.0000000+00:00","ApplicationProperties":{"Diagnostic-Id":"00-5d1c54446c8216a7f1ba063597488ef6-1cdf21d3217cb6b4-00"},"LockToken":"ec690fd0-dc45-4653-83a9-04a10465a560","DeliveryCount":1,"LockedUntil":"2026-01-28T21:49:00.2560000+00:00","SequenceNumber":10,"DeadLetterSource":null,"EnqueuedSequenceNumber":10,"EnqueuedTime":"2026-01-28T21:48:00.2440000+00:00","ExpiresAt":"2026-01-28T22:48:00.2580000+00:00","DeadLetterReason":null,"DeadLetterErrorDescription":null,"State":"Active","$type":"ServiceBusReceivedMessage"}
+2026-01-28 15:48:00.269 -06:00 [INF] Processing {"Exception":null,"StatusCode":null,"NodeId":1089,"CorrelationId":"2fbe7f43-8d1a-429c-93e8-700ea378ef64","TopicName":"api-add-topic","Subject":null,"$type":"ApiAddResponse"}
+2026-01-28 15:48:00.285 -06:00 [INF] Moved blob 'test-b72460a7-dda0-4ae0-a359-1527393797a3.txt' from 'simple-working' to 'simple-final'
+2026-01-28 15:48:00.294 -06:00 [INF] Processed Simple Request Log: {"Id":2100,"Environment":"LocalDev","Host":"cesario","Agent":"cesar","BlobName":"test-b72460a7-dda0-4ae0-a359-1527393797a3.txt","ClientRequestId":"2fbe7f43-8d1a-429c-93e8-700ea378ef64","Comment":null,"ApiId":1089,"Status":"New","CreatedOn":"2026-01-28T15:48:00.1520815","ModifiedOn":"2026-01-28T15:48:00.1520821","$type":"SimpleRequestLog"}
+2026-01-28 15:48:00.297 -06:00 [INF] End of function SimpleSubscriber execution.

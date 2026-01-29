@@ -2,6 +2,7 @@ using System.Data.Common;
 using System.Text.Json;
 using FileIt.Domain.Entities;
 using FileIt.Domain.Interfaces;
+using FileIt.Domain.Logging;
 using FileIt.Infrastructure.Data;
 using Serilog;
 using Serilog.Core;
@@ -12,21 +13,21 @@ namespace FileIt.Infrastructure.Logging;
 public class DatabaseSink : ILogEventSink
 {
     private readonly IFormatProvider? _formatProvider;
-    private readonly IFeatureConfig _featureConfig;
+    private readonly ICommonLogConfig _config;
     private readonly string? _connectionString;
 
-    public DatabaseSink(IFeatureConfig featureConfig)
+    public DatabaseSink(ICommonLogConfig config)
     {
         _formatProvider = null;
-        _featureConfig = featureConfig;
-        _connectionString = featureConfig.DbConnectionString;
+        _config = config;
+        _connectionString = config.DbConnectionString;
     }
 
-    public DatabaseSink(IFormatProvider? formatProvider, IFeatureConfig featureConfig)
+    public DatabaseSink(ICommonLogConfig config, IFormatProvider? formatProvider)
     {
         _formatProvider = formatProvider;
-        _featureConfig = featureConfig;
-        _connectionString = featureConfig.DbConnectionString;
+        _config = config;
+        _connectionString = config.DbConnectionString;
     }
 
     private string? GetString(
@@ -77,10 +78,10 @@ public class DatabaseSink : ILogEventSink
                 .Reflection.Assembly.GetExecutingAssembly()
                 .GetName()
                 .Version?.ToString(),
-            Environment = _featureConfig.Environment,
-            Feature = _featureConfig.Feature,
-            FeatureVersion = _featureConfig.FeatureVersion,
-            MachineName = _featureConfig.Host,
+            Environment = _config.Environment,
+            Feature = _config.Feature,
+            FeatureVersion = _config.FeatureVersion,
+            MachineName = _config.Host,
 
             //the event only
             CreatedOn = logEvent.Timestamp.DateTime,
