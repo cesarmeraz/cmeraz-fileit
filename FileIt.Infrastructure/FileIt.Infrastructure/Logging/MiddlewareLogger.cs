@@ -8,14 +8,16 @@ public class MiddlewareLogger : IFunctionsWorkerMiddleware
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
         string functionName = context.FunctionDefinition.Name;
+        string invocationId = context.InvocationId;
 
         // Code to execute before the function runs
         context
             .GetLogger<MiddlewareLogger>()
             .LogInformation(
                 InfrastructureEvents.FunctionStart,
-                "Start of function {Function} execution.",
-                functionName
+                "Start function {Function}, InvocationId {InvocationId}.",
+                functionName,
+                invocationId
             );
 
         await next(context); // Calls the next middleware in the pipeline or the function itself
@@ -25,8 +27,9 @@ public class MiddlewareLogger : IFunctionsWorkerMiddleware
             .GetLogger<MiddlewareLogger>()
             .LogInformation(
                 InfrastructureEvents.FunctionEnd,
-                "End of function {Function} execution.",
-                functionName
+                "End function {Function}, InvocationId {InvocationId}.",
+                functionName,
+                invocationId
             );
     }
 }

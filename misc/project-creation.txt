@@ -1,0 +1,250 @@
+
+Install a local nuget
+sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu jammy main universe" > /etc/apt/sources.list.d/jammy.list'
+sudo apt-get update
+sudo apt-get install mono-complete
+sudo apt-get install nuget
+
+Configuration
+host.json is for function settings
+appsettings.json is for non-sensitive application settings
+Application Settings in Azure Portal overrides appsettings.json and handles sensitive values
+local.settings.json works like the Portal overrides in a non-Azure/local environment
+
+The Service Bus Namespace 
+
+Commands
+IBlobAdapter
+IBusAdapter
+ILogWriter
+not database related
+
+cd ~/repos/cmeraz-fileit
+mkdir FileIt.Domain
+cd FileIt.Domain
+dotnet new classlib --name FileIt.Domain --framework net8.0
+dotnet new mstest --name FileIt.Domain.Test --framework net8.0
+dotnet new mstest --name FileIt.Domain.Integration --framework net8.0
+
+echo 'FileIt.Domain has classes with properties used as message contracts for serialization' > readme.md
+
+cd FileIt.Domain
+dotnet add package Azure.Messaging.ServiceBus
+dotnet add package Azure.Storage.Blobs --framework net8.0
+dotnet add package Microsoft.Azure.Functions.Worker
+dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0 --framework net8.0
+dotnet add package Microsoft.EntityFrameworkCore.Relational --version 8.0.0 --framework net8.0
+dotnet add package Microsoft.Extensions.Configuration
+dotnet add package Microsoft.Extensions.Configuration.Json
+dotnet add package Microsoft.Extensions.Logging
+dotnet add package Microsoft.Extensions.Azure
+dotnet add package Serilog
+dotnet add package Serilog.Enrichers.Environment
+dotnet add package Serilog.Sinks.Console
+dotnet add package Serilog.Sinks.File
+
+cd ./FileIt.Domain/bin/Debug
+files=( FileIt.Domain.*.nupkg )
+nuget_file="${files[${#files[@]}-1]}"
+nuget push $nuget_file -Source ~/nuget_local
+
+
+FileIt.Infrastructure has classes with properties used as message contracts for serialization
+mkdir FileIt.Infrastructure
+cd FileIt.Infrastructure
+dotnet new classlib --name FileIt.Infrastructure --framework net8.0
+dotnet new mstest --name FileIt.Infrastructure.Test --framework net8.0
+dotnet new mstest --name FileIt.Infrastructure.Integration --framework net8.0
+
+echo 'FileIt.Infrastructure contains concrete implementations of cross cutting utilities, configuration options and resource adapters' > readme.md
+
+cd ~/repos/cmeraz-fileit/FileIt.Infrastructure/FileIt.Infrastructure
+dotnet add package Azure.Messaging.ServiceBus
+dotnet add package Azure.Storage.Blobs --framework net8.0
+dotnet add package Microsoft.Azure.Functions.Worker
+dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0 --framework net8.0
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.0 --framework net8.0
+dotnet add package Microsoft.EntityFrameworkCore.Relational --version 8.0.0 --framework net8.0
+dotnet add package Microsoft.Extensions.Configuration
+dotnet add package Microsoft.Extensions.Configuration.Json
+dotnet add package Microsoft.Extensions.Logging
+dotnet add package Microsoft.Extensions.Azure
+dotnet add package Serilog
+dotnet add package Serilog.Enrichers.Environment
+dotnet add package Serilog.Extensions.Logging
+dotnet add package Serilog.Formatting.Compact
+dotnet add package Serilog.Settings.Configuration
+dotnet add package Serilog.Sinks.ApplicationInsights
+dotnet add package Serilog.Sinks.Console
+dotnet add package Serilog.Sinks.File
+
+cd ~/repos/cmeraz-fileit/FileIt.Infrastructure/FileIt.Infrastructure.Test
+dotnet add package Serilog
+
+
+dotnet add reference ../../FileIt.Domain/FileIt.Domain/FileIt.Domain.csproj 
+
+
+
+cd ~/repos/cmeraz-fileit/FileIt.Infrastructure/FileIt.Infrastructure.Integration
+dotnet add reference ../../FileIt.Domain/FileIt.Domain/FileIt.Domain.csproj 
+dotnet add reference ../../FileIt.Infrastructure/FileIt.Infrastructure/FileIt.Infrastructure.csproj 
+
+
+cd ./FileIt.Infrastructure/bin/Debug
+files=( FileIt.Infrastructure.*.nupkg )
+nuget_file="${files[${#files[@]}-1]}"
+nuget push $nuget_file -Source ~/nuget_local
+
+
+
+
+mkdir FileIt.Common
+cd FileIt.Common
+func init FileIt.Common --worker-runtime dotnet-isolated --target-framework net8.0
+dotnet new classlib --name FileIt.Common.App --framework net8.0
+dotnet new mstest --name FileIt.Common.Test --framework net8.0
+dotnet new sln --name FileIt.Common
+dotnet sln FileIt.Common.sln add ./FileIt.Common/FileIt_Common.csproj
+dotnet sln FileIt.Common.sln add ./FileIt.Common.App/FileIt.Common.App.csproj
+dotnet sln FileIt.Common.sln add ./FileIt.Common.Integration/FileIt.Common.Integration.csproj
+dotnet sln FileIt.Common.sln add ./FileIt.Common.Test/FileIt.Common.Test.csproj
+dotnet add package Azure.Messaging.ServiceBus
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.ServiceBus
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Timer
+dotnet add package Microsoft.Azure.Functions.Worker.Sdk
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.0
+dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0
+dotnet add package Serilog
+dotnet add package Serilog.Enrichers.Environment
+dotnet add package Serilog.Extensions.Logging
+dotnet add package Serilog.Formatting.Compact
+dotnet add package Serilog.Settings.Configuration
+dotnet add package Serilog.Sinks.ApplicationInsights
+dotnet add package Serilog.Sinks.Console
+dotnet add package Serilog.Sinks.File
+
+echo 'FileIt.Common is the collection of integration queues and topics that Features share' > readme.md
+
+dotnet add package System.Configuration.ConfigurationManager
+
+dotnet nuget add source ~/nuget_local -n LocalFeed
+
+cd ~/repos/cmeraz-fileit/FileIt.Common/FileIt.Common
+dotnet add package FileIt.Domain
+dotnet add package FileIt.Infrastructure
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.ServiceBus
+
+
+mkdir FileIt.CsvProvider
+cd FileIt.CsvProvider
+func init FileIt.CsvProvider --worker-runtime dotnet-isolated --target-framework net8.0
+dotnet new mstest --name FileIt.CsvProvider.Test --framework net8.0
+dotnet new sln --name FileIt.CsvProvider
+dotnet sln FileIt.CsvProvider.sln add ./FileIt.CsvProvider/FileIt_CsvProvider.csproj
+dotnet sln FileIt.CsvProvider.sln add ./FileIt.CsvProvider.Test/FileIt.CsvProvider.Test.csproj
+
+cd ../
+dotnet sln FileIt.All.sln add ./FileIt.CsvProvider/FileIt.CsvProvider/FileIt_CsvProvider.csproj
+dotnet sln FileIt.All.sln add ./FileIt.CsvProvider/FileIt.CsvProvider.Test/FileIt.CsvProvider.Test.csproj
+
+
+mkdir FileIt.SimpleProvider
+cd ~/repos/cmeraz-fileit/FileIt.SimpleProvider
+func init FileIt.SimpleProvider --worker-runtime dotnet-isolated --target-framework net8.0
+dotnet new classlib --name FileIt.SimpleProvider.App --framework net8.0
+dotnet new mstest --name FileIt.SimpleProvider.Test --framework net8.0
+dotnet new mstest --name FileIt.SimpleProvider.Integration --framework net8.0
+
+cd ./FileIt.SimpleProvider
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Timer
+dotnet add package Microsoft.Extensions.Hosting
+dotnet add package Microsoft.Extensions.Hosting.Abstractions
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.0
+dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0
+dotnet add package Serilog
+dotnet add package Serilog.Enrichers.Environment
+dotnet add package Serilog.Extensions.Logging
+dotnet add package Serilog.Formatting.Compact
+dotnet add package Serilog.Settings.Configuration
+dotnet add package Serilog.Sinks.ApplicationInsights
+dotnet add package Serilog.Sinks.Console
+dotnet add package Serilog.Sinks.File
+dotnet add package System.Configuration.ConfigurationManager
+
+cd ./FileIt.SimpleProvider.App
+dotnet add package Microsoft.Extensions.Hosting
+dotnet add package Microsoft.Extensions.Hosting.Abstractions
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.0
+dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0
+
+
+
+cd ~/repos/cmeraz-fileit/FileIt.Domain
+rm FileIt.Domain.sln
+dotnet new sln --name FileIt.Domain
+dotnet sln FileIt.Domain.sln add ./FileIt.Domain/FileIt.Domain.csproj
+dotnet sln FileIt.Domain.sln add ./FileIt.Domain.Test/FileIt.Domain.Test.csproj
+
+
+cd ~/repos/cmeraz-fileit/FileIt.Infrastructure
+rm FileIt.Infrastructure.sln
+dotnet new sln --name FileIt.Infrastructure
+dotnet sln FileIt.Infrastructure.sln add ./FileIt.Infrastructure/FileIt.Infrastructure.csproj
+dotnet sln FileIt.Infrastructure.sln add ./FileIt.Infrastructure.Test/FileIt.Infrastructure.Test.csproj
+dotnet sln FileIt.Infrastructure.sln add ./FileIt.Infrastructure.Integration/FileIt.Infrastructure.Integration.csproj
+
+cd ~/repos/cmeraz-fileit/FileIt.Common
+rm FileIt.Common.sln
+dotnet new sln --name FileIt.Common
+dotnet sln FileIt.Common.sln add ./FileIt.Common/FileIt_Common.csproj
+dotnet sln FileIt.Common.sln add ./FileIt.Common.App/FileIt.Common.App.csproj
+dotnet sln FileIt.Common.sln add ./FileIt.Common.Test/FileIt.Common.Test.csproj
+dotnet sln FileIt.Common.sln add ./FileIt.Common.Integration/FileIt.Common.Integration.csproj
+
+
+cd ~/repos/cmeraz-fileit/FileIt.SimpleProvider
+rm FileIt.SimpleProvider.sln
+dotnet new sln --name FileIt.SimpleProvider
+dotnet sln FileIt.SimpleProvider.sln add ./FileIt.SimpleProvider/FileIt_SimpleProvider.csproj
+dotnet sln FileIt.SimpleProvider.sln add ./FileIt.SimpleProvider.App/FileIt.SimpleProvider.App.csproj
+dotnet sln FileIt.SimpleProvider.sln add ./FileIt.SimpleProvider.Test/FileIt.SimpleProvider.Test.csproj
+dotnet sln FileIt.SimpleProvider.sln add ./FileIt.SimpleProvider.Integration/FileIt.SimpleProvider.Integration.csproj
+
+
+
+cd ~/repos/cmeraz-fileit/
+rm FileIt.All.sln
+dotnet new sln --name FileIt.All
+dotnet sln FileIt.All.sln add ./FileIt.Common/FileIt.Common/FileIt_Common.csproj
+dotnet sln FileIt.All.sln add ./FileIt.Common/FileIt.Common.App/FileIt.Common.App.csproj
+dotnet sln FileIt.All.sln add ./FileIt.Common/FileIt.Common.Test/FileIt.Common.Test.csproj
+dotnet sln FileIt.All.sln add ./FileIt.Common/FileIt.Common.Integration/FileIt.Common.Integration.csproj
+
+dotnet sln FileIt.All.sln add ./FileIt.Domain/FileIt.Domain/FileIt.Domain.csproj
+dotnet sln FileIt.All.sln add ./FileIt.Domain/FileIt.Domain.Test/FileIt.Domain.Test.csproj
+
+dotnet sln FileIt.All.sln add ./FileIt.Infrastructure/FileIt.Infrastructure/FileIt.Infrastructure.csproj
+dotnet sln FileIt.All.sln add ./FileIt.Infrastructure/FileIt.Infrastructure.Test/FileIt.Infrastructure.Test.csproj
+dotnet sln FileIt.All.sln add ./FileIt.Infrastructure/FileIt.Infrastructure.Integration/FileIt.Infrastructure.Integration.csproj
+
+dotnet sln FileIt.All.sln add ./FileIt.SimpleProvider/FileIt.SimpleProvider/FileIt_SimpleProvider.csproj
+dotnet sln FileIt.All.sln add ./FileIt.SimpleProvider/FileIt.SimpleProvider.App/FileIt.SimpleProvider.App.csproj
+dotnet sln FileIt.All.sln add ./FileIt.SimpleProvider/FileIt.SimpleProvider.Test/FileIt.SimpleProvider.Test.csproj
+dotnet sln FileIt.All.sln add ./FileIt.SimpleProvider/FileIt.SimpleProvider.Integration/FileIt.SimpleProvider.Integration.csproj
+
+
+
+
+rm -r FileIt.All
+rm -r FileIt.App
+rm -r FileIt.CsvProvider
+rm -r FileIt.SimpleProvider
+
+rm FileIt.All.sln
+rm FileIt.App.sln
+rm FileIt.CsvProvider.sln
+rm FileIt.SimpleProvider.sln

@@ -3,6 +3,7 @@ using Azure.Messaging.ServiceBus;
 using FileIt.Domain.Entities;
 using FileIt.Domain.Entities.Api;
 using FileIt.Domain.Interfaces;
+using FileIt.Domain.Simple;
 using FileIt.SimpleProvider;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -48,7 +49,7 @@ public class BasicApiAddHandler : IBasicApiAddHandler
                 new Dictionary<string, object>()
                 {
                     { "CorrelationId", clientRequestId ?? string.Empty },
-                    { "EventId", _config.SimpleSubscriberEventId },
+                    { "EventId", SimpleEvents.SimpleSubscriberCommand },
                 }
             )
         )

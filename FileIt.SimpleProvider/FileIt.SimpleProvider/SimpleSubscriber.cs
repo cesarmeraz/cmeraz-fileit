@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using FileIt.Domain.Entities.Api;
+using FileIt.Domain.Simple;
 using FileIt.SimpleProvider.App;
 using FileIt.SimpleProvider.App.WaitOnApiUpload;
 using Microsoft.Azure.Functions.Worker;
@@ -42,7 +43,7 @@ public class SimpleSubscriber
                 new Dictionary<string, object>()
                 {
                     { "CorrelationId", clientRequestId ?? string.Empty },
-                    { "EventId", _config.SimpleSubscriberEventId },
+                    { "EventId", SimpleEvents.SimpleSubscriber },
                 }
             )
         )

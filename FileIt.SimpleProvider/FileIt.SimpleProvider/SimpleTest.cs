@@ -1,5 +1,6 @@
 using System.Text;
 using Azure.Storage.Blobs;
+using FileIt.Domain.Simple;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
@@ -33,14 +34,15 @@ public class SimpleTest
     {
         using (
             _logger!.BeginScope(
-                new Dictionary<string, object>() { { "EventId", _config.SimpleTestEventId } }
+                new Dictionary<string, object>() { { "EventId", SimpleEvents.SimpleTest } }
             )
         )
         {
             var name = $"test-{Guid.NewGuid()}.txt";
             var content = $"Seeded blob created at {DateTime.Now}";
+            var container = _config.SourceContainer;
 
-            var containerClient = _blobServiceClient.GetBlobContainerClient("simple-source");
+            var containerClient = _blobServiceClient.GetBlobContainerClient(container);
             var exists = await containerClient.ExistsAsync();
             if (!exists)
                 await containerClient.CreateIfNotExistsAsync();
@@ -50,7 +52,11 @@ public class SimpleTest
             using var ms = new MemoryStream(bytes);
             await blobClient.UploadAsync(ms, overwrite: true);
 
-            _logger.LogInformation("Seeded blob '{name}' into container 'simple-source'.", name);
+            _logger.LogInformation(
+                "Seeded blob '{FileName}' into container '{Container}'.",
+                name,
+                container
+            );
         }
     }
 }

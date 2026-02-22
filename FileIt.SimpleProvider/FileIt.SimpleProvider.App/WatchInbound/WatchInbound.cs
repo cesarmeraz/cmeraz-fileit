@@ -2,6 +2,7 @@ using System.Text.Json;
 using FileIt.Domain.Entities;
 using FileIt.Domain.Entities.Api;
 using FileIt.Domain.Interfaces;
+using FileIt.Domain.Simple;
 using Microsoft.Extensions.Logging;
 
 namespace FileIt.SimpleProvider.App;
@@ -50,7 +51,7 @@ public class WatchInbound : IWatchInbound
                 new Dictionary<string, object>()
                 {
                     { "CorrelationId", clientRequestId },
-                    { "EventId", _config.SimpleIntakeEventId },
+                    { "EventId", SimpleEvents.SimpleWatcherCommand },
                 }
             )
         )

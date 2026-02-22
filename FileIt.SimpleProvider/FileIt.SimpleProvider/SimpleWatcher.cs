@@ -5,6 +5,7 @@ using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
 using FileIt.Domain.Entities;
 using FileIt.Domain.Interfaces;
+using FileIt.Domain.Simple;
 using FileIt.Infrastructure.Extensions;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -47,7 +48,7 @@ public class SimpleWatcher
                 new Dictionary<string, object>()
                 {
                     { "CorrelationId", clientRequestId },
-                    { "EventId", _config.SimpleIntakeEventId },
+                    { "EventId", SimpleEvents.SimpleWatcher },
                 }
             )
         )

@@ -14,14 +14,12 @@ public interface IApiAddCommand
 
 public class ApiAddCommand : IApiAddCommand
 {
-    private readonly CommonConfig _config;
     private readonly IApiLogRepo _apiLogRepo;
     private readonly IBroadcastResponses _broadcaster;
     private readonly IAzureClientFactory<ServiceBusSender> _senderFactory;
     private readonly ILogger<ApiAddCommand> _logger;
 
     public ApiAddCommand(
-        CommonConfig config,
         IApiLogRepo apiLogRepo,
         IAzureClientFactory<ServiceBusSender> senderFactory,
         ILogger<ApiAddCommand> logger,
@@ -29,7 +27,6 @@ public class ApiAddCommand : IApiAddCommand
     )
     {
         _broadcaster = broadcaster;
-        _config = config;
         _apiLogRepo = apiLogRepo;
         _senderFactory = senderFactory;
         _logger = logger;
@@ -42,7 +39,7 @@ public class ApiAddCommand : IApiAddCommand
                 new Dictionary<string, object>()
                 {
                     { "CorrelationId", request.CorrelationId ?? string.Empty },
-                    { "EventId", _config.AddEventId },
+                    { "EventId", CommonEvents.AddEventCommand },
                 }
             )
         )
@@ -56,7 +53,6 @@ public class ApiAddCommand : IApiAddCommand
             );
 
             //Here we evaluate API response and return a result
-            //var apiAddResult = new ApiAddResult() { };
 
             string body = JsonSerializer.Serialize(apiLogItem);
 

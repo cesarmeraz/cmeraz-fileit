@@ -17,22 +17,12 @@ public class ApiFunc
 {
     private readonly IApiAddCommand _command;
     private readonly CommonConfig _config;
-    private readonly IAzureClientFactory<ServiceBusSender> _senderFactory;
-    private readonly IApiLogRepo _apiLogRepo;
     private readonly ILogger<ApiFunc> _logger;
 
-    public ApiFunc(
-        IApiAddCommand command,
-        ILogger<ApiFunc> logger,
-        IAzureClientFactory<ServiceBusSender> senderFactory,
-        IApiLogRepo apiLogRepo,
-        CommonConfig config
-    )
+    public ApiFunc(IApiAddCommand command, ILogger<ApiFunc> logger, CommonConfig config)
     {
         _command = command;
         _logger = logger;
-        _senderFactory = senderFactory;
-        _apiLogRepo = apiLogRepo;
         _config = config;
     }
 
@@ -44,7 +34,7 @@ public class ApiFunc
                 new Dictionary<string, object>()
                 {
                     { "CorrelationId", message.CorrelationId ?? string.Empty },
-                    { "EventId", _config.AddEventId },
+                    { "EventId", CommonEvents.AddEvent },
                 }
             )
         )
@@ -55,17 +45,17 @@ public class ApiFunc
             {
                 payload = JsonSerializer.Deserialize<ApiAddPayload>(bodystr);
             }
-            await _command.ApiAdd(
-                new ApiRequest()
-                {
-                    Body = payload,
-                    CorrelationId = message.CorrelationId,
-                    MessageId = message.MessageId,
-                    QueueName = _config.ApiAddQueueName,
-                    ReplyTo = _config.ApiAddTopicName,
-                    Subject = message.Subject,
-                }
-            );
+            var request = new ApiRequest()
+            {
+                Body = payload,
+                CorrelationId = message.CorrelationId,
+                MessageId = message.MessageId,
+                QueueName = _config.ApiAddQueueName,
+                ReplyTo = _config.ApiAddTopicName,
+                Subject = message.Subject,
+            };
+            _logger.LogDebug("ApiAdd request:\n{@ApiRequest}", request);
+            await _command.ApiAdd(request);
         }
     }
 }
