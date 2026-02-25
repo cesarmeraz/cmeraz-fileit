@@ -129,7 +129,6 @@ This diagram tracks the flow of data as it passes through the workflow implement
 ```mermaid
 ---
 title: FileIt.SimpleProvider Data Flow
-displayMode: compact
 ---
 flowchart LR
   subgraph Service Bus
@@ -143,7 +142,7 @@ flowchart LR
     Final
   end
   subgraph Simple Function App
-    SimpleTest
+    SimpleTest(["SimpleText"])
     SimpleWatcher
     SimpleSubscriber
   end
@@ -151,16 +150,18 @@ flowchart LR
     ApiFunc
   end
   DB[("Database")]
-  SimpleTest -- 1. timer trigger deposits file --> Source 
+  SimpleTest -- 1. deposits file --> Source 
   Source -- 2. blob triger invokes endpoint --> SimpleWatcher
-  SimpleWatcher -- 3. writes log with Corelation Id --> DB
+  SimpleWatcher -- 3. writes record with Correlation Id --> DB
   SimpleWatcher -- 4. moves file --> Working
   SimpleWatcher -- 5. sends message to API queue --> api-add
   ApiFunc -- 6. simulates API call and publishes response --> api-add-topic
   SimpleSubscriber -- 7. listens for API response --> api-add-simple-sub
-  SimpleSubscriber -- 7. updates log with Corelation Id and API response --> DB
-  SimpleSubscriber -- 8. moves file --> Final
+  SimpleSubscriber -- 8. updates record with Correlation Id and API response --> DB
+  SimpleSubscriber -- 9. moves file --> Final
 ```
+In this diagram, a timer trigger (1) causes SimpleTest to deposit a file in a blob storage container that sets in motion the workflow. Notice that no interaction exists between Simple Function App and Common Function App. The Service Bus facilitates a decoupling between application logic (5 and 7) and API communications (6). The use of a Correlation Id helps to gather all data about a particular workflow.
+
 
 ## Design Alternatives
 1. If cloud resources are not available, the Service Bus component could be replaced with RabbitMQ and local directories could substitute Blob Storage.
