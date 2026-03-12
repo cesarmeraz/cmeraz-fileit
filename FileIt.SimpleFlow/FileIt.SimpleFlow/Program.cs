@@ -1,11 +1,11 @@
 using System.Configuration;
-using FileIt.Common.App;
-using FileIt.Common.App.ApiAdd;
 using FileIt.Domain.Interfaces;
 using FileIt.Domain.Logging;
 using FileIt.Infrastructure.Extensions;
 using FileIt.Infrastructure.Logging;
 using FileIt.Infrastructure.Tools;
+using FileIt.SimpleFlow.App;
+using FileIt.SimpleFlow.App.WaitOnApiUpload;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Configuration;
@@ -23,15 +23,15 @@ builder
     .ConfigureFunctionsApplicationInsights();
 
 var sectionName = builder.Configuration.GetValue<string>("FeatureSection") ?? "Feature";
-CommonConfig? config = builder.Configuration.GetSection(sectionName).Get<CommonConfig>();
+SimpleConfig? config = builder.Configuration.GetSection(sectionName).Get<SimpleConfig>();
 if (config == null)
 {
     throw new ApplicationException("Appsettings.json is missing Feature config.");
 }
 
 builder.Services.AddSingleton(config);
-builder.Services.AddScoped<IApiAddCommand, ApiAddCommand>();
-builder.Services.AddScoped<IBroadcastResponses, PublishTool>();
+builder.Services.AddScoped<IWatchInbound, WatchInbound>();
+builder.Services.AddScoped<IBasicApiAddHandler, BasicApiAddHandler>();
 
 IInfrastructureConfig infrastructureConfig = builder.GetInfrastructureConfig();
 builder.Services.AddInfrastructure(infrastructureConfig);

@@ -124,6 +124,13 @@ Each workflow resembles this basic solution design that follows the Dependency I
 - "High-level modules should not import anything from low-level modules. Both should depend on abstractions (e.g., interfaces)".
 - "Abstractions should not depend on details. Details (concrete implementations) should depend on abstractions".
 
+### Events and the Common Closure Principle
+The Common Closure Principle states that classes that change for the same reasons and at the same times should be gathered into components, and classes that change at different times and for different reasons should be separated into different components (MARTIN, 2017).
+
+Also known as the Single Responsibility Principle.
+
+The SimpleEvents static class is a set of static fields representing loggable events using the EventId class. It _could_ be included in the Domain as a kind of value object, but its fields will grow as we refine the features of the Simple flow. As a new feature is added to the Simple flow, so must a field be added to the SimpleEvents class. As we reconceptualize and rename features, we must rename the fields. Therefore they change together; *each flow must have its Events class within its assembly*.
+
 ## Example Data Flow Diagram
 This diagram tracks the flow of data as it passes through the workflow implemented by the FileIt.SimpleProvider example.
 ```mermaid

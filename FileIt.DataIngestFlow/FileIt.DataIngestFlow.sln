@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt_DataIngestFlow", "FileIt.DataIngestFlow\FileIt_DataIngestFlow.csproj", "{D0C27943-5375-40BB-BA65-4817E7D0097F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.DataIngestFlow.Test", "FileIt.DataIngestFlow.Test\FileIt.DataIngestFlow.Test.csproj", "{ACA02296-D7D6-4829-9F97-56FABA9D7B93}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D0C27943-5375-40BB-BA65-4817E7D0097F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0C27943-5375-40BB-BA65-4817E7D0097F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0C27943-5375-40BB-BA65-4817E7D0097F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0C27943-5375-40BB-BA65-4817E7D0097F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACA02296-D7D6-4829-9F97-56FABA9D7B93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACA02296-D7D6-4829-9F97-56FABA9D7B93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACA02296-D7D6-4829-9F97-56FABA9D7B93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACA02296-D7D6-4829-9F97-56FABA9D7B93}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

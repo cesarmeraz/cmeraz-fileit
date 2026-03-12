@@ -1,10 +1,7 @@
-using System.Data.Common;
 using System.Text.Json;
 using FileIt.Domain.Entities;
-using FileIt.Domain.Interfaces;
 using FileIt.Domain.Logging;
 using FileIt.Infrastructure.Data;
-using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 
@@ -49,16 +46,34 @@ public class DatabaseSink : ILogEventSink
 
     private int? GetInt(IReadOnlyDictionary<string, LogEventPropertyValue> properties, string key)
     {
-        int? result = null;
+        string? eventIdString = GetString(properties, key);
         if (
-            properties.TryGetValue(key, out LogEventPropertyValue? value)
-            && value is ScalarValue sv
-            && sv.Value is int rawValue
+            !string.IsNullOrWhiteSpace(eventIdString) && int.TryParse(eventIdString, out int parsed)
         )
         {
-            result = rawValue;
+            return parsed;
         }
-        return result;
+        return null;
+    }
+
+    public int? GetEventIdId(LogEvent logEvent)
+    {
+        if (logEvent.Properties.TryGetValue("EventId", out var eventIdProperty))
+        {
+            if (eventIdProperty is StructureValue eventIdStructure)
+            {
+                var idProperty = eventIdStructure.Properties.FirstOrDefault(p => p.Name == "Id");
+                if (
+                    idProperty != null
+                    && idProperty.Value is ScalarValue idScalar
+                    && idScalar.Value is int idValue
+                )
+                {
+                    return idValue;
+                }
+            }
+        }
+        return null;
     }
 
     public void Emit(LogEvent logEvent)
@@ -74,13 +89,13 @@ public class DatabaseSink : ILogEventSink
         CommonLog entry = new CommonLog()
         {
             //true, since deployment
-            CommonVersion = System
+            InfrastructureVersion = System
                 .Reflection.Assembly.GetExecutingAssembly()
                 .GetName()
                 .Version?.ToString(),
             Environment = _config.Environment,
-            Feature = _config.Feature,
-            FeatureVersion = _config.FeatureVersion,
+            Application = _config.Application,
+            ApplicationVersion = _config.ApplicationVersion,
             MachineName = _config.Host,
 
             //the event only
@@ -92,7 +107,9 @@ public class DatabaseSink : ILogEventSink
 
             //only available in properties
             CorrelationId = GetString(properties, "CorrelationId"),
-            EventId = GetInt(properties, "EventId"),
+            InvocationId = GetString(properties, "InvocationId"),
+            EventId = GetEventIdId(logEvent),
+            //EventId = GetInt(properties, "EventId"),
             Exception = GetString(properties, "Exception"),
             SourceContext = GetString(properties, "SourceContext"),
             Properties = JsonSerializer.Serialize(logEvent.Properties),

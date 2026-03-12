@@ -34,38 +34,27 @@ public class ApiAddCommand : IApiAddCommand
 
     public async Task ApiAdd(ApiRequest request)
     {
-        using (
-            _logger!.BeginScope(
-                new Dictionary<string, object>()
-                {
-                    { "CorrelationId", request.CorrelationId ?? string.Empty },
-                    { "EventId", CommonEvents.AddEventCommand },
-                }
-            )
-        )
+        _logger.LogInformation(CommonEvents.LogApiAddRequest.Id, "Simulating API action");
+        var apiLogItem = await _apiLogRepo.AddAsync(
+            request.CorrelationId ?? string.Empty,
+            "Request body",
+            "Response body",
+            "Imaginary"
+        );
+
+        //Here we evaluate API response and return a result
+        var response = new ApiAddResponse()
         {
-            //simulate API action here
-            var apiLogItem = await _apiLogRepo.AddAsync(
-                request.CorrelationId ?? string.Empty,
-                "Request body",
-                "Response body",
-                "Imaginary"
-            );
+            NodeId = apiLogItem!.Id,
+            CorrelationId = request.CorrelationId,
+            TopicName = request.ReplyTo!,
+        };
 
-            //Here we evaluate API response and return a result
-
-            string body = JsonSerializer.Serialize(apiLogItem);
-
-            _logger.LogDebug("The ApiAdd log item was created:\n{@ApiLogItem}", apiLogItem);
-
-            var response = new ApiAddResponse()
-            {
-                NodeId = apiLogItem!.Id,
-                CorrelationId = request.CorrelationId,
-                TopicName = request.ReplyTo!,
-            };
-
-            await _broadcaster.EmitAsync(response);
-        }
+        _logger.LogDebug(
+            CommonEvents.ApiAddResponsePublished.Id,
+            "Response published:\n{@ApiAddResponse}",
+            response
+        );
+        await _broadcaster.EmitAsync(response);
     }
 }

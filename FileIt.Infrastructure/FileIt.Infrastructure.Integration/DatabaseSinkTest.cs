@@ -23,11 +23,11 @@ public class DatabaseSinkTest
         ICommonLogConfig featureConfig = new CommonLogConfig()
         {
             Agent = "Integration",
-            Feature = "FileIt.Common.Integration",
+            Application = "FileIt.Common.Integration",
             Environment = "LocalDev",
             Host = "cesario",
             DbConnectionString = connString,
-            FeatureVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString(),
+            ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString(),
         };
         var target = new DatabaseSink(featureConfig);
         // Create message template tokens
@@ -79,12 +79,12 @@ public class DatabaseSinkTest
                             {
                                 CorrelationId = reader["CorrelationId"].ToString(),
                                 Environment = reader["Environment"].ToString(),
-                                Feature = reader["Feature"].ToString(),
+                                Application = reader["Feature"].ToString(),
                                 Level = reader["Level"].ToString(),
                                 MachineName = reader["MachineName"].ToString(),
                                 SourceContext = reader["SourceContext"].ToString(),
                                 Message = reader["Message"].ToString(),
-                                FeatureVersion = reader["FeatureVersion"].ToString(),
+                                ApplicationVersion = reader["FeatureVersion"].ToString(),
                             };
                             actual.Add(log);
                         }
