@@ -14,15 +14,12 @@ param allowCrossTenantReplication bool
 param networkAclsBypass string
 param networkAclsDefaultAction string
 param networkAclsIpRules array
-param networkAclsIpv6Rules array
-param publishIpv6Endpoint bool
 param dnsEndpointType string
 param isHnsEnabled bool
 param isSftpEnabled bool
 param largeFileSharesState string
 param keySource string
 param encryptionEnabled bool
-param keyTypeForTableAndQueueEncryption string
 param infrastructureEncryptionEnabled bool
 param isShareSoftDeleteEnabled bool
 
@@ -47,10 +44,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
       bypass: networkAclsBypass
       defaultAction: networkAclsDefaultAction
       ipRules: networkAclsIpRules
-      ipv6Rules: networkAclsIpv6Rules
-    }
-    dualStackEndpointPreference: {
-      publishIpv6Endpoint: publishIpv6Endpoint
     }
     dnsEndpointType: dnsEndpointType
     isHnsEnabled: isHnsEnabled

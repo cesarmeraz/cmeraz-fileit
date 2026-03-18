@@ -10,8 +10,18 @@
 # Bash script
 echo "Running $0 script"
 
-az login
 
+if [ -z "$devops_spn" ]; then
+    echo "Error: devops_spn is not set"
+    exit 1
+fi
+
+if [ -z "$sub_id" ]; then
+    echo "Error: sub_id is not set"
+    exit 1
+fi
+
+az login
 scope="/subscriptions/$sub_id" 
 devops_app_id=$(create_spn $devops_spn "Contributor")
 

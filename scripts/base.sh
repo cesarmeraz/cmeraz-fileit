@@ -4,40 +4,16 @@
 # The full path to the parent folder containing
 # child folders that contain the service principal
 # certificates
+# Stored in environment variables
 cert_parent_path="${CERT_PARENT_PATH}"
-
-# The name of a tool service principal that you can
-# use when experimenting with the tool_spn.sh script
-azcopy_spn="${AZCOPY_SERVICE_PRINCIPAL}"
-
-# The name of a tool service principal that you can
-# use when experimenting with the tool_spn.sh script
-tool_spn="${TOOL_SERVICE_PRINCIPAL}"
-
-# The name of a test service principal that you can
-# use when experimenting with the admin_spn.sh script
-test_spn="${TEST_SERVICE_PRINCIPAL}"
-
-# The name of a test service principal that you can
-# use when experimenting with the admin_spn.sh script
-web_spn="${WEB_SERVICE_PRINCIPAL}"
 
 # The name of a devops service principal dedicated to 
 # running deployment scripts from this project or from
 # pipelines like Jenkins
-devops_spn="${DEVOPS_SERVICE_PRINCIPAL}"
+devops_spn=$FILEIT_DEVOPS_SERVICE_PRINCIPAL
 
 # The devops service principal id, for authentication
-azcopy_client_id="${AZCOPY_CLIENT_ID}"
-
-# The devops service principal id, for authentication
-tool_client_id="${TOOL_CLIENT_ID}"
-
-# The devops service principal id, for authentication
-devops_client_id="${DEVOPS_CLIENT_ID}"
-
-# The web service principal id, for authentication
-web_client_id="${WEB_CLIENT_ID}"
+devops_client_id="${FILEIT_DEVOPS_CLIENT_ID}"
 
 # The location to the devops certificate, for authentication
 devops_client_key_path="$cert_parent_path/$devops_spn/$devops_spn.pem"
@@ -50,38 +26,24 @@ tenant_id="${TENANT_ID}"
 
 # A single region for all resource groups in this project
 # resources inherit their location value from their resource groups
-region="${REGION}"
-
-# I use a specific path in my home directory to stage files 
-# for ingestion into Azure Blob Storage
-ingest_path="${INGEST_PATH}"
+region="${FILEIT_REGION}"
 
 # The project naming convention relies on a unique stem value, derived 
 # from my tenant custom domain, so that resources are also uniquely named.
-stem="${AZ_STEM}"
-
-storage_url="${STORAGE_URL}"
-
-storage_local_connection_string="${STORAGE_LOCAL_CONNECTION_STRING}"
+stem="${FILEIT_STEM}"
 
 # Below are -most- of the resource names, which use the stem value in 
 # their construction
 
-web_name="$stem-web"
-apim_name="$stem-apim"
-function_name="$stem-function"
-storage_name+="cmerazfileitstorage2"
+database_name="$stem-database"
+storage_name="cmerazfileitstorage"
 keyvault_name="$stem-keyvault"
-cosmos_name="$stem-cosmos"
 bus_name="$stem-bus"
 
 # create resource group names
-web_group_name="rg-$web_name"
-apim_group_name="rg-$apim_name"
-function_group_name="rg-$function_name"
+database_group_name="rg-$database_name"
 keyvault_group_name="rg-$keyvault_name"
-storage_group_name="rg-cmeraz-filesit-storage"
-cosmos_group_name="rg-$cosmos_name"
+storage_group_name="rg-fileit-storage"
 bus_group_name="rg-$bus_name"
 
 # authenticating with the devops service principal

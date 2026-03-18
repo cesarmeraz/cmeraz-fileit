@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-    . scripts/base.sh
+. scripts/base.sh
 
 echo "PWD: $(pwd)"
 echo "Running $0"
@@ -7,12 +7,14 @@ az version
 login_azure
 
 timestamp=$(date +"%Y%m%d-%H%M%S")
-deployment_name="${function_group_name}-${timestamp}"
+resource_name="$stem-simple"
+resource_group_name="rg-$resource_name"
+deployment_name="$resource_group_name-$timestamp"
 echo "Deployment name: $deployment_name"
 
-if [[ $(az group exists --name $function_group_name) == "true" ]]; then
-    echo "Deleting $function_group_name"
-    az group delete --name $function_group_name --yes
+if [[ $(az group exists --name $resource_group_name) == "true" ]]; then
+    echo "Deleting $resource_group_name"
+    az group delete --name $resource_group_name --yes
 fi
 
 az deployment sub create \
@@ -20,8 +22,8 @@ az deployment sub create \
     --location $region \
     --template-file scripts/templates/func_sub.bicep \
     --parameters \
-        resourceName=$storage_name \
-        resourceGroupName=$function_group_name \
+        resourceName=$resource_name \
+        resourceGroupName=$resource_group_name \
         stem=$stem \
         location=$region \
         deploymentName=$deployment_name 

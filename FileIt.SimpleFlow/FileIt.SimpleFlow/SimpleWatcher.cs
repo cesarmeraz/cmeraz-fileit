@@ -33,7 +33,8 @@ public class SimpleWatcher
     /// <returns></returns>
     [Function(nameof(SimpleWatcher))]
     public async Task Run(
-        [BlobTrigger("simple-source/{blobName}")] BlobClient blobClient,
+        [BlobTrigger("simple-source/{blobName}", Source = BlobTriggerSource.EventGrid)]
+            BlobClient blobClient,
         string blobName
     )
     {
