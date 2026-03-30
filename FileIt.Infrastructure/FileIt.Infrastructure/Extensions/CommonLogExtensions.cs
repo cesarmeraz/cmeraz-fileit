@@ -1,6 +1,5 @@
 using System.Text;
 using FileIt.Domain.Interfaces;
-using FileIt.Domain.Logging;
 using FileIt.Infrastructure.Logging;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Configuration;
@@ -29,10 +28,9 @@ public static class CommonLogExtensions
         config.Environment = builder.Environment.EnvironmentName;
         config.Application = builder.Environment.ApplicationName;
         config.DbConnectionString =
-            builder.Configuration.GetValue<string>("DB_CONNECTION_STRING")
-            ?? throw new ApplicationException(
-                "Application settings is missing DB_CONNECTION_STRING."
-            );
+            builder.Configuration.GetConnectionString("FileItDbConnection")
+            ?? builder.Configuration.GetValue<string>("FileItDbConnection")
+            ?? throw new ApplicationException("Connection Strings is missing FileItDbConnection.");
 
         string? logFilePath = builder.Configuration.GetValue<string>("LOG_FILE_PATH");
         if (!string.IsNullOrWhiteSpace(logFilePath))

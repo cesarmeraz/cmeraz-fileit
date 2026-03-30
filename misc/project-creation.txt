@@ -158,9 +158,11 @@ dotnet new mstest --name FileIt.SimpleFlow.Test --framework net8.0
 dotnet new mstest --name FileIt.SimpleFlow.Integration --framework net8.0
 
 cd ~/repos/cmeraz-fileit/FileIt.SimpleFlow/FileIt.SimpleFlow
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.EventGrid
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Timer
+dotnet add package Microsoft.Azure.WebJobs
 dotnet add package Microsoft.Extensions.Hosting
 dotnet add package Microsoft.Extensions.Hosting.Abstractions
 dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.0

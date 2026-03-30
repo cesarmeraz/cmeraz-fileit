@@ -17,6 +17,10 @@
       Version="2.50.0"
     />
     <PackageReference
+      Include="Microsoft.Azure.Functions.Worker.Extensions.EventGrid"
+      Version="3.6.0"
+    />
+    <PackageReference
       Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore"
       Version="2.1.0"
     />
@@ -30,6 +34,7 @@
     />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.3.1" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.7" />
+    <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.45" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.3" />
@@ -73,4 +78,13 @@
     <ProjectReference Include="..\..\FileIt.Infrastructure\FileIt.Infrastructure\FileIt.Infrastructure.csproj" />
     <ProjectReference Include="..\FileIt.SimpleFlow.App\FileIt.SimpleFlow.App.csproj" />
   </ItemGroup>
+
+  <Target Name="Package" AfterTargets="Publish">
+    <MakeDir Directories="$(MSBuildProjectDirectory)/bin/$(Configuration)/$(TargetFramework)/" />
+    <ZipDirectory
+      Overwrite="true"
+      SourceDirectory="$(PublishDir)"
+      DestinationFile="$(MSBuildProjectDirectory)/bin/$(Configuration)/$(TargetFramework)/$(ProjectName).zip"
+    />
+  </Target>
 </Project>

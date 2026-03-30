@@ -1,9 +1,7 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Azure.Messaging.ServiceBus;
 using FileIt.Domain.Entities.Api;
 using FileIt.Domain.Interfaces;
-using FileIt.Infrastructure.Logging;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 

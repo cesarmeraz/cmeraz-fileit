@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-. scripts/base.sh
+. ~/repos/cmeraz-fileit/scripts/base.sh
 
 echo "PWD: $(pwd)"
 echo "Running $0"
@@ -9,13 +9,6 @@ login_azure
 timestamp=$(date +"%Y%m%d-%H%M%S")
 deployment_name="${database_group_name}-${timestamp}"
 echo "Deployment name: $deployment_name"
-
-if [[ $(az group exists --name $database_group_name) == "true" ]]; then
-    echo "Deleting $database_group_name"
-    az group delete --name $database_group_name --yes
-fi
-
-echo $region
 
 PUBLIC_IP=$(curl -s icanhazip.com)
 echo "My public IP address is: $PUBLIC_IP"
@@ -42,3 +35,5 @@ az deployment sub create \
         myLocalIpAddress=$PUBLIC_IP
 
 logout_azure
+echo "Done"
+exit 0

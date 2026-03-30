@@ -1,8 +1,6 @@
-using System.Configuration;
-using FileIt.Domain.Interfaces;
-using FileIt.Domain.Logging;
 using FileIt.Infrastructure.Extensions;
 using FileIt.Infrastructure.Logging;
+using FileIt.Infrastructure.Middleware;
 using FileIt.Infrastructure.Tools;
 using FileIt.SimpleFlow.App;
 using FileIt.SimpleFlow.App.WaitOnApiUpload;
@@ -17,6 +15,7 @@ var builder = FunctionsApplication.CreateBuilder(args);
 builder.ConfigureFunctionsWebApplication();
 builder.UseMiddleware<MiddlewareLogger>();
 builder.UseMiddleware<SerilogInvocationIdMiddleware>();
+builder.UseMiddleware<ExceptionHandlingMiddleware>();
 
 builder
     .Services.AddApplicationInsightsTelemetryWorkerService()
@@ -33,7 +32,7 @@ builder.Services.AddSingleton(config);
 builder.Services.AddScoped<IWatchInbound, WatchInbound>();
 builder.Services.AddScoped<IBasicApiAddHandler, BasicApiAddHandler>();
 
-IInfrastructureConfig infrastructureConfig = builder.GetInfrastructureConfig();
+var infrastructureConfig = builder.GetInfrastructureConfig();
 builder.Services.AddInfrastructure(infrastructureConfig);
 
 // Configure logging

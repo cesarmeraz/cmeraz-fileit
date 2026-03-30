@@ -1,4 +1,4 @@
-namespace FileIt.Domain.Logging;
+namespace FileIt.Infrastructure.Logging;
 
 public interface ICommonLogConfig
 {

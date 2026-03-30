@@ -1,5 +1,5 @@
 #!/bin/bash
-. scripts/base.sh
+. ~/repos/cmeraz-fileit/scripts/base.sh
 
 # This script creates a service principal with 
 # certificate credentials as the deployment
@@ -33,6 +33,12 @@ az role assignment create \
     --assignee-object-id $principalId \
     --assignee-principal-type "ServicePrincipal" \
     --role "Role Based Access Control Administrator" \
+    --scope $scope
+
+az role assignment create \
+    --assignee-object-id $principalId \
+    --assignee-principal-type "ServicePrincipal" \
+    --role "Storage Blob Data Contributor" \
     --scope $scope
 
 az logout

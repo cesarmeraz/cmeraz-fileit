@@ -1,9 +1,10 @@
 using System.Text;
 using Azure.Storage.Blobs;
+using FileIt.SimpleFlow.App;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.SimpleFlow.App;
+namespace FileIt.SimpleFlow;
 
 public class SimpleTest
 {
@@ -29,7 +30,7 @@ public class SimpleTest
     /// <param name="executionContext">the FunctionContext</param>
     /// <returns></returns>
     [Function(nameof(SimpleTest))]
-    public async Task Run([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer)
+    public async Task Run([TimerTrigger("%EveryMinuteSchedule%")] TimerInfo myTimer)
     {
         using (
             _logger!.BeginScope(

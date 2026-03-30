@@ -1,7 +1,7 @@
 using System.Text.Json;
 using FileIt.Domain.Entities;
-using FileIt.Domain.Logging;
 using FileIt.Infrastructure.Data;
+using FileIt.Infrastructure.Logging;
 using Serilog.Core;
 using Serilog.Events;
 

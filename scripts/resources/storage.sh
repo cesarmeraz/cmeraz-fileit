@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-. ./scripts/base.sh
+. ~/repos/cmeraz-fileit/scripts/base.sh
 
 echo "PWD: $(pwd)"
 echo "Running $0"
@@ -12,10 +11,6 @@ echo "Deployment name: $deployment_name"
 
 login_azure
 
-if [[ $(az group exists --name $storage_group_name) == "true" ]]; then
-    echo "Deleting $storage_group_name"
-    az group delete --name $storage_group_name --yes
-fi
 
 az deployment sub create \
     --name $deployment_name \
@@ -29,3 +24,5 @@ az deployment sub create \
         deployment_name=$deployment_name 
 
 logout_azure
+echo "Done"
+exit 0

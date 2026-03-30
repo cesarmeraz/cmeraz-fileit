@@ -1,4 +1,3 @@
-using FileIt.Domain.Logging;
 using Serilog;
 using Serilog.Configuration;
 

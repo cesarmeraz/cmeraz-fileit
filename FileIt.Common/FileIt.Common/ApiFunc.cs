@@ -22,7 +22,10 @@ public class ApiFunc
     }
 
     [Function(nameof(ApiAdd))]
-    public async Task ApiAdd([ServiceBusTrigger("api-add")] ServiceBusReceivedMessage message)
+    public async Task ApiAdd(
+        [ServiceBusTrigger("api-add", Connection = "FileItServiceBus")]
+            ServiceBusReceivedMessage message
+    )
     {
         using (
             _logger!.BeginScope(

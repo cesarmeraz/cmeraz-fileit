@@ -1,10 +1,10 @@
-param serviceBusNamespaceName string
+param namespace string
 param topicName string
-param subscriptionName string = 'sub-myTopic'
+param subscriptionName string
 
 // 1. Reference the existing Namespace
 resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' existing = {
-  name: serviceBusNamespaceName
+  name: namespace
 }
 
 // 2. Reference the existing Topic within that Namespace

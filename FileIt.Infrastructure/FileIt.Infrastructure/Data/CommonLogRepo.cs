@@ -1,6 +1,6 @@
 using FileIt.Domain.Entities;
 using FileIt.Domain.Interfaces;
-using FileIt.Domain.Logging;
+using FileIt.Infrastructure.Logging;
 using Microsoft.EntityFrameworkCore;
 
 namespace FileIt.Infrastructure.Data
