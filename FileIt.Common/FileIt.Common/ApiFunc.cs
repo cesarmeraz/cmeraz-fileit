@@ -1,14 +1,9 @@
 using System.Text.Json;
-using Azure.Core;
 using Azure.Messaging.ServiceBus;
-using Azure.Storage.Blobs;
 using FileIt.Common.App;
 using FileIt.Common.App.ApiAdd;
-using FileIt.Domain.Entities;
 using FileIt.Domain.Entities.Api;
-using FileIt.Domain.Interfaces;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 
 namespace FileIt.Common;
@@ -27,23 +22,31 @@ public class ApiFunc
     }
 
     [Function(nameof(ApiAdd))]
-    public async Task ApiAdd([ServiceBusTrigger("api-add")] ServiceBusReceivedMessage message)
+    public async Task ApiAdd(
+        [ServiceBusTrigger("api-add", Connection = "FileItServiceBus")]
+            ServiceBusReceivedMessage message
+    )
     {
         using (
             _logger!.BeginScope(
                 new Dictionary<string, object>()
                 {
                     { "CorrelationId", message.CorrelationId ?? string.Empty },
-                    { "EventId", CommonEvents.AddEvent },
                 }
             )
         )
         {
+            _logger.LogInformation(CommonEvents.AddEvent.Id, "ApiAdd started");
             ApiAddPayload? payload = null;
             string? bodystr = message.Body?.ToString();
             if (!string.IsNullOrWhiteSpace(bodystr))
             {
                 payload = JsonSerializer.Deserialize<ApiAddPayload>(bodystr);
+                _logger.LogDebug(
+                    CommonEvents.GetPayload.Id,
+                    "ApiAdd payload:\n{@ApiPayload}",
+                    payload
+                );
             }
             var request = new ApiRequest()
             {
@@ -54,7 +57,7 @@ public class ApiFunc
                 ReplyTo = _config.ApiAddTopicName,
                 Subject = message.Subject,
             };
-            _logger.LogDebug("ApiAdd request:\n{@ApiRequest}", request);
+            _logger.LogDebug(CommonEvents.ExecApiAdd.Id, "ApiAdd request:\n{@ApiRequest}", request);
             await _command.ApiAdd(request);
         }
     }

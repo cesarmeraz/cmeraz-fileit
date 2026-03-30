@@ -43,17 +43,18 @@ module storage_module 'storage_module.bicep' = {
     networkAclsBypass: 'AzureServices'
     networkAclsDefaultAction: 'Allow'
     networkAclsIpRules: []
-    networkAclsIpv6Rules: []
-    publishIpv6Endpoint: false
     dnsEndpointType: 'Standard'
     isHnsEnabled: true
     isSftpEnabled: false
     largeFileSharesState: 'Enabled'
     keySource: 'Microsoft.Storage'
     encryptionEnabled: true
-    keyTypeForTableAndQueueEncryption: 'Account'
     infrastructureEncryptionEnabled: false
     isShareSoftDeleteEnabled: true
-    deploymentName: deployment_name
+    tagsByResource: {
+      stem: stem
+      module: 'storage_module'
+      deployment: deployment_name
+    }
   }
 }

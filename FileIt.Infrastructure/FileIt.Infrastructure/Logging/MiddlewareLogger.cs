@@ -1,7 +1,8 @@
-using FileIt.Infrastructure.Logging;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
+
+namespace FileIt.Infrastructure.Logging;
 
 public class MiddlewareLogger : IFunctionsWorkerMiddleware
 {
@@ -14,7 +15,7 @@ public class MiddlewareLogger : IFunctionsWorkerMiddleware
         context
             .GetLogger<MiddlewareLogger>()
             .LogInformation(
-                InfrastructureEvents.FunctionStart,
+                InfrastructureEvents.FunctionStart.Id,
                 "Start function {Function}, InvocationId {InvocationId}.",
                 functionName,
                 invocationId
@@ -26,7 +27,7 @@ public class MiddlewareLogger : IFunctionsWorkerMiddleware
         context
             .GetLogger<MiddlewareLogger>()
             .LogInformation(
-                InfrastructureEvents.FunctionEnd,
+                InfrastructureEvents.FunctionEnd.Id,
                 "End function {Function}, InvocationId {InvocationId}.",
                 functionName,
                 invocationId

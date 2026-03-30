@@ -21,7 +21,7 @@ resource namespaces_cmeraz_fileit_bus_name_resource 'Microsoft.ServiceBus/namesp
     minimumTlsVersion: '1.2'
     publicNetworkAccess: 'Enabled'
     disableLocalAuth: false
-    zoneRedundant: true
+    zoneRedundant: false
   }
 }
 
@@ -46,26 +46,5 @@ resource namespaces_cmeraz_fileit_bus_name_default 'Microsoft.ServiceBus/namespa
     virtualNetworkRules: []
     ipRules: []
     trustedServiceAccessEnabled: false
-  }
-}
-
-resource namespaces_cmeraz_fileit_bus_name_simple 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = {
-  parent: namespaces_cmeraz_fileit_bus_name_resource
-  name: 'simple'
-  properties: {
-    maxMessageSizeInKilobytes: 256
-    lockDuration: 'PT1M'
-    maxSizeInMegabytes: 1024
-    requiresDuplicateDetection: false
-    requiresSession: false
-    defaultMessageTimeToLive: 'P14D'
-    deadLetteringOnMessageExpiration: false
-    enableBatchedOperations: true
-    duplicateDetectionHistoryTimeWindow: 'PT10M'
-    maxDeliveryCount: 10
-    status: 'Active'
-    autoDeleteOnIdle: 'P10675199DT2H48M5.4775807S'
-    enablePartitioning: false
-    enableExpress: false
   }
 }

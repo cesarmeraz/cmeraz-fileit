@@ -20,14 +20,16 @@ public class CommonLog : IAuditable
 
     public string? MachineName { get; set; }
 
-    public string? Feature { get; set; }
+    public string? Application { get; set; }
 
-    public string? FeatureVersion { get; set; }
-    public string? CommonVersion { get; set; }
+    public string? ApplicationVersion { get; set; }
+    public string? InfrastructureVersion { get; set; }
 
     public string? SourceContext { get; set; }
 
     public string? CorrelationId { get; set; }
+
+    public string? InvocationId { get; set; }
 
     public int? EventId { get; set; }
 

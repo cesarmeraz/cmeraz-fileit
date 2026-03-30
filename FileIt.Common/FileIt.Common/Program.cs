@@ -1,9 +1,9 @@
-using System.Configuration;
 using FileIt.Common.App;
 using FileIt.Common.App.ApiAdd;
 using FileIt.Domain.Interfaces;
-using FileIt.Domain.Logging;
 using FileIt.Infrastructure.Extensions;
+using FileIt.Infrastructure.Logging;
+using FileIt.Infrastructure.Middleware;
 using FileIt.Infrastructure.Tools;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
@@ -15,6 +15,8 @@ using Microsoft.Extensions.Logging;
 var builder = FunctionsApplication.CreateBuilder(args);
 builder.ConfigureFunctionsWebApplication();
 builder.UseMiddleware<MiddlewareLogger>();
+builder.UseMiddleware<SerilogInvocationIdMiddleware>();
+builder.UseMiddleware<ExceptionHandlingMiddleware>();
 
 builder
     .Services.AddApplicationInsightsTelemetryWorkerService()
@@ -31,13 +33,13 @@ builder.Services.AddSingleton(config);
 builder.Services.AddScoped<IApiAddCommand, ApiAddCommand>();
 builder.Services.AddScoped<IBroadcastResponses, PublishTool>();
 
-IInfrastructureConfig infrastructureConfig = builder.GetInfrastructureConfig();
+var infrastructureConfig = builder.GetInfrastructureConfig();
 builder.Services.AddInfrastructure(infrastructureConfig);
 
 // Configure logging
 builder.Logging.ClearProviders(); // Remove default logging providers
 ICommonLogConfig logConfig = builder.GetCommonLogConfig();
-logConfig.FeatureVersion = System
+logConfig.ApplicationVersion = System
     .Reflection.Assembly.GetExecutingAssembly()
     .GetName()
     .Version?.ToString();

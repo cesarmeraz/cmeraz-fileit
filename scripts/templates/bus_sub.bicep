@@ -39,3 +39,40 @@ module bus_module 'bus_module.bicep' = {
     }
   }
 }
+
+module queue_simple 'bus_queue.bicep' = {
+  name: '${resourceName}-queue-simple'
+  scope: resourceGroup(rg_bus.name)
+  params: {
+    namespace: resourceName
+     name: 'simple'
+  }
+}
+
+module queue_api_add 'bus_queue.bicep' = {
+  name: '${resourceName}-queue-api-add'
+  scope: resourceGroup(rg_bus.name)
+  params: {
+    namespace: resourceName
+     name: 'api-add'
+  }
+}
+
+module topic_api_add_topic 'bus_topic.bicep' = {
+  name: '${resourceName}-topic-api-add-topic'
+  scope: resourceGroup(rg_bus.name)
+  params: {
+    namespace: resourceName
+     name: 'api-add-topic'
+  }
+}
+
+module api_add_topic_subscription 'bus_subscription.bicep' = {
+  name: '${resourceName}-topic-api-add-topic-subscription'
+  scope: resourceGroup(rg_bus.name)
+  params: {
+    namespace: resourceName
+    topicName: 'api-add-topic'
+    subscriptionName: 'api-add-topic-subscription'
+  }
+}

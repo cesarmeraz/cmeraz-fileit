@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-. scripts/base.sh
+. ~/repos/cmeraz-fileit/scripts/base.sh
 
 echo "PWD: $(pwd)"
 echo "Running $0"
@@ -7,19 +7,13 @@ az version
 login_azure
 
 timestamp=$(date +"%Y%m%d-%H%M%S")
-deployment_name="${apim_group_name}-${timestamp}"
+deployment_name="${bus_group_name}-${timestamp}"
 echo "Deployment name: $deployment_name"
-
-if [[ $(az group exists --name $bus_group_name) == "true" ]]; then
-    echo "Deleting $bus_group_name"
-    az group delete --name $bus_group_name --yes
-fi
-
-echo $region
 
 az deployment sub create \
     --location $region \
     --template-file scripts/templates/bus_sub.bicep \
+    --name $deployment_name \
     --parameters \
         resourceName=$bus_name \
         resourceGroupName=$bus_group_name \
@@ -28,3 +22,5 @@ az deployment sub create \
         deploymentName=$deployment_name 
 
 logout_azure
+echo "Done"
+exit 0
