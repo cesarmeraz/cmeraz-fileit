@@ -25,6 +25,7 @@ Since implementing this solution and successfully publishing to Azure, I have to
 Here's a different take on the architecture, with these additions:
 
 ```mermaid
+%%{init: {'theme': 'neutral' } }%%
 block
   columns 4
     block:common:2
