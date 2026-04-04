@@ -46,7 +46,7 @@ bash ./scripts/principals/create_devops_principal.sh
 ```
 
 ## Database and Database Server
-You may choose to use your own database server and database, or use a different naming convention for your database. Create this resource first.
+You may choose to use your own database server and database, or use a different naming convention for your database. Create this resource first if you don't have one already.
 
 ```bash
 bash ./scripts/resources/database.sh

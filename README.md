@@ -1,12 +1,12 @@
 # cmeraz-fileit 
-## Migrating a Windows service to Azure
+## Migrating a Windows service to Azure Service Bus
+
+This repository illustrates with a working proof of concept how we might reshape a Windows service into Azure using native components that can be emulated in a local development environment. 
 
 
 # Introduction
 
-There’s an old Windows service in production that needs a lot of love. It is well-architected, such that the business logic is nicely isolated. The service runs multiple workflows and each workflow is isolated and deployed separately. It is plug-in architecture. I really can’t complain about supporting a beautiful piece of software, but it is lacking in some areas.
-
-This repository illustrates with a working proof of concept how we might reshape a Windows service into Azure using native components that can be emulated in a local development environment.
+There’s an old Windows service in production that deserves more love than it is getting. It is well-architected, such that the business logic is nicely isolated. The service runs multiple workflows and each workflow is isolated and deployed separately. It is plug-in architecture. I really can’t complain about supporting a beautiful piece of software, but it is lacking in some areas.
 
 # Problem Statement
 Maintenance on this Windows service has been neglected such that its reliability is degraded, its manual processes of deployment and testing invite human error, and its technology lies out of reach of modern advantages for observability, security, and processing.
@@ -27,9 +27,6 @@ Asynchronous method signatures would suit this kind of application perfectly, an
 
 ### Single repository
 Each plug-in has its own repository. This makes it easy to dedicate a build pipeline for each plug-in, but it comes at a cost to overall maintenance. Since developers typically just open the plug-in solution, they aren’t aware of design patterns established in other repositories. The result is a hodge-podge of patterns that complicate refactoring efforts.
-
-### Encryption
-The service and its plug-ins connect to an on-prem SQL Server 2019 database, which by default is not secure and requires certificates on the database server to encrypt the connection. They also connect to another database for downloading and running SSIS packages. In contrast, connections to current SQL Server databases, SQL MI and Azure SQL Database all offer TLS encrypted connections out of the box.
 
 ### Observability
 Apart from the logging that we write to Event Viewer and to the database, we don’t have an in-depth view of the application’s health or an understanding of root cause when there’s a failure. In addition, to view the logs in either sink, we need an incident ticket and request an engineer to view the server logs and a DBA to view the database logs. This is more a complaint about how our own rules on accountability get in our way, but a rewrite of the service could include more thoughtful structures to help expedite RCA and eliminate obstacles.
@@ -60,6 +57,12 @@ The Windows service is a technology that strives to meet a business demand but n
 * Scale out in peak loads and load level to avoid API congestion downstream.
 * Ability to retry or else park failed processes for review.
 
+## Configuration
+* host.json is for function settings
+* appsettings.json is for non-sensitive application settings, specific to each module
+* Application Settings in Azure Portal for connection strings, and values accessible both developers and engineers during runtime
+* local.settings.json for these Application Settings in a non-Azure/local environment
+
 ## Structure
 * Separate the application in the abstract from the infrastructure details, such that the path to changing cloud platform is well known and contained to specific areas.
 * Each workflow should have a separate application boundary and each feature of that workflow should have a separate logical boundary.
@@ -77,164 +80,60 @@ Architecture test projects automate enforcement that project references maintain
 
 ## Security
 * Encryption in transit and at rest.
-* Move connection strings away from config files and into environment variables.
+* Move connection strings away from config files and into environment variables and go passwordless.
 
-# Design
-## Architectural Design
-In this diagram we see a workflow function app sharing resources with a common function app, so that the two function apps are decoupled. Additional workflows can be added to also leverage the functionality in the common function app. The function apps can manage files in the same storage, log to the same datatable and communicate via the service bus. Changes to a function app can be deployed separately from other function apps to maintain modularity. During peak loads, individual function apps can scale as needed.
+# Solution
+To replace the legacy system, we use these native Azure components 
+1. Flex Consumption tier Function Apps for application logic, each representing module boundaries
+2. Blob Storage for file handling
+3. Azure SQL Database for tracing requests
+4. Service Bus for load leveling with queues and decoupling with topics
+5. Application Insights for system observability
+6. User defined managed identities for security
 
-Deployment can be automated, unit testing can be added to the pipeline, scaling can be parameterized and automated.
-```mermaid
-flowchart
-  DB[<img src='./docs//icons/10136-icon-service-SQL-Managed-Instance.svg' /> Database]
-  App[<img src='./docs//icons/10029-icon-service-Function-Apps.svg' /> Workflow Function App]
-  Common[<img src='./docs//icons/10029-icon-service-Function-Apps.svg' /> Common Function App]
-  Bus[<img src='./docs//icons/10836-icon-service-Azure-Service-Bus.svg' /> Service Bus]
-  Storage[<img src='./docs//icons/10086-icon-service-Storage-Accounts.svg' /> Blob Storage]
-
-  App --> Storage
-  Common --> Storage
-  App --> DB
-  Common --> DB
-  App --> Bus
-  Common --> Bus  
-```
-
-Since implementing this solution and successfully publishing to Azure, I have to amend this diagram to include a few extra resources. 
-1. Recognizing that the iterative development process would be easier if I didn't have to recreate sql users and roles for system defined managed identities, I converted them to user defined managed identities.
-2. When publishing the Function Apps to Flex Consumption tier instances, I learned of its unique deployment constraint and it forced me to consider all generation of Application Settings, including Application Insights connection values.
-Here's a different take on the architecture, with these additions:
 ```mermaid
 block
   columns 4
-    block:groupA:2
+    block:common:2
       columns 1
       FA1["FileIt_Common"] 
       MI1<["mi-fileit-common"]>(down) 
       end
-    block:groupB:2
+    block:simple:2
       columns 1
       FA2["FileIt_Simple"] 
       MA2<["mi-fileit-simple"]>(down) 
     end
-  block:group3:4
+  block:shared:4
     DB["Azure SQL Database"] 
-    S["Service Bus"] 
-    ST["Storage"] 
+    SB["Service Bus"] 
+    BS["Blob Storage"] 
     AI["Application Insights"]
   end
-  style FA1 fill:white,color:#636, stroke-width:1px, stroke:black 
-  style MI1 fill:white,color:#636, stroke-width:1px, stroke:black
-  style MA2 fill:white,color:#636, stroke-width:1px, stroke:black
-  style DB fill:white,color:#636, stroke-width:1px, stroke:black
-  style FA2 fill:white,color:#636, stroke-width:1px, stroke:black
-  style MI1 fill:white,color:#636, stroke-width:1px, stroke:black
-  style S fill:white,color:#636, stroke-width:1px, stroke:black
-  style ST fill:white,color:#636, stroke-width:1px, stroke:black
-  style AI fill:white,color:#636, stroke-width:1px, stroke:black
-  style groupA fill:cornflowerblue,stroke-width:4px
-  style groupB fill:coral,stroke-width:4px
-  style group3 fill:goldenrod,stroke-width:4px
+  style FA1 fill:white,color:black, stroke-width:1px, stroke:black 
+  style MI1 fill:white,color:black, stroke-width:1px, stroke:black
+  style FA2 fill:white,color:black, stroke-width:1px, stroke:black
+  style MA2 fill:white,color:black, stroke-width:1px, stroke:black
+  style DB fill:white,color:black, stroke-width:1px, stroke:black
+  style SB fill:white,color:black, stroke-width:1px, stroke:black
+  style BS fill:white,color:black, stroke-width:1px, stroke:black
+  style AI fill:white,color:black, stroke-width:1px, stroke:black
+  style common fill:cornflowerblue,stroke-width:4px
+  style simple fill:coral,stroke-width:4px
+  style shared fill:goldenrod,stroke-width:4px
 ```
-## Solution Design
-The Program, in our case the Function App project, is responsible for gathering external resources (configuration, logging, database connections), including service collections, and preparing SDK clients for injection. The implementation for these services and clients is defined in the Infrastructure project. Both of these projects compile to assemblies that have dependencies on Azure SDKs, Serilog, Entity Framework, etc. In the event that we want to change cloud platforms, e.g. AWS, that would impact the Program and Infrastructure. Our Application and Domain libraries can remain as abstractions, untouched by changes to concrete details.
+In addition to these cloud components, we prescribe these components for a local development environment:
+1. .NET 8 (dotnet-isolated) function apps running locally with [Azure Functions Core Tools](https://github.com/Azure/azure-functions-core-tools)
+2. SQL Server 2025 Developer Edition for [Windows](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) or for [Linux](https://learn.microsoft.com/en-us/sql/linux/sql-server-linux-setup?view=sql-server-ver17)
+3. Azurite to emulate Blob Storage. I use the [VS Code Extension](https://learn.microsoft.com/en-us/azure/storage/common/storage-install-azurite?tabs=visual-studio-code%2Cblob-storage) but you can install it [globally with npm](https://learn.microsoft.com/en-us/azure/storage/common/storage-install-azurite?tabs=npm%2Cblob-storage)
+4. Service Bus Emulator running in [Docker](https://docs.docker.com/desktop/). The docker compose file is included in this repo under /emulator
 
-```mermaid
----
-title: Dependency Inversion Principle
-displayMode: compact
----
-flowchart LR
-  Program[/Program/]
-  Infrastructure[/Infrastructure/]
-  App["Application"]
-  Domain
-
-  Program --> App
-  Program --> Infrastructure
-  Infrastructure --> App
-  Infrastructure --> Domain
-  App --> Domain
-```
-Each workflow resembles this basic solution design that follows the Dependency Inversion Principle:
-
-- "High-level modules should not import anything from low-level modules. Both should depend on abstractions (e.g., interfaces)".
-- "Abstractions should not depend on details. Details (concrete implementations) should depend on abstractions".
-
-### Events and the Common Closure Principle
-The Common Closure Principle states that classes that change for the same reasons and at the same times should be gathered into components, and classes that change at different times and for different reasons should be separated into different components (MARTIN, 2017).
-
-Also known as the Single Responsibility Principle.
-
-The SimpleEvents static class is a set of static fields representing loggable events using the EventId class. It _could_ be included in the Domain as a kind of value object, but its fields will grow as we refine the features of the Simple flow. As a new feature is added to the Simple flow, so must a field be added to the SimpleEvents class. As we reconceptualize and rename features, we must rename the fields. Therefore they change together; *each flow must have its Events class within its assembly*.
-
-## Example Data Flow Diagram
-This diagram tracks the flow of data as it passes through the workflow implemented by the FileIt.SimpleProvider example.
-```mermaid
----
-title: FileIt.SimpleProvider Data Flow
----
-flowchart LR
-  subgraph Service Bus
-    api-add["api-add queue"]
-    api-add-topic
-    api-add-simple-sub
-  end
-  subgraph Blob Storage
-    Source
-    Working
-    Final
-  end
-  subgraph Simple Function App
-    SimpleTest(["SimpleText"])
-    SimpleWatcher
-    SimpleSubscriber
-  end
-  subgraph Common Function App
-    ApiFunc
-  end
-  DB[("Database")]
-  SimpleTest -- 1. deposits file --> Source 
-  Source -- 2. blob triger invokes endpoint --> SimpleWatcher
-  SimpleWatcher -- 3. writes record with Correlation Id --> DB
-  SimpleWatcher -- 4. moves file --> Working
-  SimpleWatcher -- 5. sends message to API queue --> api-add
-  ApiFunc -- 6. simulates API call and publishes response --> api-add-topic
-  SimpleSubscriber -- 7. listens for API response --> api-add-simple-sub
-  SimpleSubscriber -- 8. updates record with Correlation Id and API response --> DB
-  SimpleSubscriber -- 9. moves file --> Final
-```
-In this diagram, a timer trigger (1) causes SimpleTest to deposit a file in a blob storage container that sets in motion the workflow. Notice that no interaction exists between Simple Function App and Common Function App. The Service Bus facilitates a decoupling between application logic (5 and 7) and API communications (6). The use of a Correlation Id helps to gather all data about a particular workflow.
-
-
-## Design Alternatives
-1. If cloud resources are not available, the Service Bus component could be replaced with RabbitMQ and local directories could substitute Blob Storage.
-2. If no message broker is possible, workflows could be implemented with a custom command line interface, though the application would no longer benefit from loose coupling.
-
-# Local Setup
-## Requirements
-- Visual Studio or VS Code
-- MSSQL (Developer edition is fine)
-- Azurite (Blob Storage Emulator)
-- Docker Desktop
-- Service Bus Emulator
-- Azure Function Core Tools
-- .NET 8
-
-## Installation and Execution
-- Install MSSQL.
-  - Create a FileIt database using the `scripts/misc/fileit.sql` SQL script.
-  - Deploy tables using the dacpac produced by the SQL project
-- Install Azurite using npm or the VS Code extension
-- Install Docker Desktop
-  - Edit the `emulator/config.json` with new queues or topics
-  - Run the bash script `emulator/up.sh` to start up the emulator
-  - Stop the emulator with `emulator/down.sh`
-- Build the solution with `dotnet build`
-- Run the solution
-  - cd to app/
-  - Run `func start`
-  - The app/simple/SimpleTest.cs file contains a TimerTrigger that will deposit files in the source container that will trigger the Simple flow
+These components simulate the complete Azure environment so that you can develop everything locally without a cloud-hosted dependency. 
 
 # Next
-<a href="./docs/provisioning.md">Deployment notes</a> from my experience publishing this system to Azure.
+[Understand](./docs/architecture.md) the system design.
+[Signup](./docs/contribute.md) for hackathon and join my team.
+[Setup](./docs/local.md) an instance of this system on your local machine.
+[Provision](./docs/provisioning.md) this system to Azure following notes from my experience.
+[Extend](./docs/extensions.md) this system with a new Module.
+[Deploy](./docs/deployment.md) your new Module to Azure and sync database changes.

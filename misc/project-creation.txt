@@ -185,12 +185,6 @@ dotnet add package Microsoft.Azure.Functions.Worker.Extensions.ServiceBus
 
 
 cd ~/repos/cmeraz-fileit/FileIt.SimpleFlow/FileIt.SimpleFlow.App
-dotnet add package Microsoft.Extensions.Hosting
-dotnet add package Microsoft.Extensions.Hosting.Abstractions
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.0
-dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0
-
-cd ~/repos/cmeraz-fileit/FileIt.SimpleFlow/FileIt.SimpleFlow.App
 dotnet add reference ../../FileIt.Domain/FileIt.Domain/FileIt.Domain.csproj 
 
 
