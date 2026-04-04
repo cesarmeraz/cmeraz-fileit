@@ -92,6 +92,7 @@ To replace the legacy system, we use these native Azure components
 6. User defined managed identities for security
 
 ```mermaid
+%%{init: {'theme': 'neutral' } }%%
 block
   columns 4
     block:common:2
@@ -110,7 +111,7 @@ block
     BS["Blob Storage"] 
     AI["Application Insights"]
   end
-  classDef shape fill:white,color:black, stroke-width:1px, stroke:black 
+  classDef shape color:black, stroke-width:1px, stroke:black 
   class FA1,MI1,FA2,MA2,DB,SB,BS,AI shape
   style common fill:cornflowerblue,stroke-width:4px
   style simple fill:coral,stroke-width:4px
