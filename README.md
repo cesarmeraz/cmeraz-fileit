@@ -110,14 +110,8 @@ block
     BS["Blob Storage"] 
     AI["Application Insights"]
   end
-  style FA1 fill:white,color:black, stroke-width:1px, stroke:black 
-  style MI1 fill:white,color:black, stroke-width:1px, stroke:black
-  style FA2 fill:white,color:black, stroke-width:1px, stroke:black
-  style MA2 fill:white,color:black, stroke-width:1px, stroke:black
-  style DB fill:white,color:black, stroke-width:1px, stroke:black
-  style SB fill:white,color:black, stroke-width:1px, stroke:black
-  style BS fill:white,color:black, stroke-width:1px, stroke:black
-  style AI fill:white,color:black, stroke-width:1px, stroke:black
+  classDef shape fill:white,color:black, stroke-width:1px, stroke:black 
+  class FA1,MI1,FA2,MA2,DB,SB,BS,AI shape
   style common fill:cornflowerblue,stroke-width:4px
   style simple fill:coral,stroke-width:4px
   style shared fill:goldenrod,stroke-width:4px
@@ -131,9 +125,9 @@ In addition to these cloud components, we prescribe these components for a local
 These components simulate the complete Azure environment so that you can develop everything locally without a cloud-hosted dependency. 
 
 # Next
-[Understand](./docs/architecture.md) the system design.
-[Signup](./docs/contribute.md) for hackathon and join my team.
-[Setup](./docs/local.md) an instance of this system on your local machine.
-[Provision](./docs/provisioning.md) this system to Azure following notes from my experience.
-[Extend](./docs/extensions.md) this system with a new Module.
-[Deploy](./docs/deployment.md) your new Module to Azure and sync database changes.
+- [Understand](./docs/architecture.md) the system design.
+- [Signup](./docs/contribute.md) for hackathon and join my team.
+- [Setup](./docs/local.md) an instance of this system on your local machine.
+- [Provision](./docs/provisioning.md) this system to Azure following notes from my experience.
+- [Extend](./docs/extensions.md) this system with a new Module.
+- [Deploy](./docs/deployment.md) your new Module to Azure and sync database changes.

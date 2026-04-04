@@ -23,6 +23,7 @@ Since implementing this solution and successfully publishing to Azure, I have to
 1. Recognizing that the iterative development process would be easier if I didn't have to recreate sql users and roles for system defined managed identities, I converted them to user defined managed identities.
 2. When publishing the Function Apps to Flex Consumption tier instances, I learned of its unique deployment constraint and it forced me to consider all generation of Application Settings, including Application Insights connection values.
 Here's a different take on the architecture, with these additions:
+
 ```mermaid
 block
   columns 4
@@ -42,18 +43,13 @@ block
     BS["Blob Storage"] 
     AI["Application Insights"]
   end
-  style FA1 fill:white,color:black, stroke-width:1px, stroke:black 
-  style MI1 fill:white,color:black, stroke-width:1px, stroke:black
-  style FA2 fill:white,color:black, stroke-width:1px, stroke:black
-  style MA2 fill:white,color:black, stroke-width:1px, stroke:black
-  style DB fill:white,color:black, stroke-width:1px, stroke:black
-  style SB fill:white,color:black, stroke-width:1px, stroke:black
-  style BS fill:white,color:black, stroke-width:1px, stroke:black
-  style AI fill:white,color:black, stroke-width:1px, stroke:black
+  classDef shape fill:white,color:black, stroke-width:1px, stroke:black 
+  class FA1,MI1,FA2,MA2,DB,SB,BS,AI shape
   style common fill:cornflowerblue,stroke-width:4px
   style simple fill:coral,stroke-width:4px
   style shared fill:goldenrod,stroke-width:4px
 ```
+
 ## Solution Design
 The Program, in our case the Function App project, is responsible for gathering external resources (configuration, logging, database connections), including service collections, and preparing SDK clients for injection. The implementation for these services and clients is defined in the Infrastructure project. Both of these projects compile to assemblies that have dependencies on Azure SDKs, Serilog, Entity Framework, etc. In the event that we want to change cloud platforms, e.g. AWS, that would impact the Program and Infrastructure. Our Application and Domain libraries can remain as abstractions, untouched by changes to concrete details.
 
