@@ -38,7 +38,9 @@ builder.Services.AddInfrastructure(infrastructureConfig);
 
 // Configure logging
 builder.Logging.ClearProviders(); // Remove default logging providers
-ICommonLogConfig logConfig = builder.GetCommonLogConfig();
+ICommonLogConfig logConfig = builder.Configuration.GetCommonLogConfig();
+logConfig.Environment = logConfig.Environment ?? builder.Environment.EnvironmentName;
+logConfig.Application = builder.Environment.ApplicationName;
 logConfig.ApplicationVersion = System
     .Reflection.Assembly.GetExecutingAssembly()
     .GetName()

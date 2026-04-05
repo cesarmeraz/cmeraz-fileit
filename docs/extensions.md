@@ -63,6 +63,18 @@ dotnet add package Microsoft.Azure.Functions.Worker.Extensions.ServiceBus
 cd ~/repos/cmeraz-fileit/FileIt.ExampleFlow/FileIt.ExampleFlow.App
 dotnet add reference ../../FileIt.Domain/FileIt.Domain/FileIt.Domain.csproj 
 ```
+
+## Add Project References and Packages to the Test project
+```bash
+cd ~/repos/cmeraz-fileit/FileIt.ExampleFlow/FileIt.ExampleFlow.Test
+dotnet add reference ../../FileIt.Infrastructure/FileIt.Infrastructure/FileIt.Infrastructure.csproj 
+dotnet add reference ../../FileIt.Domain/FileIt.Domain/FileIt.Domain.csproj 
+dotnet add reference ../FileIt.ExampleFlow.App/FileIt.ExampleFlow.App.csproj 
+dotnet add package Microsoft.Extensions.Logging
+dotnet add package Microsoft.NET.Test.Sdk
+dotnet add package Moq
+```
+
 ## (Re)Create the Module Solution file
 ```bash
 cd ~/repos/cmeraz-fileit/FileIt.ExampleFlow

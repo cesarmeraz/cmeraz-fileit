@@ -1,17 +1,18 @@
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using FileIt.App.Common.Tools;
+using FileIt.Domain.Interfaces;
+using FileIt.Infrastructure.Tools;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace FileIt.Test.Providers;
+namespace FileIt.Infrastructure.Test.Tools;
 
 [TestClass]
 public class TestBlobTool
 {
     [TestMethod]
-    public void TestMoveBlobAsync()
+    public void TestMoveAsync()
     {
         //parameters
         string blobName = "simple-blob";
@@ -27,7 +28,7 @@ public class TestBlobTool
 
         var mockBlobServiceClient = new Mock<BlobServiceClient>();
         var mockLogger = new Mock<ILogger<BlobTool>>();
-        IBlobTool target = new BlobTool(mockLogger.Object, mockBlobServiceClient.Object);
+        IHandleFiles target = new BlobTool(mockLogger.Object, mockBlobServiceClient.Object);
 
         var mockSourceBlobContainerClient = new Mock<BlobContainerClient>();
         mockBlobServiceClient
@@ -120,7 +121,7 @@ public class TestBlobTool
             )
         );
 
-        target.MoveBlobAsync(blobName, sourceContainerName, destinationContainerName);
+        target.MoveAsync(blobName, sourceContainerName, destinationContainerName);
 
         //verify all
         // mockBlobServiceClient.VerifyAll();

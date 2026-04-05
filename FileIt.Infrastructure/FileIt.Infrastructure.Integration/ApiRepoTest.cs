@@ -1,11 +1,16 @@
 using System.Diagnostics;
 using System.Text.Json;
 using System.Threading.Tasks;
-using FileIt.App.Api;
-using FileIt.App.Repositories;
+using FileIt.Domain.Entities.Api;
+using FileIt.Domain.Interfaces;
+using FileIt.Infrastructure.Data;
+using FileIt.Infrastructure.Extensions;
+using FileIt.Infrastructure.Logging;
+using FileIt.Infrastructure.Middleware;
+using FileIt.Infrastructure.Tools;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FileIt.Integration.Test;
+namespace FileIt.Infrastructure.Integration;
 
 [TestClass]
 public class ApiLogRepoTest : BaseTest

@@ -13,40 +13,33 @@ using Serilog.Events;
 public static class CommonLogExtensions
 {
     // Extension method for ILoggingBuilder
-    public static ICommonLogConfig GetCommonLogConfig(this FunctionsApplicationBuilder builder)
+    public static ICommonLogConfig GetCommonLogConfig(this IConfiguration configuration)
     {
-        ICommonLogConfig config = new CommonLogConfig();
-        if (string.IsNullOrWhiteSpace(config.Environment))
+        ICommonLogConfig logConfig = new CommonLogConfig();
+        if (string.IsNullOrWhiteSpace(logConfig.Environment))
         {
-            string? azure_env = builder.Configuration.GetValue<string>(
-                "AZURE_FUNCTIONS_ENVIRONMENT"
-            );
-            config.Environment = azure_env ?? config.Environment;
+            string? azure_env = configuration.GetValue<string>("AZURE_FUNCTIONS_ENVIRONMENT");
+            logConfig.Environment = azure_env ?? logConfig.Environment;
         }
-        config.Host = Environment.MachineName;
-        config.Agent = Environment.UserName;
-        config.Environment = builder.Environment.EnvironmentName;
-        config.Application = builder.Environment.ApplicationName;
-        config.DbConnectionString =
-            builder.Configuration.GetConnectionString("FileItDbConnection")
-            ?? builder.Configuration.GetValue<string>("FileItDbConnection")
+        logConfig.Host = Environment.MachineName;
+        logConfig.Agent = Environment.UserName;
+        logConfig.DbConnectionString =
+            configuration.GetConnectionString("FileItDbConnection")
+            ?? configuration.GetValue<string>("FileItDbConnection")
             ?? throw new ApplicationException("Connection Strings is missing FileItDbConnection.");
 
-        string? logFilePath = builder.Configuration.GetValue<string>("LOG_FILE_PATH");
+        string? logFilePath = configuration.GetValue<string>("LOG_FILE_PATH");
         if (!string.IsNullOrWhiteSpace(logFilePath))
         {
-            config.LogFilePath = logFilePath;
+            logConfig.LogFilePath = logFilePath;
         }
 
-        string? serilogFilePath = builder.Configuration.GetValue<string>(
-            "SERILOG_SELFLOG_FILE_PATH"
-        );
+        string? serilogFilePath = configuration.GetValue<string>("SERILOG_SELFLOG_FILE_PATH");
         if (!string.IsNullOrWhiteSpace(serilogFilePath))
         {
-            config.SerilogSelfLogFilePath = serilogFilePath;
+            logConfig.SerilogSelfLogFilePath = serilogFilePath;
         }
-        builder.Services.AddSingleton(config);
-        return config;
+        return logConfig;
     }
 
     public static ILoggingBuilder AddCommonLog(

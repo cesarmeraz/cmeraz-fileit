@@ -17,7 +17,7 @@ public interface IInfrastructureConfig
 
 public class InfrastructureConfig : IInfrastructureConfig
 {
-    private ConfigurationManager? configuration;
+    private IConfiguration? configuration;
 
     public InfrastructureConfig() { }
 
@@ -28,7 +28,7 @@ public class InfrastructureConfig : IInfrastructureConfig
     private const string APPLICATIONINSIGHTS_CONNECTION_STRING =
         "APPLICATIONINSIGHTS_CONNECTION_STRING";
 
-    public InfrastructureConfig(ConfigurationManager configuration)
+    public InfrastructureConfig(IConfiguration configuration)
     {
         this.configuration = configuration;
         List<string> missing = new List<string>();
