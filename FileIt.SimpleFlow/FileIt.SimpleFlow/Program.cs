@@ -43,6 +43,7 @@ logConfig.ApplicationVersion = System
     .Reflection.Assembly.GetExecutingAssembly()
     .GetName()
     .Version?.ToString();
+builder.Services.AddSingleton(logConfig);
 builder.Logging.AddCommonLog(logConfig);
 
 builder.Build().Run();
