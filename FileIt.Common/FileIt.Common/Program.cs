@@ -31,10 +31,10 @@ if (config == null)
 
 builder.Services.AddSingleton(config);
 builder.Services.AddScoped<IApiAddCommand, ApiAddCommand>();
-builder.Services.AddScoped<IBroadcastResponses, PublishTool>();
 
 var infrastructureConfig = builder.GetInfrastructureConfig();
 builder.Services.AddInfrastructure(infrastructureConfig);
+builder.Services.AddIBroadcastResponses();
 
 // Configure logging
 builder.Logging.ClearProviders(); // Remove default logging providers

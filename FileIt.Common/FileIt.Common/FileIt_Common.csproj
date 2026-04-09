@@ -35,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\FileIt.Domain\FileIt.Domain\FileIt.Domain.csproj" />
     <ProjectReference Include="..\..\FileIt.Infrastructure\FileIt.Infrastructure\FileIt.Infrastructure.csproj" />
     <ProjectReference Include="..\FileIt.Common.App\FileIt.Common.App.csproj" />
   </ItemGroup>
