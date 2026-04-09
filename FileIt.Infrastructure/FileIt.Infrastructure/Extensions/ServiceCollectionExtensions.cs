@@ -25,6 +25,19 @@ public static class ServiceCollectionExtensions
         return config;
     }
 
+    /// <summary>
+    /// Registers the IBroadcastResponses interface and its implementation PublishTool in the
+    /// dependency injection container. Using an extension method allows the system to keep
+    /// the Function App decoupled from the Domain, where the interface is defined.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddIBroadcastResponses(this IServiceCollection services)
+    {
+        services.AddScoped<IBroadcastResponses, PublishTool>();
+        return services;
+    }
+
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
         IInfrastructureConfig config
