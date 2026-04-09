@@ -21,10 +21,10 @@ The unit test project is important. It should not communicate with the shared re
 ```bash
 mkdir FileIt.ExampleFlow
 cd ~/repos/cmeraz-fileit/FileIt.ExampleFlow
-func init FileIt.ExampleFlow --worker-runtime dotnet-isolated --target-framework net8.0
-dotnet new classlib --name FileIt.ExampleFlow.App --framework net8.0
-dotnet new mstest --name FileIt.ExampleFlow.Test --framework net8.0
-dotnet new mstest --name FileIt.ExampleFlow.Integration --framework net8.0
+func init FileIt.ExampleFlow --worker-runtime dotnet-isolated --target-framework net10.0
+dotnet new classlib --name FileIt.ExampleFlow.App --framework net10.0
+dotnet new mstest --name FileIt.ExampleFlow.Test --framework net10.0
+dotnet new mstest --name FileIt.ExampleFlow.Integration --framework net10.0
 ```
 
 ## Add Packages to the Function App
@@ -37,8 +37,8 @@ dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Timer
 dotnet add package Microsoft.Azure.WebJobs
 dotnet add package Microsoft.Extensions.Hosting
 dotnet add package Microsoft.Extensions.Hosting.Abstractions
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.0
-dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 10.0.5
+dotnet add package Microsoft.EntityFrameworkCore --version 10.0.5
 dotnet add package Serilog
 dotnet add package Serilog.Enrichers.Environment
 dotnet add package Serilog.Extensions.Logging

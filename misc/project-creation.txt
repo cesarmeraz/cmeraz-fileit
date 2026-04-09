@@ -22,18 +22,18 @@ not database related
 cd ~/repos/cmeraz-fileit
 mkdir FileIt.Domain
 cd FileIt.Domain
-dotnet new classlib --name FileIt.Domain --framework net8.0
-dotnet new mstest --name FileIt.Domain.Test --framework net8.0
-dotnet new mstest --name FileIt.Domain.Integration --framework net8.0
+dotnet new classlib --name FileIt.Domain --framework net10.0
+dotnet new mstest --name FileIt.Domain.Test --framework net10.0
+dotnet new mstest --name FileIt.Domain.Integration --framework net10.0
 
 echo 'FileIt.Domain has classes with properties used as message contracts for serialization' > readme.md
 
 cd FileIt.Domain
 dotnet add package Azure.Messaging.ServiceBus
-dotnet add package Azure.Storage.Blobs --framework net8.0
+dotnet add package Azure.Storage.Blobs --framework net10.0
 dotnet add package Microsoft.Azure.Functions.Worker
-dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0 --framework net8.0
-dotnet add package Microsoft.EntityFrameworkCore.Relational --version 8.0.0 --framework net8.0
+dotnet add package Microsoft.EntityFrameworkCore --version 10.0.5 --framework net10.0
+dotnet add package Microsoft.EntityFrameworkCore.Relational --version 10.0.5 --framework net10.0
 dotnet add package Microsoft.Extensions.Configuration
 dotnet add package Microsoft.Extensions.Configuration.Json
 dotnet add package Microsoft.Extensions.Logging
@@ -52,19 +52,19 @@ nuget push $nuget_file -Source ~/nuget_local
 FileIt.Infrastructure has classes with properties used as message contracts for serialization
 mkdir FileIt.Infrastructure
 cd FileIt.Infrastructure
-dotnet new classlib --name FileIt.Infrastructure --framework net8.0
-dotnet new mstest --name FileIt.Infrastructure.Test --framework net8.0
-dotnet new mstest --name FileIt.Infrastructure.Integration --framework net8.0
+dotnet new classlib --name FileIt.Infrastructure --framework net10.0
+dotnet new mstest --name FileIt.Infrastructure.Test --framework net10.0
+dotnet new mstest --name FileIt.Infrastructure.Integration --framework net10.0
 
 echo 'FileIt.Infrastructure contains concrete implementations of cross cutting utilities, configuration options and resource adapters' > readme.md
 
 cd ~/repos/cmeraz-fileit/FileIt.Infrastructure/FileIt.Infrastructure
 dotnet add package Azure.Messaging.ServiceBus
-dotnet add package Azure.Storage.Blobs --framework net8.0
+dotnet add package Azure.Storage.Blobs --framework net10.0
 dotnet add package Microsoft.Azure.Functions.Worker
-dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0 --framework net8.0
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.0 --framework net8.0
-dotnet add package Microsoft.EntityFrameworkCore.Relational --version 8.0.0 --framework net8.0
+dotnet add package Microsoft.EntityFrameworkCore --version 10.0.5 --framework net10.0
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 10.0.5 --framework net10.0
+dotnet add package Microsoft.EntityFrameworkCore.Relational --version 10.0.5 --framework net10.0
 dotnet add package Microsoft.Extensions.Configuration
 dotnet add package Microsoft.Extensions.Configuration.Json
 dotnet add package Microsoft.Extensions.Logging
@@ -101,9 +101,9 @@ nuget push $nuget_file -Source ~/nuget_local
 
 mkdir FileIt.Common
 cd FileIt.Common
-func init FileIt.Common --worker-runtime dotnet-isolated --target-framework net8.0
-dotnet new classlib --name FileIt.Common.App --framework net8.0
-dotnet new mstest --name FileIt.Common.Test --framework net8.0
+func init FileIt.Common --worker-runtime dotnet-isolated --target-framework net10.0
+dotnet new classlib --name FileIt.Common.App --framework net10.0
+dotnet new mstest --name FileIt.Common.Test --framework net10.0
 dotnet new sln --name FileIt.Common
 dotnet sln FileIt.Common.sln add ./FileIt.Common/FileIt_Common.csproj
 dotnet sln FileIt.Common.sln add ./FileIt.Common.App/FileIt.Common.App.csproj
@@ -114,8 +114,8 @@ dotnet add package Microsoft.Azure.Functions.Worker.Extensions.ServiceBus
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Timer
 dotnet add package Microsoft.Azure.Functions.Worker.Sdk
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.0
-dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 10.0.5
+dotnet add package Microsoft.EntityFrameworkCore --version 10.0.5
 dotnet add package Serilog
 dotnet add package Serilog.Enrichers.Environment
 dotnet add package Serilog.Extensions.Logging
@@ -139,8 +139,8 @@ dotnet add package Microsoft.Azure.Functions.Worker.Extensions.ServiceBus
 
 mkdir FileIt.DataIngestFlow
 cd FileIt.DataIngestFlow
-func init FileIt.DataIngestFlow --worker-runtime dotnet-isolated --target-framework net8.0
-dotnet new mstest --name FileIt.DataIngestFlow.Test --framework net8.0
+func init FileIt.DataIngestFlow --worker-runtime dotnet-isolated --target-framework net10.0
+dotnet new mstest --name FileIt.DataIngestFlow.Test --framework net10.0
 dotnet new sln --name FileIt.DataIngestFlow
 dotnet sln FileIt.DataIngestFlow.sln add ./FileIt.DataIngestFlow/FileIt_DataIngestFlow.csproj
 dotnet sln FileIt.DataIngestFlow.sln add ./FileIt.DataIngestFlow.Test/FileIt.DataIngestFlow.Test.csproj
@@ -152,10 +152,10 @@ dotnet sln FileIt.All.sln add ./FileIt.DataIngestFlow/FileIt.DataIngestFlow.Test
 
 mkdir FileIt.SimpleFlow
 cd ~/repos/cmeraz-fileit/FileIt.SimpleFlow
-func init FileIt.SimpleFlow --worker-runtime dotnet-isolated --target-framework net8.0
-dotnet new classlib --name FileIt.SimpleFlow.App --framework net8.0
-dotnet new mstest --name FileIt.SimpleFlow.Test --framework net8.0
-dotnet new mstest --name FileIt.SimpleFlow.Integration --framework net8.0
+func init FileIt.SimpleFlow --worker-runtime dotnet-isolated --target-framework net10.0
+dotnet new classlib --name FileIt.SimpleFlow.App --framework net10.0
+dotnet new mstest --name FileIt.SimpleFlow.Test --framework net10.0
+dotnet new mstest --name FileIt.SimpleFlow.Integration --framework net10.0
 
 cd ~/repos/cmeraz-fileit/FileIt.SimpleFlow/FileIt.SimpleFlow
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.EventGrid
@@ -165,8 +165,8 @@ dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Timer
 dotnet add package Microsoft.Azure.WebJobs
 dotnet add package Microsoft.Extensions.Hosting
 dotnet add package Microsoft.Extensions.Hosting.Abstractions
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.0
-dotnet add package Microsoft.EntityFrameworkCore --version 8.0.0
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 10.0.5
+dotnet add package Microsoft.EntityFrameworkCore --version 10.0.5
 dotnet add package Serilog
 dotnet add package Serilog.Enrichers.Environment
 dotnet add package Serilog.Extensions.Logging

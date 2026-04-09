@@ -15,6 +15,6 @@ dotnet publish --configuration Release
 az functionapp deployment source config-zip \
   -g $resource_group_name \
   -n $resource_name \
-  --src ./FileIt.Common/bin/Release/net8.0/FileIt_Common.zip
+  --src ./FileIt.Common/bin/Release/net10.0/FileIt_Common.zip
 
 logout_azure
