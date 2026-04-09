@@ -18,9 +18,10 @@ builder.UseMiddleware<MiddlewareLogger>();
 builder.UseMiddleware<SerilogInvocationIdMiddleware>();
 builder.UseMiddleware<ExceptionHandlingMiddleware>();
 
-builder
-    .Services.AddApplicationInsightsTelemetryWorkerService()
-    .ConfigureFunctionsApplicationInsights();
+#if RELEASE
+// Add Application Insights telemetry if deployed to Azure
+builder.Services.AddApplicationInsightsTelemetryWorkerService();
+#endif
 
 var sectionName = builder.Configuration.GetValue<string>("FeatureSection") ?? "Feature";
 CommonConfig? config = builder.Configuration.GetSection(sectionName).Get<CommonConfig>();
