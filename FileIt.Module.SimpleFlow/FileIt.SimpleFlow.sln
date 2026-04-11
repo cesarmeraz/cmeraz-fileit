@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt_SimpleFlow", "FileIt.SimpleFlow\FileIt_SimpleFlow.csproj", "{2EE500AC-9DC5-41FB-A8E2-1B416B5C7C76}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt_SimpleFlow", "FileIt.Module.SimpleFlow\FileIt_SimpleFlow.csproj", "{2EE500AC-9DC5-41FB-A8E2-1B416B5C7C76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.SimpleFlow.App", "FileIt.SimpleFlow.App\FileIt.SimpleFlow.App.csproj", "{F32001DB-7123-406B-8344-06B6B66F5C43}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.App", "FileIt.Module.SimpleFlow.App\FileIt.Module.SimpleFlow.App.csproj", "{F32001DB-7123-406B-8344-06B6B66F5C43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.SimpleFlow.Test", "FileIt.SimpleFlow.Test\FileIt.SimpleFlow.Test.csproj", "{46037E29-970E-4105-A79C-5CC5BE506350}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Test", "FileIt.Module.SimpleFlow.Test\FileIt.Module.SimpleFlow.Test.csproj", "{46037E29-970E-4105-A79C-5CC5BE506350}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.SimpleFlow.Integration", "FileIt.SimpleFlow.Integration\FileIt.SimpleFlow.Integration.csproj", "{1BD3BDBA-2A21-4B5D-BC22-9428789F24D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Integration", "FileIt.Module.SimpleFlow.Integration\FileIt.Module.SimpleFlow.Integration.csproj", "{1BD3BDBA-2A21-4B5D-BC22-9428789F24D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

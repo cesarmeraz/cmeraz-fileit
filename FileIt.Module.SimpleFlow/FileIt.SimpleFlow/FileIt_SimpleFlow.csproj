@@ -60,7 +60,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\FileIt.Infrastructure\FileIt.Infrastructure\FileIt.Infrastructure.csproj" />
-    <ProjectReference Include="..\FileIt.SimpleFlow.App\FileIt.SimpleFlow.App.csproj" />
+    <ProjectReference Include="..\FileIt.Module.SimpleFlow.App\FileIt.Module.SimpleFlow.App.csproj" />
   </ItemGroup>
 
   <Target Name="Package" AfterTargets="Publish">

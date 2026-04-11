@@ -8,13 +8,13 @@ using Azure.Storage.Blobs;
 using FileIt.Domain.Entities;
 using FileIt.Domain.Interfaces;
 using FileIt.Infrastructure.Extensions;
-using FileIt.SimpleFlow.App;
+using FileIt.Module.SimpleFlow.App;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Extensions.EventGrid;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.SimpleFlow;
+namespace FileIt.Module.SimpleFlow;
 
 public class SimpleWatcher
 {

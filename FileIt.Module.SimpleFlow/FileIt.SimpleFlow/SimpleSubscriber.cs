@@ -1,12 +1,12 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using FileIt.Domain.Entities.Api;
-using FileIt.SimpleFlow.App;
-using FileIt.SimpleFlow.App.WaitOnApiUpload;
+using FileIt.Module.SimpleFlow.App;
+using FileIt.Module.SimpleFlow.App.WaitOnApiUpload;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.SimpleFlow;
+namespace FileIt.Module.SimpleFlow;
 
 public class SimpleSubscriber
 {

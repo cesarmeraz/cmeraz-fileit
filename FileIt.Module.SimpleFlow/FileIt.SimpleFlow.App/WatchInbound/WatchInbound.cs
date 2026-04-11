@@ -4,7 +4,7 @@ using FileIt.Domain.Entities.Api;
 using FileIt.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.SimpleFlow.App;
+namespace FileIt.Module.SimpleFlow.App;
 
 public interface IWatchInbound
 {

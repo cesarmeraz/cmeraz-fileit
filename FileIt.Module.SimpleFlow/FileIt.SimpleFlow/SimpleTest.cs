@@ -1,10 +1,10 @@
 using System.Text;
 using Azure.Storage.Blobs;
-using FileIt.SimpleFlow.App;
+using FileIt.Module.SimpleFlow.App;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.SimpleFlow;
+namespace FileIt.Module.SimpleFlow;
 
 public class SimpleTest
 {

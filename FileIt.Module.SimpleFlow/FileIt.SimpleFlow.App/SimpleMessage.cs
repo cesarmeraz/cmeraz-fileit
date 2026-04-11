@@ -1,4 +1,4 @@
-namespace FileIt.SimpleFlow.App
+namespace FileIt.Module.SimpleFlow.App
 {
     public class SimpleMessage
     {

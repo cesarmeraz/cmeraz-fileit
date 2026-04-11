@@ -1,8 +1,8 @@
 using FileIt.Infrastructure.Extensions;
 using FileIt.Infrastructure.Logging;
 using FileIt.Infrastructure.Middleware;
-using FileIt.SimpleFlow.App;
-using FileIt.SimpleFlow.App.WaitOnApiUpload;
+using FileIt.Module.SimpleFlow.App;
+using FileIt.Module.SimpleFlow.App.WaitOnApiUpload;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Configuration;

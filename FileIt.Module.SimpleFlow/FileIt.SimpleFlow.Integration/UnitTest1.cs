@@ -1,4 +1,4 @@
-namespace FileIt.SimpleFlow.Integration;
+namespace FileIt.Module.SimpleFlow.Integration;
 
 [TestClass]
 public class UnitTest1

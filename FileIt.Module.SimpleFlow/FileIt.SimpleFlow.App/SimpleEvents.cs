@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.SimpleFlow.App;
+namespace FileIt.Module.SimpleFlow.App;
 
 public class SimpleEvents
 {

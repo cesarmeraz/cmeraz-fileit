@@ -3,11 +3,11 @@ using Azure.Messaging.ServiceBus;
 using FileIt.Domain.Entities;
 using FileIt.Domain.Entities.Api;
 using FileIt.Domain.Interfaces;
-using FileIt.SimpleFlow;
+using FileIt.Module.SimpleFlow;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.SimpleFlow.App.WaitOnApiUpload;
+namespace FileIt.Module.SimpleFlow.App.WaitOnApiUpload;
 
 public interface IBasicApiAddHandler
 {
