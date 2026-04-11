@@ -64,10 +64,9 @@ public class WatchInbound : IWatchInbound
             blobName
         );
         await _busTool.SendMessageAsync(
-            new ApiRequest()
+            new ApiRequest(messageId)
             {
                 Body = new ApiAddPayload() { FileName = blobName },
-                MessageId = messageId,
                 ReplyTo = _config.ApiAddTopicName,
                 CorrelationId = correlationId,
                 QueueName = _config.ApiAddQueueName,

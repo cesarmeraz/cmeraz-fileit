@@ -86,8 +86,8 @@ public class TestApiFunc
                 )
             )
             .ReturnsAsync(new ApiLog() { Id = 1 });
-
-        var mockMessage = new ApiRequest()
+        var messageId = "test-message-id";
+        var mockMessage = new ApiRequest(messageId)
         {
             Body = messageBody.ToString(),
             ReplyTo = replyTo,

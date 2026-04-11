@@ -48,11 +48,10 @@ public class ApiFunc
                     payload
                 );
             }
-            var request = new ApiRequest()
+            var request = new ApiRequest(message.MessageId)
             {
                 Body = payload,
                 CorrelationId = message.CorrelationId,
-                MessageId = message.MessageId,
                 QueueName = _config.ApiAddQueueName,
                 ReplyTo = _config.ApiAddTopicName,
                 Subject = message.Subject,

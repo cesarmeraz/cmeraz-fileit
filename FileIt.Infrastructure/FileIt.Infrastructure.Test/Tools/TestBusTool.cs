@@ -40,8 +40,10 @@ public class TestBusTool
     {
         // Arrange
         var queueName = "testQueue";
+        var messageId = "test-message-id";
+
         var message = new ServiceBusMessage("Test message");
-        var request = new ApiRequest() { Body = "Test message", QueueName = "testqueue" };
+        var request = new ApiRequest(messageId) { Body = "Test message", QueueName = "testqueue" };
 
         // Act
         await _busProvider.SendMessageAsync(request);
@@ -57,8 +59,9 @@ public class TestBusTool
     public async Task SendMessageAsync_ShouldLogError_WhenExceptionThrown()
     {
         // Arrange
+        var messageId = "test-message-id";
         var message = new ServiceBusMessage("Test message");
-        var request = new ApiRequest() { Body = "Test message", QueueName = "testqueue" };
+        var request = new ApiRequest(messageId) { Body = "Test message", QueueName = "testqueue" };
         _serviceBusSenderMock
             .Setup(sender => sender.SendMessageAsync(message, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new System.Exception("Send failed"));
