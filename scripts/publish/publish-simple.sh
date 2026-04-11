@@ -10,12 +10,12 @@ resource_name="$stem-simple"
 resource_group_name="rg-$resource_name"
 
 
-cd ~/repos/cmeraz-fileit/FileIt.SimpleFlow
+cd ~/repos/cmeraz-fileit/FileIt.Module.SimpleFlow
 dotnet publish --configuration Release
 
 az functionapp deployment source config-zip \
   -g $resource_group_name \
   -n $resource_name \
-  --src ./FileIt.SimpleFlow/bin/Release/net10.0/FileIt_SimpleFlow.zip
+  --src ./FileIt.Module.SimpleFlow/bin/Release/net10.0/FileIt_SimpleFlow.zip
 
 logout_azure

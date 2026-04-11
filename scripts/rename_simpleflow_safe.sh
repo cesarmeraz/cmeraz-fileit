@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-OLD="FileIt.SimpleFlow"
+OLD="FileIt.Module.SimpleFlow"
 NEW="FileIt.Module.SimpleFlow"
 BRANCH="refactor/module/simpleflow/rename"
 SLN="FileIt.All.sln"

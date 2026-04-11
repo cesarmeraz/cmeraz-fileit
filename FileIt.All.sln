@@ -27,15 +27,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Infrastructure.Test"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Infrastructure.Integration", "FileIt.Infrastructure\FileIt.Infrastructure.Integration\FileIt.Infrastructure.Integration.csproj", "{C9827A90-4980-49C7-8EB9-6019A452D9F5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.SimpleFlow", "FileIt.SimpleFlow", "{C95EAA6E-912C-48C9-ABF5-71212D90038E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.Module.SimpleFlow", "FileIt.Module.SimpleFlow", "{C95EAA6E-912C-48C9-ABF5-71212D90038E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt_SimpleFlow", "FileIt.SimpleFlow\FileIt.SimpleFlow\FileIt_SimpleFlow.csproj", "{0279C19D-41C0-41DB-B560-F8C50B21CFAA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt_SimpleFlow", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow\FileIt_SimpleFlow.csproj", "{0279C19D-41C0-41DB-B560-F8C50B21CFAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.SimpleFlow.App", "FileIt.SimpleFlow\FileIt.SimpleFlow.App\FileIt.SimpleFlow.App.csproj", "{B1B98EA0-4BB6-42AE-89FA-1C789E3734D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.App", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.App\FileIt.Module.SimpleFlow.App.csproj", "{B1B98EA0-4BB6-42AE-89FA-1C789E3734D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.SimpleFlow.Test", "FileIt.SimpleFlow\FileIt.SimpleFlow.Test\FileIt.SimpleFlow.Test.csproj", "{87E3219C-87EC-48F8-83B7-0F44FCC1F403}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Test", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.Test\FileIt.Module.SimpleFlow.Test.csproj", "{87E3219C-87EC-48F8-83B7-0F44FCC1F403}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.SimpleFlow.Integration", "FileIt.SimpleFlow\FileIt.SimpleFlow.Integration\FileIt.SimpleFlow.Integration.csproj", "{A8EE9266-72F4-4930-9B74-A115115BBD21}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Integration", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.Integration\FileIt.Module.SimpleFlow.Integration.csproj", "{A8EE9266-72F4-4930-9B74-A115115BBD21}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.DataIngestFlow", "FileIt.DataIngestFlow", "{5CD96305-E6A6-47E5-B48F-B4B62025B78B}"
 EndProject
@@ -45,21 +45,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.DataIngestFlow.Test"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.Module.SimpleFlow", "FileIt.Module.SimpleFlow", "{00F83F78-FA8A-3097-4FEF-B7C53F3E638A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.SimpleFlow.Integration", "FileIt.SimpleFlow.Integration", "{E07FE37A-F315-B23A-8635-AD40B7B1EB5D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.Module.SimpleFlow.Integration", "FileIt.Module.SimpleFlow.Integration", "{E07FE37A-F315-B23A-8635-AD40B7B1EB5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Integration", "FileIt.Module.SimpleFlow\FileIt.SimpleFlow.Integration\FileIt.Module.SimpleFlow.Integration.csproj", "{46F62583-1F5C-4843-931D-731DCCFDE939}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Integration", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.Integration\FileIt.Module.SimpleFlow.Integration.csproj", "{46F62583-1F5C-4843-931D-731DCCFDE939}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.SimpleFlow.App", "FileIt.SimpleFlow.App", "{B73A8655-1498-98C1-A156-83F87BAE711A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.Module.SimpleFlow.App", "FileIt.Module.SimpleFlow.App", "{B73A8655-1498-98C1-A156-83F87BAE711A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.App", "FileIt.Module.SimpleFlow\FileIt.SimpleFlow.App\FileIt.Module.SimpleFlow.App.csproj", "{ABC8D816-1ACF-4E54-9C90-6D5F1B56D0ED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.App", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.App\FileIt.Module.SimpleFlow.App.csproj", "{ABC8D816-1ACF-4E54-9C90-6D5F1B56D0ED}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.SimpleFlow.Test", "FileIt.SimpleFlow.Test", "{2E08AAC0-67BD-1DFD-DC68-38579852A9F5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.Module.SimpleFlow.Test", "FileIt.Module.SimpleFlow.Test", "{2E08AAC0-67BD-1DFD-DC68-38579852A9F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Test", "FileIt.Module.SimpleFlow\FileIt.SimpleFlow.Test\FileIt.Module.SimpleFlow.Test.csproj", "{952FD470-AF51-4257-8A84-069046C138AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Test", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.Test\FileIt.Module.SimpleFlow.Test.csproj", "{952FD470-AF51-4257-8A84-069046C138AF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.SimpleFlow", "FileIt.SimpleFlow", "{0744626F-A673-A558-1C61-6371D7A63BF8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.Module.SimpleFlow", "FileIt.Module.SimpleFlow", "{0744626F-A673-A558-1C61-6371D7A63BF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt_SimpleFlow", "FileIt.Module.SimpleFlow\FileIt.SimpleFlow\FileIt_SimpleFlow.csproj", "{56D20855-B3FB-46DB-B0A4-F0BDD8252B58}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt_SimpleFlow", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow\FileIt_SimpleFlow.csproj", "{56D20855-B3FB-46DB-B0A4-F0BDD8252B58}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "obj", "obj", "{771F9803-FDDE-5FEE-DFB2-074ABE30DD2B}"
 EndProject
@@ -67,13 +67,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Release", "Release", "{F4D3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net10.0", "net10.0", "{5A0A0F7F-35B1-87AA-06AF-1130CA2D343C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerExtensions", "FileIt.Module.SimpleFlow\FileIt.SimpleFlow\obj\Release\net10.0\WorkerExtensions\WorkerExtensions.csproj", "{FABFEE6A-BD4B-43E7-9761-2916D54A8711}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerExtensions", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow\obj\Release\net10.0\WorkerExtensions\WorkerExtensions.csproj", "{FABFEE6A-BD4B-43E7-9761-2916D54A8711}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debug", "Debug", "{0CCD35A5-CFF7-D161-3305-362C530E4F88}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net10.0", "net10.0", "{67ECF8AF-DF58-4DD3-90A5-49F85B00CA93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerExtensions", "FileIt.Module.SimpleFlow\FileIt.SimpleFlow\obj\Debug\net10.0\WorkerExtensions\WorkerExtensions.csproj", "{A05F1F0E-DDF7-491F-94B1-CFC1904652D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerExtensions", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow\obj\Debug\net10.0\WorkerExtensions\WorkerExtensions.csproj", "{A05F1F0E-DDF7-491F-94B1-CFC1904652D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

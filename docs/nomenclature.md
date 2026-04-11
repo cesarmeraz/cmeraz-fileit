@@ -20,7 +20,7 @@ Some project conventions include a company name, like CompanyName.ApplicationNam
 | Application Logic Project | FileIt.Module.Name.App | FileIt.Common.App | FileIt.Module.Services.App |
 | Application Logic Test Project | FileIt.Module.Name.App.Test | FileIt.Common.Test | FileIt.Module.Services.App.Test |
 | Integration Test Project | FileIt.Module.Name.Integration | FileIt.Common.Integration | FileIt.Module.Services.Integration |
-| Function App Project | FileIt.Module.Name.Host | FileIt.SimpleFlow | FileIt.Module.SimpleFlow.Host |
-| Application Logic Project | FileIt.Module.Name.App | FileIt.SimpleFlow.App | FileIt.Module.SimpleFlow.App |
-| Application Logic Test Project | FileIt.Module.Name.App.Test | FileIt.SimpleFlow.Test | FileIt.Module.SimpleFlow.App.Test |
-| Integration Test Project | FileIt.Module.Name.Integration | FileIt.SimpleFlow.Integration | FileIt.Module.SimpleFlow.Integration |
+| Function App Project | FileIt.Module.Name.Host | FileIt.Module.SimpleFlow | FileIt.Module.SimpleFlow.Host |
+| Application Logic Project | FileIt.Module.Name.App | FileIt.Module.SimpleFlow.App | FileIt.Module.SimpleFlow.App |
+| Application Logic Test Project | FileIt.Module.Name.App.Test | FileIt.Module.SimpleFlow.Test | FileIt.Module.SimpleFlow.App.Test |
+| Integration Test Project | FileIt.Module.Name.Integration | FileIt.Module.SimpleFlow.Integration | FileIt.Module.SimpleFlow.Integration |
