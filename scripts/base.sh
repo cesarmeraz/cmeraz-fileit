@@ -1,4 +1,5 @@
 
+
 #!/usr/bin/env bash
 
 
@@ -225,12 +226,13 @@ create_topic_subscription(){
 }
 
 create_eventgrid_subscription(){
-    p_functionRGName=$1
-    p_functionAppName=$2
-    p_functionName=$3
-    p_subscriptionName=$4
-    p_containerName=$5
-    p_eventGridTopicName=$6
+    p_managedIdentityName=$1
+    p_functionRGName=$2
+    p_functionAppName=$3
+    p_functionName=$4
+    p_subscriptionName=$5
+    p_containerName=$6
+    p_eventGridTopicName=$7
 
     timestamp=$(date +"%Y%m%d-%H%M%S")
     deployment_name="${p_subscriptionName}-${timestamp}"
@@ -248,19 +250,8 @@ create_eventgrid_subscription(){
         subscriptionName=$p_subscriptionName
         containerName=$p_containerName
         eventGridTopicName=$p_eventGridTopicName
+        identityName=$p_managedIdentityName
     )
-
-    # Derive user-assigned identity name (created as mi-<functionAppName> during function creation)
-    userIdentityName="mi-${p_functionAppName}"
-
-    # Attempt to read the principalId of the user-assigned identity
-    principalId=$(az identity show --resource-group "$p_functionRGName" --name "$userIdentityName" --query principalId -o tsv 2>/dev/null || true)
-    if [[ -z "$principalId" ]]; then
-        echo "Warning: could not find user-assigned identity '$userIdentityName' in RG '$p_functionRGName'. Proceeding without principalId parameter."
-    else
-        echo "Found principalId for identity '$userIdentityName': $principalId"
-        params+=( principalId=$principalId )
-    fi
 
     az deployment sub create \
         --name $deployment_name \
@@ -271,8 +262,8 @@ create_eventgrid_subscription(){
 create_func(){
     p_nameEnding=$1
 
-    resource_name="$stem-$p_nameEnding"
-    resource_group_name="rg-$resource_name"
+    resource_name="fa-$stem-$p_nameEnding"
+    resource_group_name="rg-$stem-$p_nameEnding"
     userName="mi-$stem-$p_nameEnding"
 
     # TODO: create parameter to optionally delete existing resource group, default to false, and if true, delete the resource group before creating the function app. This is useful for development iterations, but should be used with caution to avoid unintended deletions.

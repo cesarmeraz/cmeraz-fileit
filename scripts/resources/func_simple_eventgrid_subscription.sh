@@ -7,13 +7,16 @@ az version
 
 login_azure
 
+nameEnding="simple"
+
 create_eventgrid_subscription \
-    "rg-$stem-simple" \
-    "$stem-simple" \
+    "mi-$stem-$nameEnding" \
+    "rg-$stem-$nameEnding" \
+    "fa-$stem-$nameEnding" \
     "SimpleWatcher" \
-    "simple-ingest-sub" \
-    "simple-source" \
-    "simple-ingest-sub-topic"
+    "$nameEnding-ingest-sub" \
+    "$nameEnding-source" \
+    "$nameEnding-ingest-sub-topic"
 
 logout_azure
 echo "Done"

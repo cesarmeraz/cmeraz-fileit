@@ -8,8 +8,11 @@ param functionName string
 param containerName string
 param subscriptionName string
 param eventGridTopicName string
-@description('Principal ID of the identity to assign RBAC to')
-param principalId string
+// @description('Principal ID of the identity to assign RBAC to')
+// param principalId string
+@description('Name of the user-assigned managed identity to assign RBAC to')
+param identityName string
+
 
 targetScope = 'subscription'
 
@@ -26,7 +29,7 @@ module eventGridDeploy 'eventgrid_module.bicep' = {
     containerName: containerName
     subscriptionName: subscriptionName
     eventGridTopicName: eventGridTopicName
-    principalId: principalId
+    identityName: identityName
   }
 }
 
@@ -37,6 +40,7 @@ module eventgrid_rbac 'eventgrid_rbacs.bicep' = {
     functionAppName: functionAppName
     functionRGName: functionRGName
     eventGridTopicName: eventGridTopicName
-    principalId: principalId
+    identityName: identityName
+    // principalId: principalId
   }
 }

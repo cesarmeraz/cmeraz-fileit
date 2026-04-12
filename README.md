@@ -130,5 +130,6 @@ These components simulate the complete Azure environment so that you can develop
 - [Signup](./docs/contribute.md) for hackathon and join my team.
 - [Setup](./docs/local.md) an instance of this system on your local machine.
 - [Provision](./docs/provisioning.md) this system to Azure following notes from my experience.
+- [Digest](./docs/nomenclature.md) its naming conventions.
 - [Extend](./docs/extensions.md) this system with a new Module.
 - [Deploy](./docs/deployment.md) your new Module to Azure and sync database changes.

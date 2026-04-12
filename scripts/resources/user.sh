@@ -15,11 +15,7 @@ login_azure
 az deployment sub create \
     --name $deployment_name \
     --location $region \
-    --template-file scripts/templates/user_sub.bicep \
-    --parameters \
-        stem=$stem \
-        location=$region \
-        deployment_name=$deployment_name 
+    --template-file scripts/templates/user_sub.bicep 
 
 logout_azure
 echo "Done"

@@ -22,7 +22,7 @@ public class DatabaseSinkTest
         ICommonLogConfig featureConfig = new CommonLogConfig()
         {
             Agent = "Integration",
-            Application = "FileIt.Common.Integration",
+            Application = "FileIt.Module.Services.Integration",
             Environment = "LocalDev",
             Host = "cesario",
             DbConnectionString = connString,
@@ -97,7 +97,7 @@ public class DatabaseSinkTest
                 Assert.AreEqual(1, actual.Count);
                 Assert.AreEqual(correlationId, actual[0].CorrelationId);
                 Assert.AreEqual("LocalDev", actual[0].Environment);
-                // Assert.AreEqual("FileIt.Common.Integration", actual[0].Feature);
+                // Assert.AreEqual("FileIt.Module.Services.Integration", actual[0].Feature);
                 Assert.AreEqual(logEvent.Level.ToString(), actual[0].Level);
                 Assert.AreEqual("cesario", actual[0].MachineName);
                 Assert.AreEqual("SourceContext", actual[0].SourceContext);
