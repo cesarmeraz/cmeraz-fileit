@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-. ~/repos/cmeraz-fileit/scripts/base.sh
+. ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/base.sh
 
 echo "PWD: $(pwd)"
 echo "Running $0"
 az version
 
-cd ~/repos/cmeraz-fileit/database/fileit/
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/database/fileit/
 dotnet build
 
 # Configuration Variables

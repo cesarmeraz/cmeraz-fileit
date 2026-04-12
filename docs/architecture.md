@@ -7,16 +7,16 @@ Deployment can be automated, unit testing can be added to the pipeline, scaling 
 flowchart
   DB[<img src='./docs//icons/10136-icon-service-SQL-Managed-Instance.svg' /> Database]
   App[<img src='./docs//icons/10029-icon-service-Function-Apps.svg' /> Workflow Function App]
-  Common[<img src='./docs//icons/10029-icon-service-Function-Apps.svg' /> Common Function App]
+  Services[<img src='./docs//icons/10029-icon-service-Function-Apps.svg' /> Services Function App]
   Bus[<img src='./docs//icons/10836-icon-service-Azure-Service-Bus.svg' /> Service Bus]
   Storage[<img src='./docs//icons/10086-icon-service-Storage-Accounts.svg' /> Blob Storage]
 
   App --> Storage
-  Common --> Storage
+  Services --> Storage
   App --> DB
-  Common --> DB
+  Services --> DB
   App --> Bus
-  Common --> Bus  
+  Services --> Bus  
 ```
 
 Since implementing this solution and successfully publishing to Azure, I have to amend this diagram to include a few extra resources. 
@@ -30,12 +30,12 @@ block
   columns 4
     block:common:2
       columns 1
-      FA1["FileIt_Common"] 
-      MI1<["mi-fileit-common"]>(down) 
+      FA1["FileIt.Module.Services"] 
+      MI1<["mi-fileit-services"]>(down) 
       end
     block:simple:2
       columns 1
-      FA2["FileIt_Simple"] 
+      FA2["FileIt.Module.Simple"] 
       MA2<["mi-fileit-simple"]>(down) 
     end
   block:shared:4
@@ -84,10 +84,10 @@ Also known as the Single Responsibility Principle.
 The SimpleEvents static class is a set of static fields representing loggable events using the EventId class. It _could_ be included in the Domain as a kind of value object, but its fields will grow as we refine the features of the Simple flow. As a new feature is added to the Simple flow, so must a field be added to the SimpleEvents class. As we reconceptualize and rename features, we must rename the fields. Therefore they change together; *each flow must have its Events class within its assembly*.
 
 ## Example Data Flow Diagram
-This diagram tracks the flow of data as it passes through the workflow implemented by the FileIt.SimpleProvider example.
+This diagram tracks the flow of data as it passes through the workflow implemented by the FileIt.Module.Simple example.
 ```mermaid
 ---
-title: FileIt.SimpleProvider Data Flow
+title: FileIt.Module.Simple Data Flow
 ---
 flowchart LR
   subgraph Service Bus
@@ -105,7 +105,7 @@ flowchart LR
     SimpleWatcher
     SimpleSubscriber
   end
-  subgraph Common Function App
+  subgraph Services Function App
     ApiFunc
   end
   DB[("Database")]
@@ -119,7 +119,7 @@ flowchart LR
   SimpleSubscriber -- 8. updates record with Correlation Id and API response --> DB
   SimpleSubscriber -- 9. moves file --> Final
 ```
-In this diagram, a timer trigger (1) causes SimpleTest to deposit a file in a blob storage container that sets in motion the workflow. Notice that no interaction exists between Simple Function App and Common Function App. The Service Bus facilitates a decoupling between application logic (5 and 7) and API communications (6). The use of a Correlation Id helps to gather all data about a particular workflow.
+In this diagram, a timer trigger (1) causes SimpleTest to deposit a file in a blob storage container that sets in motion the workflow. Notice that no interaction exists between Simple Function App and Services Function App. The Service Bus facilitates a decoupling between application logic (5 and 7) and API communications (6). The use of a Correlation Id helps to gather all data about a particular workflow.
 
 
 ## Design Alternatives

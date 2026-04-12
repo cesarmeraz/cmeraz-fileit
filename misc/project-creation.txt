@@ -19,7 +19,7 @@ IBusAdapter
 ILogWriter
 not database related
 
-cd ~/repos/cmeraz-fileit
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit
 mkdir FileIt.Domain
 cd FileIt.Domain
 dotnet new classlib --name FileIt.Domain --framework net10.0
@@ -58,7 +58,7 @@ dotnet new mstest --name FileIt.Infrastructure.Integration --framework net10.0
 
 echo 'FileIt.Infrastructure contains concrete implementations of cross cutting utilities, configuration options and resource adapters' > readme.md
 
-cd ~/repos/cmeraz-fileit/FileIt.Infrastructure/FileIt.Infrastructure
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Infrastructure/FileIt.Infrastructure
 dotnet add package Azure.Messaging.ServiceBus
 dotnet add package Azure.Storage.Blobs --framework net10.0
 dotnet add package Microsoft.Azure.Functions.Worker
@@ -78,7 +78,7 @@ dotnet add package Serilog.Sinks.ApplicationInsights
 dotnet add package Serilog.Sinks.Console
 dotnet add package Serilog.Sinks.File
 
-cd ~/repos/cmeraz-fileit/FileIt.Infrastructure/FileIt.Infrastructure.Test
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Infrastructure/FileIt.Infrastructure.Test
 dotnet add package Serilog
 
 
@@ -86,7 +86,7 @@ dotnet add reference ../../FileIt.Domain/FileIt.Domain/FileIt.Domain.csproj
 
 
 
-cd ~/repos/cmeraz-fileit/FileIt.Infrastructure/FileIt.Infrastructure.Integration
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Infrastructure/FileIt.Infrastructure.Integration
 dotnet add reference ../../FileIt.Domain/FileIt.Domain/FileIt.Domain.csproj 
 dotnet add reference ../../FileIt.Infrastructure/FileIt.Infrastructure/FileIt.Infrastructure.csproj 
 
@@ -131,7 +131,7 @@ dotnet add package System.Configuration.ConfigurationManager
 
 dotnet nuget add source ~/nuget_local -n LocalFeed
 
-cd ~/repos/cmeraz-fileit/FileIt.Common/FileIt.Common
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Common/FileIt.Common
 dotnet add package FileIt.Domain
 dotnet add package FileIt.Infrastructure
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.ServiceBus
@@ -151,13 +151,13 @@ dotnet sln FileIt.All.sln add ./FileIt.DataIngestFlow/FileIt.DataIngestFlow.Test
 
 
 mkdir FileIt.Module.SimpleFlow
-cd ~/repos/cmeraz-fileit/FileIt.Module.SimpleFlow
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.SimpleFlow
 func init FileIt.Module.SimpleFlow --worker-runtime dotnet-isolated --target-framework net10.0
 dotnet new classlib --name FileIt.Module.SimpleFlow.App --framework net10.0
 dotnet new mstest --name FileIt.Module.SimpleFlow.Test --framework net10.0
 dotnet new mstest --name FileIt.Module.SimpleFlow.Integration --framework net10.0
 
-cd ~/repos/cmeraz-fileit/FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.EventGrid
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs
@@ -178,33 +178,33 @@ dotnet add package Serilog.Sinks.File
 dotnet add package System.Configuration.ConfigurationManager
 
 
-cd ~/repos/cmeraz-fileit/FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow
 dotnet add reference ../../FileIt.Infrastructure/FileIt.Infrastructure/FileIt.Infrastructure.csproj 
 dotnet add reference ../../FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow.App/FileIt.Module.SimpleFlow.App.csproj 
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.ServiceBus
 
 
-cd ~/repos/cmeraz-fileit/FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow.App
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow.App
 dotnet add reference ../../FileIt.Domain/FileIt.Domain/FileIt.Domain.csproj 
 
 
 
 
-cd ~/repos/cmeraz-fileit/FileIt.Domain
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Domain
 rm FileIt.Domain.sln
 dotnet new sln --name FileIt.Domain
 dotnet sln FileIt.Domain.sln add ./FileIt.Domain/FileIt.Domain.csproj
 dotnet sln FileIt.Domain.sln add ./FileIt.Domain.Test/FileIt.Domain.Test.csproj
 
 
-cd ~/repos/cmeraz-fileit/FileIt.Infrastructure
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Infrastructure
 rm FileIt.Infrastructure.sln
 dotnet new sln --name FileIt.Infrastructure
 dotnet sln FileIt.Infrastructure.sln add ./FileIt.Infrastructure/FileIt.Infrastructure.csproj
 dotnet sln FileIt.Infrastructure.sln add ./FileIt.Infrastructure.Test/FileIt.Infrastructure.Test.csproj
 dotnet sln FileIt.Infrastructure.sln add ./FileIt.Infrastructure.Integration/FileIt.Infrastructure.Integration.csproj
 
-cd ~/repos/cmeraz-fileit/FileIt.Common
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Common
 rm FileIt.Common.sln
 dotnet new sln --name FileIt.Common
 dotnet sln FileIt.Common.sln add ./FileIt.Common/FileIt_Common.csproj
@@ -213,7 +213,7 @@ dotnet sln FileIt.Common.sln add ./FileIt.Common.Test/FileIt.Common.Test.csproj
 dotnet sln FileIt.Common.sln add ./FileIt.Common.Integration/FileIt.Common.Integration.csproj
 
 
-cd ~/repos/cmeraz-fileit/FileIt.Module.SimpleFlow
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.SimpleFlow
 rm FileIt.Module.SimpleFlow.sln
 dotnet new sln --name FileIt.Module.SimpleFlow
 dotnet sln FileIt.Module.SimpleFlow.sln add ./FileIt.Module.SimpleFlow/FileIt_SimpleFlow.csproj
@@ -223,7 +223,7 @@ dotnet sln FileIt.Module.SimpleFlow.sln add ./FileIt.Module.SimpleFlow.Integrati
 
 
 
-cd ~/repos/cmeraz-fileit/
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/
 rm FileIt.All.sln
 dotnet new sln --name FileIt.All
 dotnet sln FileIt.All.sln add ./FileIt.Common/FileIt.Common/FileIt_Common.csproj

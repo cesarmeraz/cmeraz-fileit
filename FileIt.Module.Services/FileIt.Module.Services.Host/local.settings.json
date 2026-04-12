@@ -2,7 +2,6 @@
     "IsEncrypted": false,
     "Values": {
         "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-        "AZURE_FUNCTIONS_ENVIRONMENT": "LocalDev",
         "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
         "LOG_FILE_PATH": "/home/cesar/repos/cmeraz-fileit/log.txt",
         "SERILOG_SELFLOG_FILE_PATH": "/home/cesar/repos/cmeraz-fileit/serilog.txt",

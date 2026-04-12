@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-. ~/repos/cmeraz-fileit/scripts/base.sh
+. ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/base.sh
 
 echo "PWD: $(pwd)"
 echo "Running $0"
@@ -10,7 +10,7 @@ resource_name="fa-$stem-simple"
 resource_group_name="rg-$stem-simple"
 
 
-cd ~/repos/cmeraz-fileit/FileIt.Module.SimpleFlow
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.SimpleFlow
 dotnet publish --configuration Release
 
 az functionapp deployment source config-zip \

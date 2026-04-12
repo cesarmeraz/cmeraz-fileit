@@ -1,7 +1,7 @@
 # Provisioning Azure resources
-All provisioning scripts are located in the /scripts/provisioning directory. These scripts will create the necessary Azure resources. Before running the provisioning scripts, make sure you have the necessary environment variables set, which are used to specify your Azure subscription, tenant, and other configuration details.
+All provisioning scripts are located in the /scripts/resources directory. These scripts will create the necessary Azure resources. Before running the provisioning scripts, make sure you have the necessary environment variables set, which are used to specify your Azure subscription, tenant, and other configuration details.
 
-Script files incorporate a base script containing common functions and variables, which is located at /scripts/provisioning/provisioning_base.sh. This base script is sourced at the beginning of each provisioning script to ensure that all necessary functions and variables are available.
+Script files incorporate a base script containing common functions and variables, which is located at /scripts/resources/base.sh. This base script is sourced at the beginning of each provisioning script to ensure that all necessary functions and variables are available.
 
 Scripts follow a predictable pattern of logging in as the devops service principal, setting the subscription context, and then creating the necessary resources. The scripts are idempotent, meaning you can run them multiple times without causing errors or creating duplicate resources. The scripts end by logging out.
 
@@ -12,18 +12,22 @@ On Ubuntu, I'm appending my environment variables to the bottom of the .bashrc f
 ```bash
 # Append provisioning environment variables to ~/.bashrc
 cat >> ~/.bashrc <<'EOF'
-# Azure provisioning environment variables
-export AZURE_SUBSCRIPTION_ID="your-subscription-id"
-export AZURE_TENANT_ID="your-tenant-id"
-export AZURE_SQL_SERVER="your sql server name"
-export AZURE_SQL_DATABASE="your sql database name"
+# general azure variables
+export AZURE_SQL_DATABASE=FileIt
+export AZURE_SQL_SERVER=meraz
+export SUBSCRIPTION_ID=<your-subscription-id>
+export TENANT_ID=<your-tenant-id>
 
 # cmeraz-fileit variables
 export CERT_PARENT_PATH="$HOME/certificates"
-export FILEIT_DEVOPS_SERVICE_PRINCIPAL="your-service-principal-name"
-export FILEIT_REGION="your-region"
-export FILEIT_STEM="your unique naming stem"
-export FILEIT_DEVOPS_CLIENT_ID="your-client-id"
+export FILEIT_DEVOPS_CLIENT_ID=<your-devops-spn-client-id>
+export FILEIT_DEVOPS_SERVICE_PRINCIPAL=sp-fileit-devops
+export FILEIT_REGION=<your-region>
+export FILEIT_REPO_HOME="$HOME/repos"
+export FILEIT_STEM=<your-unique-stem>
+export FILEIT_STORAGE=<your-unique-storage-account-name>
+export LOCAL_SQL_ADMIN=FileItDev
+export LOCAL_SQL_PASSWORD='<the password>'
 
 EOF
 
@@ -73,15 +77,15 @@ All function apps in the system share the same instance of Application Insights,
 bash ./scripts/resources/appinsights.sh
 ```
 
-## FileIt_Common
-Create the FileIt_Common function app. It includes the necessary RBAC role creations.
+## FileIt.Module.Services.Host
+Create the FileIt.Module.Services.Host function app. It includes the necessary RBAC role creations.
 
 ```bash
-bash ./scripts/resources/func_common.sh
+bash ./scripts/resources/func_services.sh
 ```
 
-## FileIt_Simple
-Then create the FileIt_Simple function app. It includes the necessary RBAC role creations. Additional workflows will be variations of this example.
+## FileIt.Module.Simple.Host
+Then create the FileIt.Module.Simple.Host function app. It includes the necessary RBAC role creations. Additional workflows will be variations of this example.
 ```bash
 bash ./scripts/resources/func_simple.sh
 ```

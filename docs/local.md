@@ -14,12 +14,13 @@
   - Create a FileIt database using the `scripts/misc/fileit.sql` SQL script.
   - Deploy tables using the dacpac produced by the SQL project
 - Install Azurite using npm or the VS Code extension
+  - Run the bash script `scripts/azurite/create-containers.sh` for the simple flow containers.
 - Install Docker Desktop
   - Edit the `emulator/config.json` with new queues or topics
   - Run the bash script `emulator/up.sh` to start up the emulator
   - Stop the emulator with `emulator/down.sh`
 - Build the solution with `dotnet build`
 - Run the solution
-  - cd to app/
+  - cd to FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow.Host
   - Run `func start`
-  - The app/simple/SimpleTest.cs file contains a TimerTrigger that will deposit files in the source container that will trigger the Simple flow
+  - The SimpleTest.cs file contains a TimerTrigger that will deposit files in the source container that will trigger the Simple flow

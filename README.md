@@ -97,12 +97,12 @@ block
   columns 4
     block:common:2
       columns 1
-      FA1["FileIt_Common"] 
-      MI1<["mi-fileit-common"]>(down) 
+      FA1["FileIt.Module.Services.Host"] 
+      MI1<["mi-fileit-services"]>(down) 
       end
     block:simple:2
       columns 1
-      FA2["FileIt_Simple"] 
+      FA2["FileIt.Module.Simple.Host"] 
       MA2<["mi-fileit-simple"]>(down) 
     end
   block:shared:4

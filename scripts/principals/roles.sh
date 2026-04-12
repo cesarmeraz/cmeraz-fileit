@@ -1,5 +1,5 @@
 #!/bin/bash
-. ~/repos/cmeraz-fileit/scripts/base.sh
+. ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/base.sh
 
 
 echo "PWD: $(pwd)"
@@ -15,15 +15,15 @@ role_data=$(az role definition list --query "[].{name:name, roleName:roleName}" 
 declare -A role_dict
 
 # delete roles.txt if it exists
-rm -f ~/repos/cmeraz-fileit/scripts/principals/roles.txt
+rm -f ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/principals/roles.txt
 
 # create a new roles.txt file with the role data
-echo "$role_data" > ~/repos/cmeraz-fileit/scripts/principals/roles.txt
+echo "$role_data" > ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/principals/roles.txt
 
 # printout the role data from file
 while IFS=$'\t' read -r guid name; do
     echo "Role Name: $name, GUID: $guid"
-done < ~/repos/cmeraz-fileit/scripts/principals/roles.txt
+done < ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/principals/roles.txt
 
 
 logout_azure

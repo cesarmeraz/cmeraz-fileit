@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-. ~/repos/cmeraz-fileit/scripts/base.sh
+. ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/base.sh
 
 echo "PWD: $(pwd)"
 echo "Running $0"
@@ -15,7 +15,7 @@ login_azure
 az deployment sub create \
     --name $deployment_name \
     --location $region \
-    --template-file scripts/templates/storage_sub.bicep \
+    --template-file ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/templates/storage_sub.bicep \
     --parameters \
         name=$storage_name \
         group_name=$storage_group_name \
