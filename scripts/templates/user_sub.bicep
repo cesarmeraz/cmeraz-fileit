@@ -1,16 +1,16 @@
 
-param commonGroupName string = 'rg-fileit-common'
+param servicesGroupName string = 'rg-fileit-services'
 
 param simpleGroupName string = 'rg-fileit-simple'
 
 
 targetScope = 'subscription'
 
-module userCommon 'user_module.bicep' = {
-  name: 'miFileitCommonModule'
-  scope: resourceGroup(commonGroupName)
+module userServices 'user_module.bicep' = {
+  name: 'miFileitServicesModule'
+  scope: resourceGroup(servicesGroupName)
   params: {
-    identityName: 'mi-fileit-common'
+    identityName: 'mi-fileit-services'
   }
 }
 
@@ -22,9 +22,9 @@ module userSimple 'user_module.bicep' = {
   }
 }
 
-output commonClientId string = userCommon.outputs.clientId
-output commonId string = userCommon.outputs.identityId
-output commonPrincipalId string = userCommon.outputs.principalId
+output servicesClientId string = userServices.outputs.clientId
+output servicesId string = userServices.outputs.identityId
+output servicesPrincipalId string = userServices.outputs.principalId
 
 output simpleClientId string = userSimple.outputs.clientId
 output simpleId string = userSimple.outputs.identityId

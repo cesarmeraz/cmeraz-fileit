@@ -5,7 +5,7 @@ using FileIt.Domain.Interfaces;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.Common.App.ApiAdd;
+namespace FileIt.Module.Services.App.ApiAdd;
 
 public interface IApiAddCommand
 {
@@ -34,7 +34,7 @@ public class ApiAddCommand : IApiAddCommand
 
     public async Task ApiAdd(ApiRequest request)
     {
-        _logger.LogInformation(CommonEvents.LogApiAddRequest.Id, "Simulating API action");
+        _logger.LogInformation(ServicesEvents.LogApiAddRequest.Id, "Simulating API action");
         var apiLogItem = await _apiLogRepo.AddAsync(
             request.CorrelationId ?? string.Empty,
             "Request body",
@@ -51,7 +51,7 @@ public class ApiAddCommand : IApiAddCommand
         };
 
         _logger.LogDebug(
-            CommonEvents.ApiAddResponsePublished.Id,
+            ServicesEvents.ApiAddResponsePublished.Id,
             "Response published:\n{@ApiAddResponse}",
             response
         );

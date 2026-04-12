@@ -1,20 +1,20 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
-using FileIt.Common.App;
-using FileIt.Common.App.ApiAdd;
+using FileIt.Module.Services.App;
+using FileIt.Module.Services.App.ApiAdd;
 using FileIt.Domain.Entities.Api;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.Common;
+namespace FileIt.Module.Services.Host;
 
 public class ApiFunc
 {
     private readonly IApiAddCommand _command;
-    private readonly CommonConfig _config;
+    private readonly ServicesConfig _config;
     private readonly ILogger<ApiFunc> _logger;
 
-    public ApiFunc(IApiAddCommand command, ILogger<ApiFunc> logger, CommonConfig config)
+    public ApiFunc(IApiAddCommand command, ILogger<ApiFunc> logger, ServicesConfig config)
     {
         _command = command;
         _logger = logger;
@@ -36,14 +36,14 @@ public class ApiFunc
             )
         )
         {
-            _logger.LogInformation(CommonEvents.AddEvent.Id, "ApiAdd started");
+            _logger.LogInformation(ServicesEvents.AddEvent.Id, "ApiAdd started");
             ApiAddPayload? payload = null;
             string? bodystr = message.Body?.ToString();
             if (!string.IsNullOrWhiteSpace(bodystr))
             {
                 payload = JsonSerializer.Deserialize<ApiAddPayload>(bodystr);
                 _logger.LogDebug(
-                    CommonEvents.GetPayload.Id,
+                    ServicesEvents.GetPayload.Id,
                     "ApiAdd payload:\n{@ApiPayload}",
                     payload
                 );
@@ -56,7 +56,7 @@ public class ApiFunc
                 ReplyTo = _config.ApiAddTopicName,
                 Subject = message.Subject,
             };
-            _logger.LogDebug(CommonEvents.ExecApiAdd.Id, "ApiAdd request:\n{@ApiRequest}", request);
+            _logger.LogDebug(ServicesEvents.ExecApiAdd.Id, "ApiAdd request:\n{@ApiRequest}", request);
             await _command.ApiAdd(request);
         }
     }

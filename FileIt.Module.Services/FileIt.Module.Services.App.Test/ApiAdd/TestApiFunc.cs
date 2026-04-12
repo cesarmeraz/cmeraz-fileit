@@ -1,14 +1,14 @@
 using System.Text;
 using Azure.Messaging.ServiceBus;
-using FileIt.Common.App;
-using FileIt.Common.App.ApiAdd;
+using FileIt.Module.Services.App;
+using FileIt.Module.Services.App.ApiAdd;
 using FileIt.Domain.Entities.Api;
 using FileIt.Domain.Interfaces;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace FileIt.Common.Test.ApiAdd;
+namespace FileIt.Module.Services.App.Test.ApiAdd;
 
 [TestClass]
 public class TestApiFunc
@@ -41,7 +41,7 @@ public class TestApiFunc
         _apiLogRepoMock = new Mock<IApiLogRepo>();
         _broadcasterMock = new Mock<IBroadcastResponses>();
 
-        var config = new CommonConfig()
+        var config = new ServicesConfig()
         {
             ApiAddQueueName = "api-add",
             ApiAddTopicName = "api-add-topic",

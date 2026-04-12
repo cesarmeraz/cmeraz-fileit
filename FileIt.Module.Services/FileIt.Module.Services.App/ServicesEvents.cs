@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.Common.App;
+namespace FileIt.Module.Services.App;
 
-public class CommonEvents
+public class ServicesEvents
 {
     public static EventId AddEvent = new EventId(1000, nameof(AddEvent));
 

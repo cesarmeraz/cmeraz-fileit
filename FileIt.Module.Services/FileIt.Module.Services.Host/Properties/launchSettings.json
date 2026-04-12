@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "FileIt_Common": {
+    "FileIt.Module.Services.Host": {
       "commandName": "Project",
       "commandLineArgs": "--port 7227",
       "launchBrowser": false

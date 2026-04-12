@@ -36,7 +36,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\FileIt.Infrastructure\FileIt.Infrastructure\FileIt.Infrastructure.csproj" />
-    <ProjectReference Include="..\FileIt.Common.App\FileIt.Common.App.csproj" />
+    <ProjectReference Include="..\FileIt.Module.Services.App\FileIt.Module.Services.App.csproj" />
   </ItemGroup>
 
   <Target Name="Package" AfterTargets="Publish">

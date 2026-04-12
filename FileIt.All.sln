@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.Common", "FileIt.Common", "{CAE9A5D1-F592-483D-BE20-653B39967D5D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.Module.Services", "FileIt.Module.Services", "{CAE9A5D1-F592-483D-BE20-653B39967D5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt_Common", "FileIt.Common\FileIt.Common\FileIt_Common.csproj", "{B03D1478-686F-4DF2-BACA-CE8F8D32B467}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.Services.Host", "FileIt.Module.Services\FileIt.Module.Services.Host\FileIt.Module.Services.Host.csproj", "{B03D1478-686F-4DF2-BACA-CE8F8D32B467}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Common.App", "FileIt.Common\FileIt.Common.App\FileIt.Common.App.csproj", "{EBA45633-B46C-47BB-AA98-6A525329F982}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.Services.App", "FileIt.Module.Services\FileIt.Module.Services.App\FileIt.Module.Services.App.csproj", "{EBA45633-B46C-47BB-AA98-6A525329F982}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Common.Test", "FileIt.Common\FileIt.Common.Test\FileIt.Common.Test.csproj", "{6C8E9118-F7AC-4E77-A934-9F675FC341F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.Services.App.Test", "FileIt.Module.Services\FileIt.Module.Services.App.Test\FileIt.Module.Services.App.Test.csproj", "{6C8E9118-F7AC-4E77-A934-9F675FC341F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Common.Integration", "FileIt.Common\FileIt.Common.Integration\FileIt.Common.Integration.csproj", "{A32CD7A6-033B-4A3B-96B3-9ACA18AA698C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.Services.Integration", "FileIt.Module.Services\FileIt.Module.Services.Integration\FileIt.Module.Services.Integration.csproj", "{A32CD7A6-033B-4A3B-96B3-9ACA18AA698C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Domain", "FileIt.Domain\FileIt.Domain\FileIt.Domain.csproj", "{87147206-DE4C-4F2F-AF65-2A126A9B5A4E}"
 EndProject
@@ -22,9 +22,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Infrastructure.Test", "FileIt.Infrastructure\FileIt.Infrastructure.Test\FileIt.Infrastructure.Test.csproj", "{6AEFB8B8-2161-4834-9268-C054BC666429}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Infrastructure.Integration", "FileIt.Infrastructure\FileIt.Infrastructure.Integration\FileIt.Infrastructure.Integration.csproj", "{C9827A90-4980-49C7-8EB9-6019A452D9F5}"
-EndProject
-EndProject
-EndProject
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Integration", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.Integration\FileIt.Module.SimpleFlow.Integration.csproj", "{46F62583-1F5C-4843-931D-731DCCFDE939}"
 EndProject
@@ -235,8 +232,7 @@ Global
 		{EBA45633-B46C-47BB-AA98-6A525329F982} = {CAE9A5D1-F592-483D-BE20-653B39967D5D}
 		{6C8E9118-F7AC-4E77-A934-9F675FC341F2} = {CAE9A5D1-F592-483D-BE20-653B39967D5D}
 		{A32CD7A6-033B-4A3B-96B3-9ACA18AA698C} = {CAE9A5D1-F592-483D-BE20-653B39967D5D}
-		{66C5E312-AE8B-4277-9BC0-B55B864537C1} = {5CD96305-E6A6-47E5-B48F-B4B62025B78B}
-		{1BE5AF79-D9FD-4901-AFBB-04137899A7E7} = {5CD96305-E6A6-47E5-B48F-B4B62025B78B}
+
 		{FBEEDAC3-D991-4213-B810-A6CF216E58FD} = {0744626F-A673-A558-1C61-6371D7A63BF8}
 	EndGlobalSection
 EndGlobal

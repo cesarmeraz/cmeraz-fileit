@@ -39,7 +39,6 @@ public class TestBusTool
     public async Task SendMessageAsync_ShouldSendMessage_WhenCalled()
     {
         // Arrange
-        var queueName = "testQueue";
         var messageId = "test-message-id";
 
         var message = new ServiceBusMessage("Test message");

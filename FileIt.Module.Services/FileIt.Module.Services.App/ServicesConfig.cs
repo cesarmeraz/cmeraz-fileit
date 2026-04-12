@@ -1,9 +1,9 @@
 using FileIt.Domain.Entities;
 using FileIt.Domain.Interfaces;
 
-namespace FileIt.Common.App;
+namespace FileIt.Module.Services.App;
 
-public class CommonConfig
+public class ServicesConfig
 {
     public string? ApiAddTopicName { get; set; }
     public string? ApiAddQueueName { get; set; }

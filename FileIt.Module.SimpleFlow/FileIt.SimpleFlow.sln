@@ -1,9 +1,8 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Host", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.Host.csproj", "{2EE500AC-9DC5-41FB-A8E2-1B416B5C7C76}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Host", "FileIt.Module.SimpleFlow.Host\FileIt.Module.SimpleFlow.Host.csproj", "{2EE500AC-9DC5-41FB-A8E2-1B416B5C7C76}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.App", "FileIt.Module.SimpleFlow.App\FileIt.Module.SimpleFlow.App.csproj", "{F32001DB-7123-406B-8344-06B6B66F5C43}"
 EndProject

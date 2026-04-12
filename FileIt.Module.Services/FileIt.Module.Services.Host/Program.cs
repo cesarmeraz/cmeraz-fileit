@@ -1,5 +1,5 @@
-using FileIt.Common.App;
-using FileIt.Common.App.ApiAdd;
+using FileIt.Module.Services.App;
+using FileIt.Module.Services.App.ApiAdd;
 using FileIt.Domain.Interfaces;
 using FileIt.Infrastructure.Extensions;
 using FileIt.Infrastructure.Logging;
@@ -24,7 +24,7 @@ builder.Services.AddApplicationInsightsTelemetryWorkerService();
 #endif
 
 var sectionName = builder.Configuration.GetValue<string>("FeatureSection") ?? "Feature";
-CommonConfig? config = builder.Configuration.GetSection(sectionName).Get<CommonConfig>();
+ServicesConfig? config = builder.Configuration.GetSection(sectionName).Get<ServicesConfig>();
 if (config == null)
 {
     throw new ApplicationException("Appsettings.json is missing Feature config.");

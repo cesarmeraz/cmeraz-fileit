@@ -2,9 +2,9 @@
 USE master;
 GO
 
-DROP USER IF EXISTS [mi-fileit-common];
+DROP USER IF EXISTS [mi-fileit-services];
 GO
-CREATE USER [mi-fileit-common] FROM EXTERNAL PROVIDER;
+CREATE USER [mi-fileit-services] FROM EXTERNAL PROVIDER;
 GO
 
 DROP USER IF EXISTS [mi-fileit-simple];

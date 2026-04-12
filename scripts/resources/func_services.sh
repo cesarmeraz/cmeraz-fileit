@@ -6,7 +6,7 @@ echo "Running $0"
 az version
 login_azure
 
-create_func "common"
+create_func "services"
 
 logout_azure
 echo "Done"

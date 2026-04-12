@@ -1,18 +1,29 @@
 param storageAccountName string
 param functionAppName string
 param functionRGName string // Needed to build the full ID
-@description('Principal ID of the identity to assign RBAC to')
-param principalId string
+// @description('Principal ID of the identity to assign RBAC to')
+// param principalId string
 param functionName string
 param containerName string
 param subscriptionName string
 param subscriptionId string
+
+
+@description('Name of the user-assigned managed identity to assign RBAC to')
+param identityName string
 
 @description('The event grid system topic name')
 param eventGridTopicName string
 
 // EventGridContributor
 var role='1e241071-0855-49ea-94dc-649edcd759de'
+
+// Reference the existing User-Assigned Managed Identity
+resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  name: identityName
+  scope: resourceGroup(functionRGName)
+}
+
 
 // Reference existing Storage Account in the CURRENT scope
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
@@ -40,7 +51,7 @@ resource eventGridRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-0
   name: guid(systemTopic.id, functionApp.name, role)
   scope: systemTopic
   properties: {
-    principalId: principalId
+    principalId: userAssignedIdentity.properties.principalId
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role)
     principalType: 'ServicePrincipal'
   }
