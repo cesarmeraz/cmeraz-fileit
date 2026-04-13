@@ -83,13 +83,14 @@ public static class CommonLogExtensions
         {
             loggerConfig.WriteTo.File(featureConfig.LogFilePath);
         }
-        if (featureConfig.Environment != "LocalDev")
-        {
-            loggerConfig.WriteTo.ApplicationInsights(
-                featureConfig.AppInsightsConnectionString,
-                TelemetryConverter.Traces
-            );
-        }
+
+#if RELEASE
+        loggerConfig.WriteTo.ApplicationInsights(
+            featureConfig.AppInsightsConnectionString,
+            TelemetryConverter.Traces
+        );
+#endif
+
         Log.Logger = loggerConfig.CreateLogger();
 
         // Register your custom provider

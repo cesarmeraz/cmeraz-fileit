@@ -3,11 +3,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-        "label": "start",
-        "dependsOn": ["clean", "test", "build", "func start"]
-        },
-        {
-            "label": "func start",
+            "label": "start services",
             "type": "shell",
             "command": "func start",
             "isBackground": true,
@@ -22,101 +18,27 @@
                 "panel": "new"
             },
             "options": {
-                "cwd": "${workspaceFolder}/api"
+                "cwd": "${workspaceFolder}/FileIt.Module.Services/FileIt.Module.Services.Host"
             }
         },
         {
-            "label": "Build for Production",
+            "label": "start simple",
             "type": "shell",
-            "command": "dotnet",
-            "args": [
-                "build",
-                "${workspaceFolder}/tool/Tool.csproj",
-                "--configuration",
-                "Release"
-            ],
-            "problemMatcher": "$msCompile",
-            "group": "none",
-            "presentation": {
-                "reveal": "always",
-                "panel": "shared"
-            }
-        },
-        {
-            "label": "clean",
-            "command": "dotnet",
-            "args": [
-                "clean"
-            ],
-            "type": "process",
-            "problemMatcher": "$msCompile",
-            "options": {
-                "cwd": "${workspaceFolder}/api"
-            }
-        },
-        {
-            "label": "test",
-            "type": "shell",
-            "command": "dotnet",
-            "args": [
-                "test",
-                "${workspaceFolder}/test/Test.csproj",
-                "--configuration",
-                "Debug"
-            ],
-            "dependsOn": "clean",
-            "problemMatcher": "$msCompile",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": "none",
-            "presentation": {
-                "reveal": "always",
-                "panel": "shared"
-            }
-        },
-        {
-            "label": "build",
-            "command": "dotnet",
-            "args": [
-                "build",
-                "--configuration",
-                "Debug"
-            ],
-            "type": "process",
-            "dependsOn": "test",
-            "problemMatcher": "$msCompile",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            }
-        },
-        {
-            "label": "run",
-            "type": "func",
-            "dependsOn": "build",
-            "options": {
-                "cwd": "${workspaceFolder}/api"
-            },
-            "command": "start",
+            "command": "func start",
             "isBackground": true,
-            "problemMatcher": "$func-dotnet-watch",
-        },
-        {
-            "label": "publish (functions)",
-            "command": "dotnet",
-            "args": [
-                "publish",
-                "--configuration",
-                "Release",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "type": "process",
-            "dependsOn": "clean release (functions)",
-            "problemMatcher": "$msCompile",
+            "problemMatcher": "$func-watch",
+            "dependsOn": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
             "options": {
-                "cwd": "${workspaceFolder}/api"
+                "cwd": "${workspaceFolder}/FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow.Host"
             }
-        }
+        },
     ]
 }

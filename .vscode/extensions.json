@@ -3,7 +3,6 @@
     "ms-azuretools.vscode-azurefunctions",
     "ms-dotnettools.csharp",
     "rogalmic.bash-debug",
-    "csharpier.csharpier-vscode",
-    "github.codespaces"
+    "csharpier.csharpier-vscode"
   ]
 }
