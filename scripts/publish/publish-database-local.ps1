@@ -4,7 +4,7 @@ Write-Host "PWD: $(Get-Location)"
 Write-Host "Running $($MyInvocation.MyCommand.Name)"
 az version
 
-Set-Location "$env:FILEIT_REPO_HOME/cmeraz-fileit/database/fileit/"
+Set-Location "$env:FILEIT_REPO_HOME/cmeraz-fileit/FileIt.Database/"
 dotnet build
 
 # Configuration Variables
