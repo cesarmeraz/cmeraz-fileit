@@ -24,8 +24,8 @@ serilog.txt
 *.userosscache
 *.sln.docstates
 *.env
-# except the env file for devcontainer
-!.devcontainer/.env
+# except the env file for the emulator
+!emulator/.env
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
