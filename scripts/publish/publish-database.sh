@@ -5,7 +5,7 @@ echo "PWD: $(pwd)"
 echo "Running $0"
 az version
 
-cd ${FILEIT_REPO_HOME}/cmeraz-fileit/database/fileit/
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Database/
 dotnet build
 
 # Configuration Variables
