@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-. ~/repos/cmeraz-fileit/scripts/base.sh
+. ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/base.sh
 
 # the service principal retrieved here is referenced in the key vault
 # access policy, but it is preferred to use RBAC, so this should change
@@ -14,7 +14,7 @@ local_dev_sp_id=$(az ad sp list --display-name $devops_spn --query "[0].id" -o t
 
 az deployment sub create \
     --location $region \
-    --template-file templates/keyvault_sub.bicep \
+    --template-file ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/templates/keyvault_sub.bicep \
     --parameters \
         stem=$stem \
         location=$region \

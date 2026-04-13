@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-. ~/repos/cmeraz-fileit/scripts/base.sh
+. ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/base.sh
 
 echo "PWD: $(pwd)"
 echo "Running $0"
@@ -29,6 +29,16 @@ fi
 if [[ $(az group exists --name $storage_group_name) == "true" ]]; then
     echo "Deleting $storage_group_name"
     az group delete --name $storage_group_name --yes
+fi
+
+if [[ $(az group exists --name rg-$stem-services) == "true" ]]; then
+    echo "Deleting rg-$stem-services"
+    az group delete --name rg-$stem-services --yes
+fi
+
+if [[ $(az group exists --name rg-$stem-simple) == "true" ]]; then
+    echo "Deleting rg-$stem-simple"
+    az group delete --name rg-$stem-simple --yes
 fi
 
 logout_azure

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-. ~/repos/cmeraz-fileit/scripts/base.sh
+. ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/base.sh
 
 echo "PWD: $(pwd)"
 echo "Running $0"
@@ -12,7 +12,7 @@ echo "Deployment name: $deployment_name"
 
 az deployment sub create \
     --location $region \
-    --template-file scripts/templates/bus_sub.bicep \
+    --template-file ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/templates/bus_sub.bicep \
     --name $deployment_name \
     --parameters \
         resourceName=$bus_name \

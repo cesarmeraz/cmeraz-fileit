@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-. ~/repos/cmeraz-fileit/scripts/base.sh
+. ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/base.sh
 
 echo "PWD: $(pwd)"
 echo "Running $0"
@@ -18,7 +18,7 @@ p_queueName="api-add"
     az deployment group create \
         --resource-group $bus_group_name \
         --name $deployment_name \
-        --template-file scripts/templates/bus_queue.bicep \
+        --template-file ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/templates/bus_queue.bicep \
         --parameters \
             namespace=$bus_name \
             name=$p_queueName

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-. ~/repos/cmeraz-fileit/scripts/base.sh
+. ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/base.sh
 
 echo "PWD: $(pwd)"
 echo "Running $0"
@@ -23,7 +23,7 @@ echo "Password stored securely."
 az deployment sub create \
     --location $region \
     --name $deployment_name \
-    --template-file scripts/templates/database_sub.bicep \
+    --template-file ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/templates/database_sub.bicep \
     --parameters \
         resourceName=$database_name \
         resourceGroupName=$database_group_name \
