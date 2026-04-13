@@ -5,18 +5,48 @@
 # ------------------------------------------------------
 # Your subscription id in GUID form
 sub_id="${SUBSCRIPTION_ID}"
+#if subscription id not set in env var, fail
+if [ -z "$sub_id" ]; then
+    echo "Error: SUBSCRIPTION_ID environment variable not set"
+    exit 1
+fi
+
 
 # Your tenant id in GUID form
 tenant_id="${TENANT_ID}"
+#if tenant id not set in env var, fail
+if [ -z "$tenant_id" ]; then
+    echo "Error: TENANT_ID environment variable not set"
+    exit 1
+fi
+
 
 # The server name, not the fully qualified domain name
 sql_server_name="${AZURE_SQL_SERVER}"
+#if sql server name not set in env var, fail
+if [ -z "$sql_server_name" ]; then
+    echo "Error: AZURE_SQL_SERVER environment variable not set"
+    exit 1
+fi
+
+
 
 # The name of the database on the server, FileIt is mine
 database_name="${AZURE_SQL_DATABASE}"
+#if database name not set in env var, fail
+if [ -z "$database_name" ]; then
+    echo "Error: AZURE_SQL_DATABASE environment variable not set"
+    exit 1
+fi
 
 # The root of the repo on the local dev box / build agent
-FILEIT_REPO_HOME="${FILEIT_REPO_HOME}"
+repo_home="${FILEIT_REPO_HOME}"
+#if repo home not set in env var, fail
+if [ -z "$repo_home" ]; then
+    echo "Error: FILEIT_REPO_HOME environment variable not set"
+    exit 1
+fi
+
 # ------------------------------------------------------
 
 
@@ -30,15 +60,33 @@ FILEIT_REPO_HOME="${FILEIT_REPO_HOME}"
 # certificates
 cert_parent_path="${CERT_PARENT_PATH}"
 
+# if cert parent path not set in env var, fail
+if [ -z "$cert_parent_path" ]; then
+    echo "Error: CERT_PARENT_PATH environment variable not set"
+    exit 1
+fi
+
+
 # The devops service principal id, for authentication
 # In Entra ID, this is the Application (client) ID of the SPN
 # found in App registrations
 devops_client_id="${FILEIT_DEVOPS_CLIENT_ID}"
+# if devops client id not set in env var, fail
+if [ -z "$devops_client_id" ]; then
+    echo "Error: FILEIT_DEVOPS_CLIENT_ID environment variable not set"
+    exit 1
+fi
+
 
 # The name of a devops service principal dedicated to 
 # running deployment scripts from this project or from
 # pipelines like Jenkins
 devops_spn=$FILEIT_DEVOPS_SERVICE_PRINCIPAL
+# if devops service principal name not set in env var, fail
+if [ -z "$devops_spn" ]; then
+    echo "Error: FILEIT_DEVOPS_SERVICE_PRINCIPAL environment variable not set"
+    exit 1
+fi
 
 # The location to the devops certificate, for authentication
 devops_client_key_path="$cert_parent_path/$devops_spn/$devops_spn.pem"
@@ -46,14 +94,30 @@ devops_client_key_path="$cert_parent_path/$devops_spn/$devops_spn.pem"
 # A single region for all resource groups in this project
 # resources inherit their location value from their resource groups
 region="${FILEIT_REGION}"
+# if region not set in env var, fail
+if [ -z "$region" ]; then
+    echo "Error: FILEIT_REGION environment variable not set"
+    exit 1
+fi
+
 
 # The project naming convention relies on a unique stem value, derived 
 # from my tenant custom domain, so that resources are also uniquely named.
 # Since I've create this with my own unique stem, you'll need to vary yours.
 stem="${FILEIT_STEM}"
+# if stem not set in env var, fail
+if [ -z "$stem" ]; then
+    echo "Error: FILEIT_STEM environment variable not set"
+    exit 1
+fi
 
 # the storage account name, which must be globally unique across Azure
 storage_name="${FILEIT_STORAGE}"
+# if storage account name not set in env var, fail
+if [ -z "$storage_name" ]; then
+    echo "Error: FILEIT_STORAGE environment variable not set"
+    exit 1
+fi
 
 # ------------------------------------------------------
 # Resources used by all function apps
@@ -172,7 +236,7 @@ create_queue(){
     az deployment group create \
         --resource-group $bus_group_name \
         --name $deployment_name \
-        --template-file ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/templates/bus_queue.bicep \
+        --template-file $repo_home/cmeraz-fileit/scripts/templates/bus_queue.bicep \
         --parameters \
             namespace=$bus_name \
             name=$p_queueName
@@ -191,7 +255,7 @@ create_topic(){
     az deployment group create \
         --resource-group $bus_group_name \
         --name $deployment_name \
-        --template-file ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/templates/bus_topic.bicep \
+        --template-file $repo_home/cmeraz-fileit/scripts/templates/bus_topic.bicep \
         --parameters \
             namespace=$bus_name \
             name=$p_topicName
@@ -211,7 +275,7 @@ create_topic_subscription(){
     az deployment group create \
         --resource-group $bus_group_name \
         --name $deployment_name \
-        --template-file ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/templates/bus_subscription.bicep \
+        --template-file $repo_home/cmeraz-fileit/scripts/templates/bus_subscription.bicep \
         --parameters \
             namespace=$bus_name \
             topicName=$p_topicName \
@@ -260,7 +324,7 @@ create_eventgrid_subscription(){
     az deployment sub create \
         --name $deployment_name \
         --location $region \
-        --template-file ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/templates/eventgrid_sub.bicep "${params[@]}"
+        --template-file $repo_home/cmeraz-fileit/scripts/templates/eventgrid_sub.bicep "${params[@]}"
 }
 
 
@@ -295,7 +359,7 @@ create_func(){
     az deployment sub create \
         --name $deployment_name \
         --location $region \
-        --template-file ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/templates/func_sub.bicep \
+        --template-file $repo_home/cmeraz-fileit/scripts/templates/func_sub.bicep \
         --parameters \
             resourceName=$resource_name \
             resourceGroupName=$resource_group_name \

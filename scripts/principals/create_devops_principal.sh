@@ -1,5 +1,6 @@
 #!/bin/bash
-. ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/base.sh
+. ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/spn_base.sh
+
 
 # This script creates a service principal with 
 # certificate credentials as the deployment
@@ -9,17 +10,6 @@
 
 # Bash script
 echo "Running $0 script"
-
-
-if [ -z "$devops_spn" ]; then
-    echo "Error: devops_spn is not set"
-    exit 1
-fi
-
-if [ -z "$sub_id" ]; then
-    echo "Error: sub_id is not set"
-    exit 1
-fi
 
 az login
 scope="/subscriptions/$sub_id" 

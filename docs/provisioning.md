@@ -7,32 +7,23 @@ Scripts follow a predictable pattern of logging in as the devops service princip
 
 ## Environment Variables
 
-On Ubuntu, I'm appending my environment variables to the bottom of the .bashrc file in my home directory, which gets loaded when I log in or when I execute the source ~/.bashrc command.
+On Ubuntu, I'm appending my environment variables to the bottom of the .bashrc file in my home directory, which gets loaded when I log in or when I execute the source /etc/environment command.
 
 ```bash
-# Append provisioning environment variables to ~/.bashrc
-cat >> ~/.bashrc <<'EOF'
-# general azure variables
-export AZURE_SQL_DATABASE=FileIt
-export AZURE_SQL_SERVER=meraz
-export SUBSCRIPTION_ID=<your-subscription-id>
-export TENANT_ID=<your-tenant-id>
+AZURE_SQL_DATABASE=FileIt
+AZURE_SQL_SERVER=meraz
+SUBSCRIPTION_ID=<your-subscription-id>
+TENANT_ID=<your-tenant-id>
+CERT_PARENT_PATH="/home/cesar/certificates"
+FILEIT_DEVOPS_CLIENT_ID=<your-devops-spn-client-id>
+FILEIT_DEVOPS_SERVICE_PRINCIPAL=sp-fileit-devops
+FILEIT_REGION=<your-region>
+FILEIT_REPO_HOME="/home/cesar/repos"
+FILEIT_STEM=<your-unique-stem>
+FILEIT_STORAGE=<your-unique-storage-account-name>
+LOCAL_SQL_ADMIN=FileItDev
+LOCAL_SQL_PASSWORD='<the password>'
 
-# cmeraz-fileit variables
-export CERT_PARENT_PATH="$HOME/certificates"
-export FILEIT_DEVOPS_CLIENT_ID=<your-devops-spn-client-id>
-export FILEIT_DEVOPS_SERVICE_PRINCIPAL=sp-fileit-devops
-export FILEIT_REGION=<your-region>
-export FILEIT_REPO_HOME="$HOME/repos"
-export FILEIT_STEM=<your-unique-stem>
-export FILEIT_STORAGE=<your-unique-storage-account-name>
-export LOCAL_SQL_ADMIN=FileItDev
-export LOCAL_SQL_PASSWORD='<the password>'
-
-EOF
-
-# Reload ~/.bashrc
-source ~/.bashrc
 ```
 
 Of course there are ways to script this in Windows. The important thing is to have these environment variables set before you run the provisioning scripts, which will use them to create the necessary Azure resources.
