@@ -23,13 +23,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Infrastructure.Test"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Infrastructure.Integration", "FileIt.Infrastructure\FileIt.Infrastructure.Integration\FileIt.Infrastructure.Integration.csproj", "{C9827A90-4980-49C7-8EB9-6019A452D9F5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.Module.SimpleFlow", "FileIt.Module.SimpleFlow", "{0744626F-A673-A558-1C61-6371D7A63BF8}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Integration", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.Integration\FileIt.Module.SimpleFlow.Integration.csproj", "{46F62583-1F5C-4843-931D-731DCCFDE939}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.App", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.App\FileIt.Module.SimpleFlow.App.csproj", "{ABC8D816-1ACF-4E54-9C90-6D5F1B56D0ED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Test", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.Test\FileIt.Module.SimpleFlow.Test.csproj", "{952FD470-AF51-4257-8A84-069046C138AF}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileIt.Module.SimpleFlow", "FileIt.Module.SimpleFlow", "{0744626F-A673-A558-1C61-6371D7A63BF8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.SimpleFlow.Host", "FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.Host\FileIt.Module.SimpleFlow.Host.csproj", "{FBEEDAC3-D991-4213-B810-A6CF216E58FD}"
 EndProject
@@ -232,7 +232,9 @@ Global
 		{EBA45633-B46C-47BB-AA98-6A525329F982} = {CAE9A5D1-F592-483D-BE20-653B39967D5D}
 		{6C8E9118-F7AC-4E77-A934-9F675FC341F2} = {CAE9A5D1-F592-483D-BE20-653B39967D5D}
 		{A32CD7A6-033B-4A3B-96B3-9ACA18AA698C} = {CAE9A5D1-F592-483D-BE20-653B39967D5D}
-
+		{46F62583-1F5C-4843-931D-731DCCFDE939} = {0744626F-A673-A558-1C61-6371D7A63BF8}
+		{ABC8D816-1ACF-4E54-9C90-6D5F1B56D0ED} = {0744626F-A673-A558-1C61-6371D7A63BF8}
+		{952FD470-AF51-4257-8A84-069046C138AF} = {0744626F-A673-A558-1C61-6371D7A63BF8}
 		{FBEEDAC3-D991-4213-B810-A6CF216E58FD} = {0744626F-A673-A558-1C61-6371D7A63BF8}
 	EndGlobalSection
 EndGlobal
