@@ -1,0 +1,44 @@
+// .vscode/tasks.json
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "start services",
+            "type": "shell",
+            "command": "func start",
+            "isBackground": true,
+            "problemMatcher": "$func-watch",
+            "dependsOn": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/FileIt.Module.Services/FileIt.Module.Services.Host"
+            }
+        },
+        {
+            "label": "start simple",
+            "type": "shell",
+            "command": "func start",
+            "isBackground": true,
+            "problemMatcher": "$func-watch",
+            "dependsOn": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow.Host"
+            }
+        },
+    ]
+}

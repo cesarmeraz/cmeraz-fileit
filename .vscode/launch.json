@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Start Services",
+            "type": "coreclr",
+            "request": "attach",
+            "preLaunchTask": "start services",
+            "processId": "${command:azureFunctions.pickProcess}"
+        },
+        {
+            "name": "Start Simple Flow",
+            "type": "coreclr",
+            "request": "attach",
+            "preLaunchTask": "start simple",
+            "processId": "${command:azureFunctions.pickProcess}"
+        },
+
+        {
+            "type": "bashdb",
+            "request": "launch",
+            "name": "Bash",
+            "cwd": "${workspaceFolder}",
+            "program": "${file}",
+            "terminalKind": "integrated"
+        }
+    ]
+}
+
