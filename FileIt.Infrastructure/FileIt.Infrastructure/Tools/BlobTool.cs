@@ -1,5 +1,6 @@
 using System.Net.Sockets;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using FileIt.Domain.Interfaces;
 using FileIt.Infrastructure;
 using Microsoft.Extensions.Logging;
@@ -39,7 +40,7 @@ public class BlobTool : IHandleFiles
                 await sourceContainerClient.CreateIfNotExistsAsync();
 
             var destinationContainerClient = _blobServiceClient.GetBlobContainerClient(destination);
-            var destExists = await sourceContainerClient.ExistsAsync();
+            var destExists = await destinationContainerClient.ExistsAsync();
             if (!destExists)
                 await destinationContainerClient.CreateIfNotExistsAsync();
 
@@ -58,7 +59,12 @@ public class BlobTool : IHandleFiles
                 return;
             }
 
-            await destinationBlobClient.StartCopyFromUriAsync(sourceBlobClient.Uri);
+            await destinationBlobClient.StartCopyFromUriAsync(
+                sourceBlobClient.Uri,
+                new BlobCopyFromUriOptions { AccessTier = AccessTier.Hot },
+                CancellationToken.None
+            );
+
             await sourceBlobClient.DeleteAsync();
 
             _logger.LogInformation(
