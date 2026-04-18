@@ -18,7 +18,7 @@ Some project conventions include a company name, like CompanyName.ApplicationNam
 |--------|--------|--------|--------|
 | Function App Project | FileIt.Module.Name.Host | FileIt.Common | FileIt.Module.Services.Host |
 | Application Logic Project | FileIt.Module.Name.App | FileIt.Common.App | FileIt.Module.Services.App |
-| Application Logic Test Project | FileIt.Module.Name.App.Test | FileIt.Common.Test | FileIt.Module.Services.App.Test |
+| Application Logic Test Project | FileIt.Module.Name.App.Test | FileIt.Common.Test | FileIt.Module.Services.Test |
 | Integration Test Project | FileIt.Module.Name.Integration | FileIt.Common.Integration | FileIt.Module.Services.Integration |
 | Function App Project | FileIt.Module.Name.Host | FileIt.Module.SimpleFlow | FileIt.Module.SimpleFlow.Host |
 | Application Logic Project | FileIt.Module.Name.App | FileIt.Module.SimpleFlow.App | FileIt.Module.SimpleFlow.App |
