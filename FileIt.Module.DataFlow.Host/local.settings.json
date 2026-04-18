@@ -8,7 +8,7 @@
     "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__isEnabled": "false",
     "LOG_FILE_PATH": "C:\\Users\\Proximus\\source\\repos\\cmeraz-fileit-develop\\log.txt",
     "SERILOG_SELFLOG_FILE_PATH": "C:\\Users\\Proximus\\source\\repos\\cmeraz-fileit-develop\\serilog.txt",
-    "FileItDbConnection": "Data Source=localhost;Initial Catalog=FileIt;User ID=FileItDev;Password=123qwe!@#QWE;TrustServerCertificate=True;Encrypt=True;",
+    "FileItDbConnection": "Data Source=jmplabsv04.database.windows.net;Initial Catalog=FileIt;User ID=Proximus;Password=Seraphim25$$@$$;TrustServerCertificate=True;Encrypt=True;",
     "FileItStorage": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://localhost:10000/devstoreaccount1;",
     "SERVICEBUS_NAMESPACE": "emulator",
     "EveryHourSchedule": "0 0 * * * *",

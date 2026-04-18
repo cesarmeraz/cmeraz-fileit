@@ -58,6 +58,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IHandleFiles, BlobTool>();
         services.AddScoped<IApiLogRepo, ApiLogRepo>();
         services.AddScoped<ISimpleRequestLogRepo, SimpleRequestLogRepo>();
+        services.AddScoped<IDataFlowRequestLogRepo, DataFlowRequestLogRepo>();
         services.AddDbContextFactory<CommonDbContext>(options =>
             options.UseSqlServer(config.DbConnectionString)
         );
