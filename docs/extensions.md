@@ -16,20 +16,25 @@ As of yet, I don't have a use for that last project but many of my colleagues wr
 
 The unit test project is important. It should not communicate with the shared resources. It should test target code in isolation and be safe for execution in any environment.
 
+## Install the Test Framework
+
+```bash
+dotnet new install TUnit.Templates
+```
 
 ## Create the Projects
 ```bash
-mkdir FileIt.ExampleFlow
-cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.ExampleFlow
-func init FileIt.ExampleFlow --worker-runtime dotnet-isolated --target-framework net10.0
-dotnet new classlib --name FileIt.ExampleFlow.App --framework net10.0
-dotnet new mstest --name FileIt.ExampleFlow.Test --framework net10.0
-dotnet new mstest --name FileIt.ExampleFlow.Integration --framework net10.0
+mkdir FileIt.Module.ExampleFlow
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.ExampleFlow
+func init FileIt.Module.ExampleFlow.Host --worker-runtime dotnet-isolated --target-framework net10.0
+dotnet new classlib --name FileIt.Module.ExampleFlow.App --framework net10.0
+dotnet new TUnit -n "FileIt.Module.ExampleFlow.Test" --framework net10.0
+dotnet new TUnit -n "FileIt.Module.ExampleFlow.Integration" --framework net10.0
 ```
 
 ## Add Packages to the Function App
 ```bash
-cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.ExampleFlow/FileIt.ExampleFlow
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.ExampleFlow/FileIt.Module.ExampleFlow.Host
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.EventGrid
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs
@@ -52,45 +57,47 @@ dotnet add package System.Configuration.ConfigurationManager
 
 ## Add Project References to the Function App
 ```bash
-cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.ExampleFlow/FileIt.ExampleFlow
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.ExampleFlow/FileIt.Module.ExampleFlow.Host
 dotnet add reference ../../FileIt.Infrastructure/FileIt.Infrastructure/FileIt.Infrastructure.csproj 
-dotnet add reference ../../FileIt.ExampleFlow/FileIt.ExampleFlow.App/FileIt.ExampleFlow.App.csproj 
+dotnet add reference ../../FileIt.Module.ExampleFlow/FileIt.Module.ExampleFlow.App/FileIt.Module.ExampleFlow.App.csproj 
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.ServiceBus
 ```
 
-## Add Project References to the Function App Handler
+## Add Project References to the Application
 ```bash
-cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.ExampleFlow/FileIt.ExampleFlow.App
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.ExampleFlow/FileIt.Module.ExampleFlow.App
 dotnet add reference ../../FileIt.Domain/FileIt.Domain/FileIt.Domain.csproj 
 ```
 
 ## Add Project References and Packages to the Test project
 ```bash
-cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.ExampleFlow/FileIt.ExampleFlow.Test
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.ExampleFlow/FileIt.Module.ExampleFlow.Test
 dotnet add reference ../../FileIt.Infrastructure/FileIt.Infrastructure/FileIt.Infrastructure.csproj 
 dotnet add reference ../../FileIt.Domain/FileIt.Domain/FileIt.Domain.csproj 
-dotnet add reference ../FileIt.ExampleFlow.App/FileIt.ExampleFlow.App.csproj 
+dotnet add reference ../FileIt.Module.ExampleFlow.App/FileIt.Module.ExampleFlow.App.csproj 
 dotnet add package Microsoft.Extensions.Logging
-dotnet add package Microsoft.NET.Test.Sdk
-dotnet add package Moq
+dotnet add package coverlet.MTP
+dotnet add package TUnit
+dotnet add package TUnit.Mocks
+dotnet add package TUnit.Mocks.Logging
 ```
 
 ## (Re)Create the Module Solution file
 ```bash
-cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.ExampleFlow
-rm FileIt.ExampleFlow.sln
-dotnet new sln --name FileIt.ExampleFlow
-dotnet sln FileIt.ExampleFlow.sln add ./FileIt.ExampleFlow/FileIt_ExampleFlow.csproj
-dotnet sln FileIt.ExampleFlow.sln add ./FileIt.ExampleFlow.App/FileIt.ExampleFlow.App.csproj
-dotnet sln FileIt.ExampleFlow.sln add ./FileIt.ExampleFlow.Test/FileIt.ExampleFlow.Test.csproj
-dotnet sln FileIt.ExampleFlow.sln add ./FileIt.ExampleFlow.Integration/FileIt.ExampleFlow.Integration.csproj
+cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.ExampleFlow
+rm FileIt.Module.ExampleFlow.sln
+dotnet new sln --name FileIt.Module.ExampleFlow
+dotnet sln FileIt.Module.ExampleFlow.sln add ./FileIt.Module.ExampleFlow/FileIt_ExampleFlow.csproj
+dotnet sln FileIt.Module.ExampleFlow.sln add ./FileIt.Module.ExampleFlow.App/FileIt.Module.ExampleFlow.App.csproj
+dotnet sln FileIt.Module.ExampleFlow.sln add ./FileIt.Module.ExampleFlow.Test/FileIt.Module.ExampleFlow.Test.csproj
+dotnet sln FileIt.Module.ExampleFlow.sln add ./FileIt.Module.ExampleFlow.Integration/FileIt.Module.ExampleFlow.Integration.csproj
 ```
 
 ## Add the Module to the main Solution
 ```bash
 cd ${FILEIT_REPO_HOME}/cmeraz-fileit/
-dotnet sln FileIt.All.sln add ./FileIt.ExampleFlow/FileIt.ExampleFlow/FileIt_ExampleFlow.csproj
-dotnet sln FileIt.All.sln add ./FileIt.ExampleFlow/FileIt.ExampleFlow.App/FileIt.ExampleFlow.App.csproj
-dotnet sln FileIt.All.sln add ./FileIt.ExampleFlow/FileIt.ExampleFlow.Test/FileIt.ExampleFlow.Test.csproj
-dotnet sln FileIt.All.sln add ./FileIt.ExampleFlow/FileIt.ExampleFlow.Integration/FileIt.ExampleFlow.Integration.csproj
+dotnet sln FileIt.All.sln add ./FileIt.Module.ExampleFlow/FileIt.Module.ExampleFlow/FileIt_ExampleFlow.csproj
+dotnet sln FileIt.All.sln add ./FileIt.Module.ExampleFlow/FileIt.Module.ExampleFlow.App/FileIt.Module.ExampleFlow.App.csproj
+dotnet sln FileIt.All.sln add ./FileIt.Module.ExampleFlow/FileIt.Module.ExampleFlow.Test/FileIt.Module.ExampleFlow.Test.csproj
+dotnet sln FileIt.All.sln add ./FileIt.Module.ExampleFlow/FileIt.Module.ExampleFlow.Integration/FileIt.Module.ExampleFlow.Integration.csproj
 ```
