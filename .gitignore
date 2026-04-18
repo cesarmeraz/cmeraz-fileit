@@ -14,6 +14,9 @@ __azurite_db_blob__.json
 __azurite_db_table__.json
 AzuriteConfig
 
+# Test results
+[Ts]est[Rr]esult*/
+
 # Serilog log files
 # log.txt
 serilog.txt
@@ -25,6 +28,7 @@ serilog.txt
 *.userosscache
 *.sln.docstates
 *.env
+*.lscache
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
