@@ -1,134 +1,113 @@
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using FileIt.Domain.Interfaces;
 using FileIt.Infrastructure.Tools;
-using Microsoft.Extensions.Logging;
-using Moq;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FileIt.Infrastructure.Test.Tools;
 
-[TestClass]
 public class TestBlobTool
 {
-    [TestMethod]
-    public void TestMoveAsync()
+    [Test]
+    public async Task TestMoveAsync()
     {
-        //parameters
-        string blobName = "simple-blob";
-        string sourceContainerName = "source";
-        string destinationContainerName = "destination";
-        // Create a mock BlobContainerInfo
-        ETag mockETag = new ETag("\"a1b2c3d4e5f6789\"");
-        DateTimeOffset mockLastModified = new DateTimeOffset(2025, 10, 27, 10, 0, 0, TimeSpan.Zero);
-        BlobContainerInfo mockBlobContainerInfo = BlobsModelFactory.BlobContainerInfo(
-            mockETag,
-            mockLastModified
+        var repository = new MockRepository();
+
+        const string blobName = "simple-blob";
+        const string sourceContainerName = "source";
+        const string destinationContainerName = "destination";
+        const string url = "https://example.com/source/simple-blob";
+
+        var mockBlobServiceClient = repository.Of<BlobServiceClient>();
+        var mockSourceBlobContainerClient = repository.Of<BlobContainerClient>();
+        var mockDestBlobContainerClient = repository.Of<BlobContainerClient>();
+        var mockSourceBlobClient = repository.Of<BlobClient>();
+        var mockDestBlobClient = repository.Of<BlobClient>();
+        var mockCopyFromUriOperation = repository.Of<CopyFromUriOperation>();
+        var mockResponse = repository.Of<Response>();
+        var mockDeleteResponse = repository.Of<Response>();
+
+        var target = new BlobTool(NullLogger<BlobTool>.Instance, mockBlobServiceClient.Object);
+
+        var mockBlobContainerInfo = BlobsModelFactory.BlobContainerInfo(
+            new ETag("\"a1b2c3d4e5f6789\""),
+            new DateTimeOffset(2025, 10, 27, 10, 0, 0, TimeSpan.Zero)
         );
 
-        var mockBlobServiceClient = new Mock<BlobServiceClient>();
-        var mockLogger = new Mock<ILogger<BlobTool>>();
-        IHandleFiles target = new BlobTool(mockLogger.Object, mockBlobServiceClient.Object);
-
-        var mockSourceBlobContainerClient = new Mock<BlobContainerClient>();
         mockBlobServiceClient
-            .Setup(bsc =>
-                bsc.GetBlobContainerClient(It.Is<string>(x => x.Equals(sourceContainerName)))
-            )
+            .GetBlobContainerClient(Arg.Is<string>(x => x == sourceContainerName))
             .Returns(mockSourceBlobContainerClient.Object);
 
-        mockSourceBlobContainerClient
-            .Setup(client =>
-                client.CreateIfNotExistsAsync(
-                    It.IsAny<PublicAccessType>(),
-                    It.IsAny<System.Collections.Generic.IDictionary<string, string>>(),
-                    It.IsAny<BlobContainerEncryptionScopeOptions>(),
-                    It.IsAny<System.Threading.CancellationToken>()
-                )
-            )
-            .ReturnsAsync(
-                Response.FromValue(
-                    mockBlobContainerInfo, // Example BlobContainerInfo
-                    Mock.Of<Azure.Response>() // Mock a basic Azure.Response
-                )
-            );
+        // mockSourceBlobContainerClient
+        //     .CreateIfNotExistsAsync(
+        //         Arg.Any<PublicAccessType>(),
+        //         Arg.Any<IDictionary<string, string>>(),
+        //         Arg.Any<BlobContainerEncryptionScopeOptions>(),
+        //         Arg.Any<CancellationToken>()
+        //     )
+        //     .ReturnsAsync(
+        //         Task.FromResult(Response.FromValue(mockBlobContainerInfo, mockResponse.Object))
+        //     );
 
-        var mockDestBlobContainerClient = new Mock<BlobContainerClient>();
+        mockSourceBlobContainerClient
+            .ExistsAsync(Arg.Any<CancellationToken>())
+            .ReturnsAsync(Task.FromResult(Response.FromValue<bool>(true, mockResponse.Object)));
+
         mockBlobServiceClient
-            .Setup(bsc =>
-                bsc.GetBlobContainerClient(It.Is<string>(x => x.Equals(destinationContainerName)))
-            )
+            .GetBlobContainerClient(Arg.Is<string>(x => x == destinationContainerName))
             .Returns(mockDestBlobContainerClient.Object);
 
-        mockDestBlobContainerClient
-            .Setup(client =>
-                client.CreateIfNotExistsAsync(
-                    It.IsAny<PublicAccessType>(),
-                    It.IsAny<System.Collections.Generic.IDictionary<string, string>>(),
-                    It.IsAny<BlobContainerEncryptionScopeOptions>(),
-                    It.IsAny<System.Threading.CancellationToken>()
-                )
-            )
-            .ReturnsAsync(
-                Response.FromValue(
-                    mockBlobContainerInfo, // Example BlobContainerInfo
-                    Mock.Of<Azure.Response>() // Mock a basic Azure.Response
-                )
-            );
+        // mockDestBlobContainerClient
+        //     .CreateIfNotExistsAsync(
+        //         Arg.Any<PublicAccessType>(),
+        //         Arg.Any<IDictionary<string, string>>(),
+        //         Arg.Any<BlobContainerEncryptionScopeOptions>(),
+        //         Arg.Any<CancellationToken>()
+        //     )
+        //     .ReturnsAsync(
+        //         Task.FromResult(Response.FromValue(mockBlobContainerInfo, mockResponse.Object))
+        //     );
 
-        var mockSourceBlobClient = new Mock<BlobClient>();
+        mockDestBlobContainerClient
+            .ExistsAsync(Arg.Any<CancellationToken>())
+            .ReturnsAsync(Task.FromResult(Response.FromValue<bool>(true, mockResponse.Object)));
+
         mockSourceBlobContainerClient
-            .Setup(x => x.GetBlobClient(It.IsAny<string>()))
+            .GetBlobClient(Arg.Any<string>())
             .Returns(mockSourceBlobClient.Object);
-        var mockCopyFromUriOperation = new Mock<CopyFromUriOperation>();
-        var mockDestBlobClient = new Mock<BlobClient>();
-        mockDestBlobClient
-            .Setup(x =>
-                x.StartCopyFromUriAsync(
-                    It.IsAny<Uri>(),
-                    It.IsAny<BlobCopyFromUriOptions>(),
-                    It.IsAny<System.Threading.CancellationToken>()
-                )
-            )
-            .Returns(Task.FromResult(mockCopyFromUriOperation.Object));
 
         mockDestBlobContainerClient
-            .Setup(x => x.GetBlobClient(It.IsAny<string>()))
+            .GetBlobClient(Arg.Any<string>())
             .Returns(mockDestBlobClient.Object);
 
-        mockSourceBlobClient
-            .Setup(x => x.ExistsAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Response.FromValue(true, new Mock<Response>().Object));
-
-        var mockDeleteAzureResponse = new Mock<Azure.Response>();
-        mockSourceBlobClient
-            .Setup(x =>
-                x.DeleteAsync(
-                    It.IsAny<DeleteSnapshotsOption>(),
-                    It.IsAny<BlobRequestConditions>(),
-                    It.IsAny<CancellationToken>()
-                )
+        mockDestBlobClient
+            .StartCopyFromUriAsync(
+                Arg.Any<Uri>(),
+                Arg.Any<BlobCopyFromUriOptions>(),
+                Arg.Any<CancellationToken>()
             )
-            .ReturnsAsync(mockDeleteAzureResponse.Object);
+            .ReturnsAsync(Task.FromResult(mockCopyFromUriOperation.Object));
 
-        mockLogger.Setup(m =>
-            m.Log(
-                It.IsAny<LogLevel>(),
-                It.IsAny<EventId>(),
-                It.IsAny<It.IsAnyType>(), // Represents the state object, often an anonymous type for structured logging
-                It.IsAny<Exception>(),
-                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>() // The formatter function
+        mockSourceBlobClient
+            .ExistsAsync(Arg.Any<CancellationToken>())
+            .ReturnsAsync(Task.FromResult(Response.FromValue<bool>(true, mockResponse.Object)));
+
+        mockSourceBlobClient.Uri.Returns(new Uri(url));
+
+        mockSourceBlobClient
+            .DeleteAsync(
+                Arg.Any<DeleteSnapshotsOption>(),
+                Arg.Any<BlobRequestConditions>(),
+                Arg.Any<CancellationToken>()
             )
-        );
+            .ReturnsAsync(Task.FromResult(mockDeleteResponse.Object));
 
-        target.MoveAsync(blobName, sourceContainerName, destinationContainerName);
+        await target.MoveAsync(blobName, sourceContainerName, destinationContainerName);
 
-        //verify all
-        // mockBlobServiceClient.VerifyAll();
-        // mockSourceBlobContainerClient.VerifyAll();
-        // mockDestBlobContainerClient.VerifyAll();
-        // mockSourceBlobClient.VerifyAll();
-        // mockDestBlobClient.VerifyAll();
-        // mockLogger.VerifyAll();
+        mockBlobServiceClient.VerifyAll();
+        mockSourceBlobContainerClient.VerifyAll();
+        mockDestBlobContainerClient.VerifyAll();
+        mockSourceBlobClient.VerifyAll();
+        mockDestBlobClient.VerifyAll();
     }
 }

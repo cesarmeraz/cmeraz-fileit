@@ -3,71 +3,61 @@ using Azure.Messaging.ServiceBus;
 using FileIt.Domain.Entities.Api;
 using FileIt.Infrastructure.Tools;
 using Microsoft.Extensions.Azure;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+using Microsoft.Extensions.Logging.Abstractions;
+using TUnit.Assertions;
+using TUnit.Core;
+using TUnit.Mocks;
+using TUnit.Mocks.Arguments;
 
 namespace FileIt.Infrastructure.Test.Tools;
 
-[TestClass]
 public class TestBusTool
 {
-    public required Mock<ILogger<BusTool>> _loggerMock;
-    public required Mock<ServiceBusClient> _serviceBusClientMock;
-    public required Mock<ServiceBusSender> _serviceBusSenderMock;
-    public required Mock<IAzureClientFactory<ServiceBusSender>> _senderFactoryMock;
-    public required BusTool _busProvider;
+    private readonly Mock<ServiceBusSender> _serviceBusSenderMock;
+    private readonly Mock<IAzureClientFactory<ServiceBusSender>> _senderFactoryMock;
+    private readonly BusTool _busProvider;
 
-    [TestInitialize]
-    public void Setup()
+    public TestBusTool()
     {
-        _loggerMock = new Mock<ILogger<BusTool>>();
-        _serviceBusClientMock = new Mock<ServiceBusClient>();
-        _serviceBusSenderMock = new Mock<ServiceBusSender>();
-        _senderFactoryMock = new Mock<IAzureClientFactory<ServiceBusSender>>();
-        _senderFactoryMock
-            .Setup(x => x.CreateClient(It.IsAny<string>()))
-            .Returns(_serviceBusSenderMock.Object);
-        _serviceBusClientMock
-            .Setup(client => client.CreateSender(It.IsAny<string>()))
-            .Returns(_serviceBusSenderMock.Object);
+        var repository = new MockRepository();
 
-        _busProvider = new BusTool(_loggerMock.Object, _senderFactoryMock.Object);
+        _serviceBusSenderMock = repository.Of<ServiceBusSender>();
+        _senderFactoryMock = repository.Of<IAzureClientFactory<ServiceBusSender>>();
+
+        _senderFactoryMock.CreateClient(Arg.Any<string>()).Returns(_serviceBusSenderMock.Object);
+
+        _busProvider = new BusTool(NullLogger<BusTool>.Instance, _senderFactoryMock.Object);
     }
 
-    [TestMethod]
+    [Test]
     public async Task SendMessageAsync_ShouldSendMessage_WhenCalled()
     {
-        // Arrange
         var messageId = "test-message-id";
-
         var message = new ServiceBusMessage("Test message");
         var request = new ApiRequest(messageId) { Body = "Test message", QueueName = "testqueue" };
 
-        // Act
+        _serviceBusSenderMock
+            .SendMessageAsync(Arg.Any<ServiceBusMessage>(), Arg.Any<CancellationToken>())
+            .Returns();
+
         await _busProvider.SendMessageAsync(request);
 
-        // Assert
-        _serviceBusSenderMock.Verify(
-            sender => sender.SendMessageAsync(message, It.IsAny<CancellationToken>()),
-            Times.Once
-        );
+        _serviceBusSenderMock.VerifyAll();
     }
 
-    [TestMethod]
-    public async Task SendMessageAsync_ShouldLogError_WhenExceptionThrown()
+    [Test]
+    public async Task SendMessageAsync_ShouldThrow_WhenSendFails()
     {
-        // Arrange
         var messageId = "test-message-id";
         var message = new ServiceBusMessage("Test message");
         var request = new ApiRequest(messageId) { Body = "Test message", QueueName = "testqueue" };
-        _serviceBusSenderMock
-            .Setup(sender => sender.SendMessageAsync(message, It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new System.Exception("Send failed"));
 
-        // Act
-        // await Assert.ThrowsExceptionAsync<System.Exception>(() =>
-        //     _busProvider.SendMessageAsync(request)
-        // );
+        _serviceBusSenderMock
+            .SendMessageAsync(Arg.Any<ServiceBusMessage>(), Arg.Any<CancellationToken>())
+            .Throws(new System.Exception("Send failed"));
+
+        await Assert.ThrowsAsync<System.Exception>(() => _busProvider.SendMessageAsync(request));
+
+        _serviceBusSenderMock.VerifyAll();
     }
 }
