@@ -23,8 +23,8 @@ cd ${FILEIT_REPO_HOME}/cmeraz-fileit
 mkdir FileIt.Domain
 cd FileIt.Domain
 dotnet new classlib --name FileIt.Domain --framework net10.0
-dotnet new mstest --name FileIt.Domain.Test --framework net10.0
-dotnet new mstest --name FileIt.Domain.Integration --framework net10.0
+dotnet new TUnit --name FileIt.Domain.Test --framework net10.0
+dotnet new TUnit --name FileIt.Domain.Integration --framework net10.0
 
 echo 'FileIt.Domain has classes with properties used as message contracts for serialization' > readme.md
 
@@ -53,8 +53,8 @@ FileIt.Infrastructure has classes with properties used as message contracts for 
 mkdir FileIt.Infrastructure
 cd FileIt.Infrastructure
 dotnet new classlib --name FileIt.Infrastructure --framework net10.0
-dotnet new mstest --name FileIt.Infrastructure.Test --framework net10.0
-dotnet new mstest --name FileIt.Infrastructure.Integration --framework net10.0
+dotnet new TUnit --name FileIt.Infrastructure.Test --framework net10.0
+dotnet new TUnit --name FileIt.Infrastructure.Integration --framework net10.0
 
 echo 'FileIt.Infrastructure contains concrete implementations of cross cutting utilities, configuration options and resource adapters' > readme.md
 
@@ -103,7 +103,7 @@ mkdir FileIt.Common
 cd FileIt.Common
 func init FileIt.Common --worker-runtime dotnet-isolated --target-framework net10.0
 dotnet new classlib --name FileIt.Common.App --framework net10.0
-dotnet new mstest --name FileIt.Common.Test --framework net10.0
+dotnet new TUnit --name FileIt.Common.Test --framework net10.0
 dotnet new sln --name FileIt.Common
 dotnet sln FileIt.Common.sln add ./FileIt.Common/FileIt_Common.csproj
 dotnet sln FileIt.Common.sln add ./FileIt.Common.App/FileIt.Common.App.csproj
@@ -140,7 +140,7 @@ dotnet add package Microsoft.Azure.Functions.Worker.Extensions.ServiceBus
 mkdir FileIt.DataIngestFlow
 cd FileIt.DataIngestFlow
 func init FileIt.DataIngestFlow --worker-runtime dotnet-isolated --target-framework net10.0
-dotnet new mstest --name FileIt.DataIngestFlow.Test --framework net10.0
+dotnet new TUnit --name FileIt.DataIngestFlow.Test --framework net10.0
 dotnet new sln --name FileIt.DataIngestFlow
 dotnet sln FileIt.DataIngestFlow.sln add ./FileIt.DataIngestFlow/FileIt_DataIngestFlow.csproj
 dotnet sln FileIt.DataIngestFlow.sln add ./FileIt.DataIngestFlow.Test/FileIt.DataIngestFlow.Test.csproj
@@ -154,8 +154,8 @@ mkdir FileIt.Module.SimpleFlow
 cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.SimpleFlow
 func init FileIt.Module.SimpleFlow --worker-runtime dotnet-isolated --target-framework net10.0
 dotnet new classlib --name FileIt.Module.SimpleFlow.App --framework net10.0
-dotnet new mstest --name FileIt.Module.SimpleFlow.Test --framework net10.0
-dotnet new mstest --name FileIt.Module.SimpleFlow.Integration --framework net10.0
+dotnet new TUnit --name FileIt.Module.SimpleFlow.Test --framework net10.0
+dotnet new TUnit --name FileIt.Module.SimpleFlow.Integration --framework net10.0
 
 cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.EventGrid
