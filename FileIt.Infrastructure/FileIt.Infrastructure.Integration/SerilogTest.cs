@@ -2,10 +2,9 @@ using Microsoft.Extensions.Logging;
 
 namespace FileIt.Infrastructure.Integration;
 
-[TestClass]
 public class SerilogTest
 {
-    [TestMethod]
+    [Test]
     public void TestAdd()
     {
         string ClientRequestId = Guid.NewGuid().ToString(),
