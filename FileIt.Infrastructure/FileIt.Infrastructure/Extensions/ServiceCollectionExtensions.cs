@@ -65,8 +65,6 @@ public static class ServiceCollectionExtensions
 
         services.AddAzureClients(clientBuilder =>
         {
-            // Set a credential for all clients to use by default
-
             var clientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
 
             if (string.IsNullOrEmpty(clientId))
@@ -113,6 +111,7 @@ public static class ServiceCollectionExtensions
                         provider.GetRequiredService<ServiceBusClient>().CreateSender("api-add")
                 )
                 .WithName("api-add");
+
             clientBuilder
                 .AddClient<ServiceBusSender, ServiceBusClientOptions>(
                     (_, _, provider) =>
@@ -121,6 +120,15 @@ public static class ServiceCollectionExtensions
                             .CreateSender("api-add-topic")
                 )
                 .WithName("api-add-topic");
+
+            clientBuilder
+                .AddClient<ServiceBusSender, ServiceBusClientOptions>(
+                    (_, _, provider) =>
+                        provider
+                            .GetRequiredService<ServiceBusClient>()
+                            .CreateSender("dataflow-transform")
+                )
+                .WithName("dataflow-transform");
         });
 
         services.AddSingleton<ILoggerProvider>(new SerilogLoggerProvider(Log.Logger));

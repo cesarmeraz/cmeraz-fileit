@@ -13,4 +13,7 @@ public interface IDataFlowRequestLogRepo : IRepository<DataFlowRequestLog>
 
     // Looks up a log entry by the correlation ID we assigned when the file arrived
     Task<DataFlowRequestLog?> GetByClientRequestIdAsync(string? clientRequestId);
+
+    // Updates the transform result fields directly — bypasses the base class naive update
+    Task UpdateTransformResultAsync(string clientRequestId, int rowsTransformed, string exportBlobName, string status);
 }

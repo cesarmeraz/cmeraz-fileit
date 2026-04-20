@@ -42,13 +42,30 @@ public class DataFlowRequestLogRepo : BaseRepository<DataFlowRequestLog>, IDataF
         return await base.AddAsync(log);
     }
 
-    // Looks up a log entry by correlation ID — used when the transform completes
-    // to find the original record and update it with the results
+    // Looks up a log entry by correlation ID
     public async Task<DataFlowRequestLog?> GetByClientRequestIdAsync(string? clientRequestId)
     {
         using var dbContext = Factory.CreateDbContext();
         return await dbContext.DataFlowRequestLogs.FirstOrDefaultAsync(log =>
             log.ClientRequestId == clientRequestId && log.Environment == this.config.Environment
         );
+    }
+
+    // Direct targeted update for transform results — bypasses the base class naive update
+    public async Task UpdateTransformResultAsync(string clientRequestId, int rowsTransformed, string exportBlobName, string status)
+    {
+        using var dbContext = Factory.CreateDbContext();
+        var existing = await dbContext.DataFlowRequestLogs.FirstOrDefaultAsync(x =>
+            x.ClientRequestId == clientRequestId
+        );
+
+        if (existing == null) return;
+
+        existing.RowsTransformed = rowsTransformed;
+        existing.ExportBlobName = exportBlobName;
+        existing.Status = status;
+        existing.ModifiedOn = DateTime.Now;
+
+        await dbContext.SaveChangesAsync();
     }
 }

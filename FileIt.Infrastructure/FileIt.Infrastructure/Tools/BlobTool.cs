@@ -19,7 +19,6 @@ public class BlobTool : IHandleFiles
 
     public async Task MoveAsync(string filename, string source, string destination)
     {
-        // Placeholder for moving a blob
         if (string.IsNullOrWhiteSpace(filename))
         {
             throw new ArgumentException("Blob name must be provided", nameof(filename));
@@ -93,7 +92,6 @@ public class BlobTool : IHandleFiles
 
     public async Task GetFileAsync(string filename, string location)
     {
-        // Placeholder for getting a blob
         if (string.IsNullOrWhiteSpace(filename))
         {
             throw new ArgumentException("Blob name must be provided", nameof(filename));
@@ -169,7 +167,8 @@ public class BlobTool : IHandleFiles
         try
         {
             var containerClient = _blobServiceClient.GetBlobContainerClient(location);
-            await containerClient.UploadBlobAsync(filename, content);
+            var blobClient = containerClient.GetBlobClient(filename);
+            await blobClient.UploadAsync(content, overwrite: true);
         }
         catch (Exception ex)
         {
@@ -180,5 +179,24 @@ public class BlobTool : IHandleFiles
                 filename
             );
         }
+    }
+
+    public async Task<Stream> DownloadAsync(string filename, string location)
+    {
+        _logger.LogInformation(
+            InfrastructureEvents.BlobToolGetFile.Id,
+            "Downloading '{FileName}' from {Location}",
+            filename,
+            location
+        );
+
+        var containerClient = _blobServiceClient.GetBlobContainerClient(location);
+        var blobClient = containerClient.GetBlobClient(filename);
+
+        var downloadResponse = await blobClient.DownloadAsync();
+        var ms = new MemoryStream();
+        await downloadResponse.Value.Content.CopyToAsync(ms);
+        ms.Position = 0;
+        return ms;
     }
 }
