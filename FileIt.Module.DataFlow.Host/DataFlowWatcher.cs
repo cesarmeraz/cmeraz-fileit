@@ -29,10 +29,13 @@ public class DataFlowWatcher
     [Function("DataFlowWatcherLocal")]
     public async Task RunLocal(
         [BlobTrigger("dataflow-source/{blobName}")] BlobClient blobClient,
-        string blobName
+        string blobName,
+        FunctionContext context
     )
     {
         blobClient = blobClient ?? throw new ArgumentNullException(nameof(blobClient));
+
+        var cancellationToken = context.CancellationToken;
 
         // Pull the correlation ID from the blob request header
         string clientRequestId = await blobClient.GetCorrelationId();
@@ -49,15 +52,17 @@ public class DataFlowWatcher
                 blobName
             );
 
-            await _watcher.RunAsync(blobName, clientRequestId);
+            await _watcher.RunAsync(blobName, clientRequestId, cancellationToken);
         }
     }
 #endif
 
     // Production — Event Grid trigger fires when a file lands in blob storage
     [Function(nameof(DataFlowWatcher))]
-    public async Task Run([EventGridTrigger] EventGridEvent eventGridEvent)
+    public async Task Run([EventGridTrigger] EventGridEvent eventGridEvent, FunctionContext context)
     {
+        var cancellationToken = context.CancellationToken;
+
         _logger.LogInformation("Received EventGridEvent: {@EventGridEvent}", eventGridEvent);
         var blobName = (eventGridEvent.Subject ?? string.Empty).Split('/').Last();
 
@@ -75,7 +80,7 @@ public class DataFlowWatcher
                 blobName
             );
 
-            await _watcher.RunAsync(blobName, clientRequestId);
+            await _watcher.RunAsync(blobName, clientRequestId, cancellationToken);
         }
     }
 }

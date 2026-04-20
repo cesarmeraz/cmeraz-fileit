@@ -17,7 +17,7 @@ public class BlobTool : IHandleFiles
         _blobServiceClient = blobServiceClient;
     }
 
-    public async Task MoveAsync(string filename, string source, string destination)
+    public async Task MoveAsync(string filename, string source, string destination, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(filename))
         {
@@ -33,19 +33,19 @@ public class BlobTool : IHandleFiles
                 destination
             );
             var sourceContainerClient = _blobServiceClient.GetBlobContainerClient(source);
-            var sourceExists = await sourceContainerClient.ExistsAsync();
+            var sourceExists = await sourceContainerClient.ExistsAsync(cancellationToken);
             if (!sourceExists)
-                await sourceContainerClient.CreateIfNotExistsAsync();
+                await sourceContainerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
 
             var destinationContainerClient = _blobServiceClient.GetBlobContainerClient(destination);
-            var destExists = await sourceContainerClient.ExistsAsync();
+            var destExists = await sourceContainerClient.ExistsAsync(cancellationToken);
             if (!destExists)
-                await destinationContainerClient.CreateIfNotExistsAsync();
+                await destinationContainerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
 
             var sourceBlobClient = sourceContainerClient.GetBlobClient(filename);
             var destinationBlobClient = destinationContainerClient.GetBlobClient(filename);
 
-            var existsResponse = await sourceBlobClient.ExistsAsync();
+            var existsResponse = await sourceBlobClient.ExistsAsync(cancellationToken);
             if (!existsResponse.Value)
             {
                 _logger.LogWarning(
@@ -57,8 +57,8 @@ public class BlobTool : IHandleFiles
                 return;
             }
 
-            await destinationBlobClient.StartCopyFromUriAsync(sourceBlobClient.Uri);
-            await sourceBlobClient.DeleteAsync();
+            await destinationBlobClient.StartCopyFromUriAsync(sourceBlobClient.Uri, cancellationToken: cancellationToken);
+            await sourceBlobClient.DeleteAsync(cancellationToken: cancellationToken);
 
             _logger.LogInformation(
                 InfrastructureEvents.BlobToolMoved.Id,
@@ -90,7 +90,7 @@ public class BlobTool : IHandleFiles
         }
     }
 
-    public async Task GetFileAsync(string filename, string location)
+    public async Task GetFileAsync(string filename, string location, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(filename))
         {
@@ -108,7 +108,7 @@ public class BlobTool : IHandleFiles
             var containerClient = _blobServiceClient.GetBlobContainerClient(location);
             var blobClient = containerClient.GetBlobClient(filename);
 
-            var existsResponse = await blobClient.ExistsAsync();
+            var existsResponse = await blobClient.ExistsAsync(cancellationToken);
             if (!existsResponse.Value)
             {
                 _logger.LogWarning(
@@ -119,9 +119,9 @@ public class BlobTool : IHandleFiles
                 );
                 return;
             }
-            var downloadResponse = await blobClient.DownloadAsync();
+            var downloadResponse = await blobClient.DownloadAsync(cancellationToken);
             using var ms = new System.IO.MemoryStream();
-            await downloadResponse.Value.Content.CopyToAsync(ms);
+            await downloadResponse.Value.Content.CopyToAsync(ms, cancellationToken);
             ms.Position = 0;
 
             _logger.LogInformation(
@@ -156,7 +156,7 @@ public class BlobTool : IHandleFiles
         await Task.CompletedTask;
     }
 
-    public async Task UploadAsync(Stream content, string filename, string location)
+    public async Task UploadAsync(Stream content, string filename, string location, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation(
             InfrastructureEvents.BlobToolUploadStart.Id,
@@ -168,7 +168,7 @@ public class BlobTool : IHandleFiles
         {
             var containerClient = _blobServiceClient.GetBlobContainerClient(location);
             var blobClient = containerClient.GetBlobClient(filename);
-            await blobClient.UploadAsync(content, overwrite: true);
+            await blobClient.UploadAsync(content, overwrite: true, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
@@ -181,7 +181,7 @@ public class BlobTool : IHandleFiles
         }
     }
 
-    public async Task<Stream> DownloadAsync(string filename, string location)
+    public async Task<Stream> DownloadAsync(string filename, string location, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation(
             InfrastructureEvents.BlobToolGetFile.Id,
@@ -193,9 +193,9 @@ public class BlobTool : IHandleFiles
         var containerClient = _blobServiceClient.GetBlobContainerClient(location);
         var blobClient = containerClient.GetBlobClient(filename);
 
-        var downloadResponse = await blobClient.DownloadAsync();
+        var downloadResponse = await blobClient.DownloadAsync(cancellationToken);
         var ms = new MemoryStream();
-        await downloadResponse.Value.Content.CopyToAsync(ms);
+        await downloadResponse.Value.Content.CopyToAsync(ms, cancellationToken);
         ms.Position = 0;
         return ms;
     }

@@ -9,7 +9,7 @@ namespace FileIt.Module.DataFlow.App.WatchInbound;
 
 public interface IWatchInbound
 {
-    Task RunAsync(string blobName, string correlationId);
+    Task RunAsync(string blobName, string correlationId, CancellationToken cancellationToken = default);
 }
 
 public class WatchInbound : IWatchInbound
@@ -35,7 +35,7 @@ public class WatchInbound : IWatchInbound
         _requestLogRepo = requestLogRepo;
     }
 
-    public async Task RunAsync(string blobName, string correlationId)
+    public async Task RunAsync(string blobName, string correlationId, CancellationToken cancellationToken = default)
     {
         // Step 1 - write a record to the database so we can trace this file through the whole flow
         _logger.LogInformation(
@@ -45,13 +45,17 @@ public class WatchInbound : IWatchInbound
         );
         await _requestLogRepo.AddAsync(blobName, correlationId);
 
+        cancellationToken.ThrowIfCancellationRequested();
+
         // Step 2 - move the file out of source into working so nothing else picks it up
         _logger.LogInformation(
             DataFlowEvents.DataFlowWatcherMoveToWorking.Id,
             "Moving {BlobName} to working container",
             blobName
         );
-        await _blobTool.MoveAsync(blobName, _config.SourceContainer, _config.WorkingContainer);
+        await _blobTool.MoveAsync(blobName, _config.SourceContainer, _config.WorkingContainer, cancellationToken);
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         // Step 3 - put a message on the service bus queue so the transform handler knows there's work to do
         string messageId = Guid.NewGuid().ToString();

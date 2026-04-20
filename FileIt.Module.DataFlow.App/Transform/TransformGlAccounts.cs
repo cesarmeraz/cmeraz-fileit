@@ -11,7 +11,7 @@ namespace FileIt.Module.DataFlow.App.Transform;
 
 public interface ITransformGlAccounts
 {
-    Task<string> RunAsync(Stream csvStream, string correlationId);
+    Task<string> RunAsync(Stream csvStream, string correlationId, CancellationToken cancellationToken = default);
 }
 
 public class TransformGlAccounts : ITransformGlAccounts
@@ -23,7 +23,7 @@ public class TransformGlAccounts : ITransformGlAccounts
         _logger = logger;
     }
 
-    public async Task<string> RunAsync(Stream csvStream, string correlationId)
+    public async Task<string> RunAsync(Stream csvStream, string correlationId, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation(
             DataFlowEvents.DataFlowTransform.Id,
@@ -35,8 +35,9 @@ public class TransformGlAccounts : ITransformGlAccounts
         var lines = new List<string>();
         using var reader = new StreamReader(csvStream);
         string? csvLine;
-        while ((csvLine = await reader.ReadLineAsync()) != null)
+        while ((csvLine = await reader.ReadLineAsync(cancellationToken)) != null)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             lines.Add(csvLine);
         }
 
@@ -52,7 +53,8 @@ public class TransformGlAccounts : ITransformGlAccounts
 
         foreach (var row in lines.Skip(1))
         {
-            // Handle quoted fields by doing a basic split — good enough for this data
+            cancellationToken.ThrowIfCancellationRequested();
+
             var fields = row.Split(',');
 
             if (fields.Length <= Math.Max(companyCodeIndex, accountGroupIndex))
@@ -75,12 +77,13 @@ public class TransformGlAccounts : ITransformGlAccounts
         // Build the output CSV
         var outputLines = new List<string>
         {
-            // Header row for the output file
             "CompanyCode,AccountGroup,TotalAccounts,BalanceSheetAccounts,NonBalanceSheetAccounts"
         };
 
         foreach (var kvp in summary.OrderBy(k => k.Key))
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var parts = kvp.Key.Split('|');
             string companyCode = parts[0];
             string accountGroup = parts[1];
@@ -98,7 +101,6 @@ public class TransformGlAccounts : ITransformGlAccounts
             correlationId
         );
 
-        // Return the output as a single string — the caller will write it to blob storage
         return string.Join(Environment.NewLine, outputLines);
     }
 }

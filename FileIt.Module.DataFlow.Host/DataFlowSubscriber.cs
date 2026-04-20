@@ -37,9 +37,11 @@ public class DataFlowSubscriber
     // Listens on the dataflow-transform queue for files ready to be transformed
     [Function(nameof(DataFlowSubscriber))]
     public async Task Run(
-        [ServiceBusTrigger("dataflow-transform")] ServiceBusReceivedMessage message
+        [ServiceBusTrigger("dataflow-transform")] ServiceBusReceivedMessage message,
+        FunctionContext context
     )
     {
+        var cancellationToken = context.CancellationToken;
         string clientRequestId = message.CorrelationId ?? string.Empty;
 
         using (
@@ -85,7 +87,9 @@ public class DataFlowSubscriber
             }
 
             // Download the CSV from working container
-            var csvStream = await _blobTool.DownloadAsync(entry.BlobName, _config.WorkingContainer);
+            var csvStream = await _blobTool.DownloadAsync(entry.BlobName, _config.WorkingContainer, cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             // Run the transform
             _logger.LogInformation(
@@ -94,7 +98,9 @@ public class DataFlowSubscriber
                 entry.BlobName
             );
 
-            string outputCsv = await _transformHandler.RunAsync(csvStream, clientRequestId);
+            string outputCsv = await _transformHandler.RunAsync(csvStream, clientRequestId, cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             // Count rows in output
             var outputLines = outputCsv.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
@@ -103,7 +109,7 @@ public class DataFlowSubscriber
             // Upload output CSV to final container
             string exportBlobName = $"summary_{entry.BlobName}";
             using var outputStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(outputCsv));
-            await _blobTool.UploadAsync(outputStream, exportBlobName, _config.FinalContainer);
+            await _blobTool.UploadAsync(outputStream, exportBlobName, _config.FinalContainer, cancellationToken);
 
             _logger.LogInformation(
                 DataFlowEvents.DataFlowSubscriberMoveToFinal.Id,
