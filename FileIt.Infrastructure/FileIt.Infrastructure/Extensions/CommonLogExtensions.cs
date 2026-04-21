@@ -84,6 +84,36 @@ public static class CommonLogExtensions
             loggerConfig.WriteTo.File(featureConfig.LogFilePath);
         }
 
+        // Ship logs to Aspire dashboard via OTLP when running under Aspire.
+        // OTEL_EXPORTER_OTLP_ENDPOINT is auto-injected by Aspire into each child process.
+        // If the variable is absent (standalone func run), this block is skipped and behavior is unchanged.
+        var otlpEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT");
+        if (!string.IsNullOrWhiteSpace(otlpEndpoint))
+        {
+            // Enable Serilog SelfLog to stderr so we can see sink errors in the Aspire console
+            Serilog.Debugging.SelfLog.Enable(Console.Error);
+
+            // Aspire ships OTLP over https with a dev cert on localhost.
+            // Bypass cert validation on the underlying HttpClient for local dev.
+            var httpHandler = new System.Net.Http.HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback =
+                    System.Net.Http.HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            };
+
+            loggerConfig.WriteTo.OpenTelemetry(options =>
+            {
+                options.Endpoint = otlpEndpoint;
+                options.Protocol = Serilog.Sinks.OpenTelemetry.OtlpProtocol.Grpc;
+                options.HttpMessageHandler = httpHandler;
+                options.ResourceAttributes = new Dictionary<string, object>
+                {
+                    ["service.name"] = featureConfig.Application ?? "FileIt",
+                    ["service.version"] = featureConfig.ApplicationVersion ?? "1.0.0"
+                };
+            });
+        }
+
 #if RELEASE
         loggerConfig.WriteTo.ApplicationInsights(
             featureConfig.AppInsightsConnectionString,
