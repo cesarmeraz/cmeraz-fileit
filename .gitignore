@@ -15,7 +15,7 @@ __azurite_db_table__.json
 AzuriteConfig
 
 # Serilog log files
-# log.txt
+log.txt
 serilog.txt
 
 # User-specific files

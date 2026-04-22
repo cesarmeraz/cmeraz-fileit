@@ -1,3 +1,4 @@
+using Aspire.Hosting.ApplicationModel;
 using Azure.Storage.Blobs;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -34,38 +35,48 @@ var dataflow = builder.AddProject<Projects.FileIt_Module_DataFlow_Host>("dataflo
     .WaitFor(services)
     .WaitFor(blobs);
 
-var app = builder.Build();
-
-// --- Ensure DataFlow blob containers exist on startup ---
-// Azurite emulator uses a well-known connection string
-const string azuriteConnectionString =
-    "DefaultEndpointsProtocol=http;" +
-    "AccountName=devstoreaccount1;" +
-    "AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;" +
-    "BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
-
-_ = Task.Run(async () =>
+// --- Ensure blob containers exist once Aspire has created the resources ---
+// Uses Aspire's eventing API (the modern replacement for IDistributedApplicationLifecycleHook).
+// Fires after all resources are created, so no timing hack is needed.
+builder.Eventing.Subscribe<AfterResourcesCreatedEvent>(async (@event, cancellationToken) =>
 {
-    // wait a few seconds for Azurite container to be ready
-    await Task.Delay(TimeSpan.FromSeconds(8));
+    const string azuriteConnectionString =
+        "DefaultEndpointsProtocol=http;" +
+        "AccountName=devstoreaccount1;" +
+        "AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;" +
+        "BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
 
-    var serviceClient = new BlobServiceClient(azuriteConnectionString);
-    foreach (var containerName in new[]
+    var containers = new[]
     {
         "dataflow-source", "dataflow-working", "dataflow-final",
         "simple-source", "simple-working", "simple-final"
-    })
+    };
+
+    var serviceClient = new BlobServiceClient(azuriteConnectionString);
+
+    foreach (var containerName in containers)
     {
-        try
+        // Retry briefly since Azurite may not accept connections the instant the resource reports created
+        for (int attempt = 1; attempt <= 10; attempt++)
         {
-            await serviceClient.GetBlobContainerClient(containerName).CreateIfNotExistsAsync();
-            Console.WriteLine($"[container-init] ensured: {containerName}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[container-init] failed for {containerName}: {ex.Message}");
+            try
+            {
+                await serviceClient
+                    .GetBlobContainerClient(containerName)
+                    .CreateIfNotExistsAsync(cancellationToken: cancellationToken);
+                Console.WriteLine($"[container-init] ensured: {containerName}");
+                break;
+            }
+            catch when (attempt < 10)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[container-init] FAILED for {containerName} after {attempt} attempts: {ex.Message}");
+            }
         }
     }
 });
 
-app.Run();
+builder.Build().Run();
