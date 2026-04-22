@@ -63,6 +63,7 @@ public static class CommonLogExtensions
         temp.Append("\n\t\"EventId\": {EventId}");
         temp.Append("\n}}{NewLine}{Exception}");
 
+        Version? version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
         var loggerConfig = new LoggerConfiguration()
             .MinimumLevel.Override("Azure", LogEventLevel.Warning)
             .MinimumLevel.Override("Azure.Storage.Blobs", LogEventLevel.Warning)
@@ -75,13 +76,14 @@ public static class CommonLogExtensions
             .Enrich.WithMachineName()
             .Enrich.WithProperty("Application", featureConfig.Application)
             .Enrich.WithProperty("ApplicationVersion", featureConfig.ApplicationVersion)
-            .Enrich.WithProperty(
-                "InfrastructureVersion",
-                System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
-            );
+            .Enrich.WithProperty("InfrastructureVersion", version);
         if (!string.IsNullOrWhiteSpace(featureConfig.LogFilePath))
         {
-            loggerConfig.WriteTo.File(featureConfig.LogFilePath);
+            loggerConfig.WriteTo.File(
+                new MarkdownFormatter(),
+                featureConfig.LogFilePath,
+                rollingInterval: RollingInterval.Day
+            );
         }
 
 #if RELEASE

@@ -1,3 +1,4 @@
+using FileIt.Infrastructure;
 using FileIt.Infrastructure.Extensions;
 using FileIt.Infrastructure.Logging;
 using FileIt.Infrastructure.Middleware;
@@ -47,4 +48,8 @@ logConfig.ApplicationVersion = System
 builder.Services.AddSingleton(logConfig);
 builder.Logging.AddCommonLog(logConfig);
 
-builder.Build().Run();
+IHost host = builder.Build();
+host.Services.GetRequiredService<ILogger<Program>>()
+    .LogInformation(InfrastructureEvents.First, "Starting SimpleFlow Host");
+
+host.Run();
