@@ -133,3 +133,57 @@ These components simulate the complete Azure environment so that you can develop
 - [Digest](./docs/nomenclature.md) its naming conventions.
 - [Extend](./docs/extensions.md) this system with a new Module.
 - [Deploy](./docs/deployment.md) your new Module to Azure and sync database changes.
+
+---
+
+# My contributions (Xavier / Proximus)
+
+Branch: `feature/gl-account-dataflow`
+
+This fork extends Cesar's FileIt baseline with a full end-to-end implementation of the DataFlow module, a local Aspire orchestration layer, and observability wiring. The goal is a self-contained proof of concept that runs cold with a single `dotnet run` on a fresh clone, so the whole stack is demo-ready without requiring the rest of the team to have stood anything up.
+
+## Issues addressed
+
+### #24 - Load a CSV or JSON into a table, transform, and export to file
+
+Built the DataFlow module end to end. A `GLAccount.csv` dropped into the `dataflow-source` blob container is picked up by `WatchInbound` (blob trigger), logged to the `DataFlowRequestLog` table in Azure SQL with a correlation ID, moved to `dataflow-working`, then a message is placed on the `dataflow-transform` service bus queue. `DataFlowSubscriber` picks up that message, downloads the blob, runs `TransformGlAccounts` (groups by COMPANYCODE + GLACCOUNTGROUP, counts rows, flags profit/loss vs balance sheet), writes the summary as `summary_GLAccount.csv` to `dataflow-final`, and updates the RequestLog row with rows-ingested, rows-transformed, and status=Complete. 24 groups produced from ~20k row test file.
+
+### #19 - Test the Correlation ID
+
+Correlation IDs now flow end to end across function invocations AND across the service bus hop: `WatchInbound` generates the ID, stores it on the RequestLog row, enqueues it in the transform message, `DataFlowSubscriber` receives it, and every log entry in every host for that CSV shares the same ID. Verified today by filtering Aspire's Structured view by a specific correlation ID and seeing the complete journey in one timeline.
+
+### #25 - Message data
+
+Service bus message payload for the DataFlow transform queue includes the correlation ID, blob name, and RequestLog ID. `BusTool` wraps the send/receive so the payload shape stays consistent across modules.
+
+### #28 - Add Cancellation Tokens
+
+Every async method in the DataFlow App layer (`IWatchInbound.RunAsync`, `ITransformGlAccounts.RunAsync`, `BlobTool` operations, `BusTool` operations) accepts a `CancellationToken` parameter wired through from the function invocation.
+
+### #40 - New module generation
+
+The DataFlow module was built from scratch following the pattern Cesar established with SimpleFlow, so the pattern for generating a new module is effectively documented by having a second worked example to diff against: Domain interfaces -> Infrastructure wiring -> App layer logic -> Host bindings -> Test scaffold.
+
+### #20 - Improve the Docker experience
+
+Fed back to Cesar directly: added `.gitattributes` rules for CRLF/LF consistency on docker compose and shell files, pinned the SQL Edge image to version 1.0.7 in compose to avoid ARM64 resolution on AMD64 VMs, and documented the WSL path for running from the solution root.
+
+### #12 - Investigate Aspire
+
+Full local orchestration via a new `FileIt.AppHost` project. One `dotnet run` spins up Azurite, all three function hosts in the correct order with `WaitFor` dependencies, injects the Azure SQL connection string from user secrets as `FileItDbConnection`, auto-creates all six blob containers (`dataflow-source`, `dataflow-working`, `dataflow-final`, `simple-source`, `simple-working`, `simple-final`), and exposes unified structured logs across all hosts in the Aspire dashboard.
+
+Known officially assigned to Stas. I built this for my own learning and to have a standalone demo path. See [docs/ASPIRE.md](./docs/ASPIRE.md) for setup, gotchas, and what I learned.
+
+### #39 - Production Cloud Readiness
+
+In progress. Blob, Azure SQL, and function host pieces are wired for cloud deployment. Bicep IaC exists in the repo. Waiting on Finn for Service Bus RBAC grants to complete the cloud-ready pass.
+
+## What's still open on this branch
+
+- **Traces tab in Aspire** still empty. Structured logs via Serilog OTLP work, but distributed traces would require adding OpenTelemetry `ActivitySource` instrumentation to each function invocation. Medium effort, high demo payoff.
+- **Service Bus emulator in AppHost** not yet wired, waiting on Finn for the cloud side. Locally the existing docker compose emulator still works alongside Aspire.
+- **Lifecycle hook refactor** complete. AppHost now uses `builder.Eventing.Subscribe<AfterResourcesCreatedEvent>` instead of the initial `Task.Run` + delay hack.
+
+## Why a separate branch
+
+This is my contingency path. If the full team lands their pieces by the June deadline we merge forward. If not, this branch stands alone as a working demo.
