@@ -14,9 +14,11 @@ __azurite_db_blob__.json
 __azurite_db_table__.json
 AzuriteConfig
 
-# Serilog log files
+# Serilog log files and runtime log output folder
 log.txt
 serilog.txt
+*.log
+logs/
 
 # User-specific files
 *.rsuser

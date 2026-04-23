@@ -81,10 +81,61 @@ public static class CommonLogExtensions
                 "InfrastructureVersion",
                 System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
             );
-        if (!string.IsNullOrWhiteSpace(featureConfig.LogFilePath))
+        // Rich rolling log file for dev/QA/business sharing (#43).
+        // One file per host (derived from Application name), rolling daily,
+        // 30-day retention, 100MB per-file cap.
+        //
+        // Log output folder resolution:
+        // 1. LOG_OUTPUT_DIR env var wins (production flexibility - points at Azure Files, mounted volume, etc.)
+        // 2. Otherwise, walk up from the current directory to find the solution root and drop logs/ next to it
+        //    (local dev - all 3 hosts converge on <repo_root>/logs/ so devs and QA find them in one place)
+        // 3. Otherwise, current directory as a last-resort fallback
+        var logFolder = Environment.GetEnvironmentVariable("LOG_OUTPUT_DIR");
+        if (string.IsNullOrWhiteSpace(logFolder))
         {
-            loggerConfig.WriteTo.File(featureConfig.LogFilePath);
+            var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
+            while (dir != null && !dir.GetFiles("*.sln").Any())
+            {
+                dir = dir.Parent;
+            }
+            logFolder = dir != null
+                ? Path.Combine(dir.FullName, "logs")
+                : Path.Combine(Directory.GetCurrentDirectory(), "logs");
         }
+        Directory.CreateDirectory(logFolder);
+
+        var hostName = (featureConfig.Application ?? "fileit")
+            .Replace("FileIt.Module.", string.Empty)
+            .Replace("FileIt.", string.Empty)
+            .ToLowerInvariant();
+
+        var sharedLogPath = Path.Combine(logFolder, $"{hostName}-.log");
+
+        var sharedOutputTemplate =
+            "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} | {Level:u3} | {Application,-40} | " +
+            "Correlation: {CorrelationId,-36} | Invocation: {InvocationId,-36} | " +
+            "Event {EventName,-40} | {SourceContext} | {Message:lj}{NewLine}{Exception}";
+
+        // Delete stale log files so the new template applies cleanly on the next run
+        try
+        {
+            foreach (var stale in Directory.EnumerateFiles(logFolder, $"{hostName}-*.log"))
+            {
+                File.Delete(stale);
+            }
+        }
+        catch { /* best effort, ignore if files are locked */ }
+
+        loggerConfig.WriteTo.File(
+            path: sharedLogPath,
+            outputTemplate: sharedOutputTemplate,
+            rollingInterval: Serilog.RollingInterval.Day,
+            retainedFileCountLimit: 30,
+            fileSizeLimitBytes: 100_000_000,
+            rollOnFileSizeLimit: true,
+            shared: false,
+            flushToDiskInterval: TimeSpan.FromSeconds(2)
+        );
 
         // Ship logs to Aspire dashboard via OTLP when running under Aspire.
         // OTEL_EXPORTER_OTLP_ENDPOINT is auto-injected by Aspire into each child process.
