@@ -24,9 +24,12 @@ public class ApiFunc
     [Function(nameof(ApiAdd))]
     public async Task ApiAdd(
         [ServiceBusTrigger("api-add", Connection = "FileItServiceBus")]
-            ServiceBusReceivedMessage message
+            ServiceBusReceivedMessage message,
+        FunctionContext context
     )
     {
+        var cancellationToken = context.CancellationToken;
+
         using (
             _logger!.BeginScope(
                 new Dictionary<string, object>()
@@ -48,6 +51,9 @@ public class ApiFunc
                     payload
                 );
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
             var request = new ApiRequest(message.MessageId)
             {
                 Body = payload,
@@ -57,7 +63,7 @@ public class ApiFunc
                 Subject = message.Subject,
             };
             _logger.LogDebug(ServicesEvents.ExecApiAdd.Id, "ApiAdd request:\n{@ApiRequest}", request);
-            await _command.ApiAdd(request);
+            await _command.ApiAdd(request, cancellationToken);
         }
     }
 }

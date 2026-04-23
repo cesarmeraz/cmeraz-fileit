@@ -21,7 +21,7 @@ public class PublishTool : IBroadcastResponses
         _logger = logger;
     }
 
-    public async Task EmitAsync(ApiAddResponse response)
+    public async Task EmitAsync(ApiAddResponse response, CancellationToken cancellationToken = default)
     {
         if (response == null)
             throw new ArgumentNullException(nameof(response));
@@ -71,7 +71,10 @@ public class PublishTool : IBroadcastResponses
                 );
                 throw;
             }
-            await sender.SendMessageAsync(returnMessage);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await sender.SendMessageAsync(returnMessage, cancellationToken);
             _logger.LogInformation(
                 InfrastructureEvents.PublishToolEmitEnd,
                 "Returning response from Api"

@@ -8,7 +8,7 @@ namespace FileIt.Module.SimpleFlow.App;
 
 public interface IWatchInbound
 {
-    Task RunAsync(string blobName, string correlationId);
+    Task RunAsync(string blobName, string correlationId, CancellationToken cancellationToken = default);
 }
 
 public class WatchInbound : IWatchInbound
@@ -37,10 +37,11 @@ public class WatchInbound : IWatchInbound
     /// <summary>
     /// a BlobTrigger that receives the BlobClient and its name
     /// </summary>
-    /// <param name="blobClient">the BlobClient</param>
     /// <param name="blobName">the file name</param>
+    /// <param name="correlationId">the correlation id for this run</param>
+    /// <param name="cancellationToken">token to observe for graceful cancellation</param>
     /// <returns></returns>
-    public async Task RunAsync(string blobName, string correlationId)
+    public async Task RunAsync(string blobName, string correlationId, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation(
             SimpleEvents.SimpleWatcherAddRequestLog.Id,
@@ -49,12 +50,14 @@ public class WatchInbound : IWatchInbound
         );
         await _requestLogRepo.AddAsync(blobName, correlationId);
 
+        cancellationToken.ThrowIfCancellationRequested();
+
         _logger.LogInformation(
             SimpleEvents.SimpleWatcherMoveToWorking.Id,
             "Adding RequestLog for {BlobName}",
             blobName
         );
-        await _blobTool.MoveAsync(blobName, _config.SourceContainer, _config.WorkingContainer);
+        await _blobTool.MoveAsync(blobName, _config.SourceContainer, _config.WorkingContainer, cancellationToken);
 
         string messageId = Guid.NewGuid().ToString();
 
@@ -70,7 +73,8 @@ public class WatchInbound : IWatchInbound
                 ReplyTo = _config.ApiAddTopicName,
                 CorrelationId = correlationId,
                 QueueName = _config.ApiAddQueueName,
-            }
+            },
+            cancellationToken
         );
     }
 }

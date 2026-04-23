@@ -29,12 +29,15 @@ public class SimpleSubscriber
     /// A ServiceBusTrigger that processes the file ingested
     /// </summary>
     /// <param name="message">the ServiceBusReceivedMessage</param>
+    /// <param name="context">the FunctionContext providing the CancellationToken</param>
     /// <returns></returns>
     [Function(nameof(SimpleSubscriber))]
     public async Task Run(
-        [ServiceBusTrigger("api-add-topic", "api-add-simple-sub")] ServiceBusReceivedMessage message
+        [ServiceBusTrigger("api-add-topic", "api-add-simple-sub")] ServiceBusReceivedMessage message,
+        FunctionContext context
     )
     {
+        var cancellationToken = context.CancellationToken;
         string clientRequestId = message.CorrelationId ?? string.Empty;
 
         using (
@@ -62,8 +65,11 @@ public class SimpleSubscriber
                 );
                 throw new ApplicationException("Failed to deserialize ApiAddResponse!");
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
             _logger.LogInformation(SimpleEvents.SimpleSubscriber.Id, "Processing ApiAddResponse");
-            await _responseHandler.RunAsync(response);
+            await _responseHandler.RunAsync(response, cancellationToken);
             //LogFunctionEnd(nameof(SimpleSubscriber));
         }
     }

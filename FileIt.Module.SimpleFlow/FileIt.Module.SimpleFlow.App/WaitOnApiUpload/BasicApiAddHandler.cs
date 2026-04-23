@@ -11,7 +11,7 @@ namespace FileIt.Module.SimpleFlow.App.WaitOnApiUpload;
 
 public interface IBasicApiAddHandler
 {
-    Task RunAsync(ApiAddResponse message);
+    Task RunAsync(ApiAddResponse message, CancellationToken cancellationToken = default);
 }
 
 public class BasicApiAddHandler : IBasicApiAddHandler
@@ -38,8 +38,9 @@ public class BasicApiAddHandler : IBasicApiAddHandler
     /// A ServiceBusTrigger that processes the file ingested
     /// </summary>
     /// <param name="message">the ServiceBusReceivedMessage</param>
+    /// <param name="cancellationToken">token to observe for graceful cancellation</param>
     /// <returns></returns>
-    public async Task RunAsync(ApiAddResponse message)
+    public async Task RunAsync(ApiAddResponse message, CancellationToken cancellationToken = default)
     {
         string clientRequestId = message.CorrelationId ?? string.Empty;
 
@@ -65,12 +66,15 @@ public class BasicApiAddHandler : IBasicApiAddHandler
             );
             throw new Exception("SimpleRequestLog entry is missing BlobName");
         }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
         _logger.LogInformation(
             SimpleEvents.SimpleSubscriberMoveToFinal.Id,
             "Moving {BlobName} to Final",
             entry.BlobName
         );
-        await _blobTool.MoveAsync(entry.BlobName, _config.WorkingContainer, _config.FinalContainer);
+        await _blobTool.MoveAsync(entry.BlobName, _config.WorkingContainer, _config.FinalContainer, cancellationToken);
 
         entry.ApiId = message.NodeId;
 
@@ -80,6 +84,7 @@ public class BasicApiAddHandler : IBasicApiAddHandler
             entry.ApiId
         );
         await _requestLogRepo.UpdateAsync(entry);
+
         _logger.LogDebug(
             SimpleEvents.SimpleSubscriberCompleted.Id,
             "Processed Simple Request Log: {@entry}",

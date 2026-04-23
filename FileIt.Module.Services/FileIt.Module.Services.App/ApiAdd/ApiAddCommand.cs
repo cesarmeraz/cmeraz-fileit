@@ -9,7 +9,7 @@ namespace FileIt.Module.Services.App.ApiAdd;
 
 public interface IApiAddCommand
 {
-    Task ApiAdd(ApiRequest request);
+    Task ApiAdd(ApiRequest request, CancellationToken cancellationToken = default);
 }
 
 public class ApiAddCommand : IApiAddCommand
@@ -32,7 +32,7 @@ public class ApiAddCommand : IApiAddCommand
         _logger = logger;
     }
 
-    public async Task ApiAdd(ApiRequest request)
+    public async Task ApiAdd(ApiRequest request, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation(ServicesEvents.LogApiAddRequest.Id, "Simulating API action");
         var apiLogItem = await _apiLogRepo.AddAsync(
@@ -41,6 +41,8 @@ public class ApiAddCommand : IApiAddCommand
             "Response body",
             "Imaginary"
         );
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         //Here we evaluate API response and return a result
         var response = new ApiAddResponse()
@@ -55,6 +57,6 @@ public class ApiAddCommand : IApiAddCommand
             "Response published:\n{@ApiAddResponse}",
             response
         );
-        await _broadcaster.EmitAsync(response);
+        await _broadcaster.EmitAsync(response, cancellationToken);
     }
 }

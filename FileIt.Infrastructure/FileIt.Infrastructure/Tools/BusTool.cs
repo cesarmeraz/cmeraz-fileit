@@ -18,7 +18,7 @@ namespace FileIt.Infrastructure.Tools
             _senderFactory = senderFactory;
         }
 
-        public async Task SendMessageAsync(ApiRequest request)
+        public async Task SendMessageAsync(ApiRequest request, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(request.QueueName))
             {
@@ -46,8 +46,10 @@ namespace FileIt.Infrastructure.Tools
             message.ReplyTo = request.ReplyTo;
             message.Subject = request.Subject;
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             ServiceBusSender sender = _senderFactory.CreateClient(request.QueueName);
-            await sender.SendMessageAsync(message);
+            await sender.SendMessageAsync(message, cancellationToken);
             _logger.LogInformation(
                 InfrastructureEvents.BusToolSendMessageEnqueued.Id,
                 "Enqueued message {MessageId} to {QueueName} queue",
