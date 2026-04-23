@@ -34,7 +34,7 @@ public class ApiAddCommand : IApiAddCommand
 
     public async Task ApiAdd(ApiRequest request)
     {
-        _logger.LogInformation(ServicesEvents.LogApiAddRequest.Id, "Simulating API action");
+        _logger.LogInformation(ServicesEvents.LogApiAddRequest, "Simulating API action");
         var apiLogItem = await _apiLogRepo.AddAsync(
             request.CorrelationId ?? string.Empty,
             "Request body",
@@ -51,7 +51,7 @@ public class ApiAddCommand : IApiAddCommand
         };
 
         _logger.LogDebug(
-            ServicesEvents.ApiAddResponsePublished.Id,
+            ServicesEvents.ApiAddResponsePublished,
             "Response published:\n{@ApiAddResponse}",
             response
         );

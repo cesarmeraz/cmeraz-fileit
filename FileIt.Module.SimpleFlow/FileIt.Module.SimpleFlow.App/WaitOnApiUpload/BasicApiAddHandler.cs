@@ -44,7 +44,7 @@ public class BasicApiAddHandler : IBasicApiAddHandler
         string clientRequestId = message.CorrelationId ?? string.Empty;
 
         _logger.LogInformation(
-            SimpleEvents.SimpleSubscriberGetRequestLog.Id,
+            SimpleEvents.SimpleSubscriberGetRequestLog,
             "Get RequestLog by CorrelationId {CorrelationId}",
             message.CorrelationId
         );
@@ -52,7 +52,7 @@ public class BasicApiAddHandler : IBasicApiAddHandler
         if (entry == null)
         {
             _logger.LogError(
-                SimpleEvents.SimpleSubscriberRequestLogNotFound.Id,
+                SimpleEvents.SimpleSubscriberRequestLogNotFound,
                 "SimpleRequestLog entry not found"
             );
             throw new Exception("SimpleRequestLog entry not found");
@@ -60,13 +60,13 @@ public class BasicApiAddHandler : IBasicApiAddHandler
         if (string.IsNullOrWhiteSpace(entry.BlobName))
         {
             _logger.LogError(
-                SimpleEvents.SimpleSubscriberBlobNameMissing.Id,
+                SimpleEvents.SimpleSubscriberBlobNameMissing,
                 "SimpleRequestLog entry is missing BlobName"
             );
             throw new Exception("SimpleRequestLog entry is missing BlobName");
         }
         _logger.LogInformation(
-            SimpleEvents.SimpleSubscriberMoveToFinal.Id,
+            SimpleEvents.SimpleSubscriberMoveToFinal,
             "Moving {BlobName} to Final",
             entry.BlobName
         );
@@ -75,13 +75,13 @@ public class BasicApiAddHandler : IBasicApiAddHandler
         entry.ApiId = message.NodeId;
 
         _logger.LogInformation(
-            SimpleEvents.SimpleSubscriberUpdateRequestLog.Id,
+            SimpleEvents.SimpleSubscriberUpdateRequestLog,
             "Update RequestLog with {ApiId}",
             entry.ApiId
         );
         await _requestLogRepo.UpdateAsync(entry);
         _logger.LogDebug(
-            SimpleEvents.SimpleSubscriberCompleted.Id,
+            SimpleEvents.SimpleSubscriberCompleted,
             "Processed Simple Request Log: {@entry}",
             entry
         );
