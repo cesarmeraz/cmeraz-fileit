@@ -139,3 +139,57 @@ An early experimental AppHost had `builder.AddSqlServer("sql").WithDataVolume()`
 - **Service Bus in AppHost.** `Aspire.Hosting.Azure.ServiceBus` is already referenced in the `csproj`. Once Finn grants the Service Bus RBAC role, we can add `builder.AddAzureServiceBus("servicebus").RunAsEmulator()` + `AddServiceBusQueue(...)` + `AddServiceBusTopic(...)` calls and `WithReference(serviceBus)` on each function host. Until then, the existing docker compose emulator in `/emulator` still works alongside Aspire.
 
 - **Lifecycle hook refactor.** Done. Container init is inside an eventing subscriber, not a `Task.Run` with a fixed delay.
+
+
+## Cloud Service Bus provisioning (2026-04-22)
+
+The cloud Service Bus was provisioned today in the Innovation Hub hackathon tenant:
+
+- Tenant: `innohubspace.onmicrosoft.com`
+- Subscription: `lab-35`
+- Resource group: `rg-lab-sbus-01`
+- Namespace: `sbus-pe-2d99722c9843d8` (Premium, Canada Central, zone-redundant)
+- Host: `sbus-pe-2d99722c9843d8.servicebus.windows.net`
+
+### Entities created via Azure CLI
+
+```powershell
+$ns = "sbus-pe-2d99722c9843d8"
+$rg = "rg-lab-sbus-01"
+
+az servicebus queue create --namespace-name $ns --resource-group $rg --name dataflow-transform
+az servicebus queue create --namespace-name $ns --resource-group $rg --name api-add
+
+az servicebus topic create --namespace-name $ns --resource-group $rg --name dataflow-transform-topic
+az servicebus topic create --namespace-name $ns --resource-group $rg --name api-add-topic
+
+az servicebus topic subscription create --namespace-name $ns --resource-group $rg --topic-name api-add-topic --name api-add-simple-sub
+```
+
+Final entity list:
+
+| Kind | Name | Notes |
+|---|---|---|
+| Queue | `dataflow-transform` | DataFlow WatchInbound → Subscriber |
+| Queue | `api-add` | SimpleFlow → ApiAdd |
+| Queue | `secure-queue` | Pre-existing (Finn's test artifact, unused by app) |
+| Topic | `dataflow-transform-topic` | DataFlow reply channel |
+| Topic | `api-add-topic` | Services ApiAdd response topic |
+| Topic Subscription | `api-add-simple-sub` on `api-add-topic` | SimpleSubscriber listener |
+
+### Gotcha - public network access disabled by default
+
+The namespace name prefix `sbus-pe-` is a convention hinting at "private endpoint". Out of the box the namespace had **Public network access = Disabled**, which blocks Peek/Send/Receive from anything not inside the allowed VNet. Service Bus Explorer in the portal showed a yellow banner: "This namespace has public network access disabled, data operations such as Peek, Send or Receive against this Service Bus entity will not work until you switch to all networks or allowlist your client IP."
+
+For local dev and demo we switched to **Public network access = Enabled from all networks** via the Networking blade. Acceptable for this sandbox (fake users, terminated after hackathon). For production you would leave public access off and connect only from inside the VNet via managed identity on deployed function apps.
+
+### Auth for local dev
+
+SAS via `RootManageSharedAccessKey` policy (claims: Manage, Send, Listen). Primary Connection String copied into user secrets rather than source control:
+
+```powershell
+cd FileIt.AppHost
+dotnet user-secrets set "ConnectionStrings:serviceBus" "<primary connection string>"
+```
+
+For cloud deployment the function apps should use their managed identity (`mi-fileit-*`) assigned the `Azure Service Bus Data Owner` role, not SAS.

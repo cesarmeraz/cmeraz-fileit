@@ -17,21 +17,30 @@ var blobs = azurite.AddBlobs("blobs");
 // --- Azure SQL (cloud) ---
 var azureSql = builder.AddConnectionString("azureSql");
 
+// --- Azure Service Bus (cloud) ---
+var serviceBus = builder.AddConnectionString("serviceBus");
+
 // --- Func Apps with full wiring ---
 var services = builder.AddProject<Projects.FileIt_Module_Services_Host>("services-host")
     .WithReference(blobs)
     .WithEnvironment("FileItDbConnection", azureSql)
+    .WithEnvironment("FileItServiceBus", serviceBus)
+    .WithEnvironment("ConnectionStrings__ServiceBus", serviceBus)
     .WaitFor(blobs);
 
 var simpleflow = builder.AddProject<Projects.FileIt_Module_SimpleFlow_Host>("simpleflow-host")
     .WithReference(blobs)
     .WithEnvironment("FileItDbConnection", azureSql)
+    .WithEnvironment("FileItServiceBus", serviceBus)
+    .WithEnvironment("ConnectionStrings__ServiceBus", serviceBus)
     .WaitFor(services)
     .WaitFor(blobs);
 
 var dataflow = builder.AddProject<Projects.FileIt_Module_DataFlow_Host>("dataflow-host")
     .WithReference(blobs)
     .WithEnvironment("FileItDbConnection", azureSql)
+    .WithEnvironment("FileItServiceBus", serviceBus)
+    .WithEnvironment("ConnectionStrings__ServiceBus", serviceBus)
     .WaitFor(services)
     .WaitFor(blobs);
 
