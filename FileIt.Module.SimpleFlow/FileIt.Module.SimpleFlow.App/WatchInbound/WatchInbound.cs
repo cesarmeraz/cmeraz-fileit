@@ -44,7 +44,7 @@ public class WatchInbound : IWatchInbound
     public async Task RunAsync(string blobName, string correlationId, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation(
-            SimpleEvents.SimpleWatcherAddRequestLog.Id,
+            SimpleEvents.SimpleWatcherAddRequestLog,
             "Adding RequestLog for {BlobName}",
             blobName
         );
@@ -53,7 +53,7 @@ public class WatchInbound : IWatchInbound
         cancellationToken.ThrowIfCancellationRequested();
 
         _logger.LogInformation(
-            SimpleEvents.SimpleWatcherMoveToWorking.Id,
+            SimpleEvents.SimpleWatcherMoveToWorking,
             "Adding RequestLog for {BlobName}",
             blobName
         );
@@ -62,7 +62,7 @@ public class WatchInbound : IWatchInbound
         string messageId = Guid.NewGuid().ToString();
 
         _logger.LogInformation(
-            SimpleEvents.SimpleWatcherQueueApiAdd.Id,
+            SimpleEvents.SimpleWatcherQueueApiAdd,
             "Add message for {BlobName} to API Add queue",
             blobName
         );

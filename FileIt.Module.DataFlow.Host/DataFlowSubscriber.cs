@@ -54,14 +54,14 @@ public class DataFlowSubscriber
         )
         {
             _logger.LogDebug(
-                DataFlowEvents.DataFlowSubscriberReceive.Id,
+                DataFlowEvents.DataFlowSubscriberReceive,
                 "Receiving message for correlation {CorrelationId}",
                 clientRequestId
             );
 
             // Look up the request log to get the blob name
             _logger.LogInformation(
-                DataFlowEvents.DataFlowSubscriberGetRequestLog.Id,
+                DataFlowEvents.DataFlowSubscriberGetRequestLog,
                 "Looking up RequestLog for correlation {CorrelationId}",
                 clientRequestId
             );
@@ -70,7 +70,7 @@ public class DataFlowSubscriber
             if (entry == null)
             {
                 _logger.LogError(
-                    DataFlowEvents.DataFlowSubscriberRequestLogNotFound.Id,
+                    DataFlowEvents.DataFlowSubscriberRequestLogNotFound,
                     "DataFlowRequestLog not found for correlation {CorrelationId}",
                     clientRequestId
                 );
@@ -80,7 +80,7 @@ public class DataFlowSubscriber
             if (string.IsNullOrWhiteSpace(entry.BlobName))
             {
                 _logger.LogError(
-                    DataFlowEvents.DataFlowSubscriberBlobNameMissing.Id,
+                    DataFlowEvents.DataFlowSubscriberBlobNameMissing,
                     "BlobName is missing from DataFlowRequestLog"
                 );
                 throw new ApplicationException("DataFlowRequestLog entry is missing BlobName");
@@ -93,7 +93,7 @@ public class DataFlowSubscriber
 
             // Run the transform
             _logger.LogInformation(
-                DataFlowEvents.DataFlowTransform.Id,
+                DataFlowEvents.DataFlowTransform,
                 "Running GL Account transform for {BlobName}",
                 entry.BlobName
             );
@@ -112,7 +112,7 @@ public class DataFlowSubscriber
             await _blobTool.UploadAsync(outputStream, exportBlobName, _config.FinalContainer, cancellationToken);
 
             _logger.LogInformation(
-                DataFlowEvents.DataFlowSubscriberMoveToFinal.Id,
+                DataFlowEvents.DataFlowSubscriberMoveToFinal,
                 "Uploaded output file {ExportBlobName} to final container",
                 exportBlobName
             );
@@ -126,7 +126,7 @@ public class DataFlowSubscriber
             );
 
             _logger.LogInformation(
-                DataFlowEvents.DataFlowSubscriberCompleted.Id,
+                DataFlowEvents.DataFlowSubscriberCompleted,
                 "DataFlow transform complete. {RowsTransformed} groups written to {ExportBlobName}",
                 rowsTransformed,
                 exportBlobName

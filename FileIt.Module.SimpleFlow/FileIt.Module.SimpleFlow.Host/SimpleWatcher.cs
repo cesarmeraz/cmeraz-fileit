@@ -57,7 +57,7 @@ public class SimpleWatcher
         )
         {
             _logger.LogInformation(
-                SimpleEvents.SimpleWatcher.Id,
+                SimpleEvents.SimpleWatcher,
                 "Received blob trigger for blob: {BlobName}",
                 blobName
             );
@@ -87,7 +87,7 @@ public class SimpleWatcher
         )
         {
             _logger.LogInformation(
-                SimpleEvents.SimpleWatcher.Id,
+                SimpleEvents.SimpleWatcher,
                 "Received blob trigger for blob: {BlobName}",
                 blobName
             );

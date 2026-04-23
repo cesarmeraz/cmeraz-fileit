@@ -60,7 +60,8 @@ public static class CommonLogExtensions
         temp.Append("\n\t\"SourceContext\":\"{SourceContext}\",");
         temp.Append("\n\t\"CorrelationId\":\"{CorrelationId}\",");
         temp.Append("\n\t\"InvocationId\":\"{InvocationId}\",");
-        temp.Append("\n\t\"EventId\": {EventId}");
+        temp.Append("\n\t\"EventId\":{EventId},");
+        temp.Append("\n\t\"EventName\":\"{EventName}\"");
         temp.Append("\n}}{NewLine}{Exception}");
 
         var loggerConfig = new LoggerConfiguration()
@@ -71,6 +72,7 @@ public static class CommonLogExtensions
             .WriteTo.DatabaseSink(featureConfig)
             .WriteTo.Console(outputTemplate: temp.ToString())
             .Enrich.FromLogContext()
+            .Enrich.With<FileIt.Infrastructure.Logging.EventNameEnricher>()
             .Enrich.WithEnvironmentName()
             .Enrich.WithMachineName()
             .Enrich.WithProperty("Application", featureConfig.Application)

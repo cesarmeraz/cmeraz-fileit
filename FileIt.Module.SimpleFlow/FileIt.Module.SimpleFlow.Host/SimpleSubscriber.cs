@@ -51,7 +51,7 @@ public class SimpleSubscriber
         {
             //LogFunctionStart(nameof(SimpleSubscriber));
             _logger.LogDebug(
-                SimpleEvents.SimpleSubscriberReceive.Id,
+                SimpleEvents.SimpleSubscriberReceive,
                 "Receiving {@message}",
                 message
             );
@@ -60,7 +60,7 @@ public class SimpleSubscriber
             if (response == null)
             {
                 _logger.LogWarning(
-                    SimpleEvents.SimpleSubscriberReceiveFailed.Id,
+                    SimpleEvents.SimpleSubscriberReceiveFailed,
                     "Failed to deserialize ApiAddResponse"
                 );
                 throw new ApplicationException("Failed to deserialize ApiAddResponse!");
@@ -68,7 +68,7 @@ public class SimpleSubscriber
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _logger.LogInformation(SimpleEvents.SimpleSubscriber.Id, "Processing ApiAddResponse");
+            _logger.LogInformation(SimpleEvents.SimpleSubscriber, "Processing ApiAddResponse");
             await _responseHandler.RunAsync(response, cancellationToken);
             //LogFunctionEnd(nameof(SimpleSubscriber));
         }

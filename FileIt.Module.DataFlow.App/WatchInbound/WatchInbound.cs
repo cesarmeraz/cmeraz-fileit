@@ -39,7 +39,7 @@ public class WatchInbound : IWatchInbound
     {
         // Step 1 - write a record to the database so we can trace this file through the whole flow
         _logger.LogInformation(
-            DataFlowEvents.DataFlowWatcherAddRequestLog.Id,
+            DataFlowEvents.DataFlowWatcherAddRequestLog,
             "Adding RequestLog for {BlobName}",
             blobName
         );
@@ -49,7 +49,7 @@ public class WatchInbound : IWatchInbound
 
         // Step 2 - move the file out of source into working so nothing else picks it up
         _logger.LogInformation(
-            DataFlowEvents.DataFlowWatcherMoveToWorking.Id,
+            DataFlowEvents.DataFlowWatcherMoveToWorking,
             "Moving {BlobName} to working container",
             blobName
         );
@@ -60,7 +60,7 @@ public class WatchInbound : IWatchInbound
         // Step 3 - put a message on the service bus queue so the transform handler knows there's work to do
         string messageId = Guid.NewGuid().ToString();
         _logger.LogInformation(
-            DataFlowEvents.DataFlowWatcherQueueTransform.Id,
+            DataFlowEvents.DataFlowWatcherQueueTransform,
             "Queuing transform message for {BlobName}",
             blobName
         );

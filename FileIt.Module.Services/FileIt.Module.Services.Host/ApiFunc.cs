@@ -39,14 +39,14 @@ public class ApiFunc
             )
         )
         {
-            _logger.LogInformation(ServicesEvents.AddEvent.Id, "ApiAdd started");
+            _logger.LogInformation(ServicesEvents.AddEvent, "ApiAdd started");
             ApiAddPayload? payload = null;
             string? bodystr = message.Body?.ToString();
             if (!string.IsNullOrWhiteSpace(bodystr))
             {
                 payload = JsonSerializer.Deserialize<ApiAddPayload>(bodystr);
                 _logger.LogDebug(
-                    ServicesEvents.GetPayload.Id,
+                    ServicesEvents.GetPayload,
                     "ApiAdd payload:\n{@ApiPayload}",
                     payload
                 );
@@ -62,7 +62,7 @@ public class ApiFunc
                 ReplyTo = _config.ApiAddTopicName,
                 Subject = message.Subject,
             };
-            _logger.LogDebug(ServicesEvents.ExecApiAdd.Id, "ApiAdd request:\n{@ApiRequest}", request);
+            _logger.LogDebug(ServicesEvents.ExecApiAdd, "ApiAdd request:\n{@ApiRequest}", request);
             await _command.ApiAdd(request, cancellationToken);
         }
     }

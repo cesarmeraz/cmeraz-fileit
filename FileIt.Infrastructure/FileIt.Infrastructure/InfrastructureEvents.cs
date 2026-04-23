@@ -5,7 +5,7 @@ namespace FileIt.Infrastructure;
 public class InfrastructureEvents
 {
     public static EventId First = new EventId(1, nameof(First));
-    public static EventId FunctionStart = new EventId(2, nameof(FunctionEnd));
+    public static EventId FunctionStart = new EventId(2, nameof(FunctionStart));
     public static EventId FunctionEnd = new EventId(3, nameof(FunctionEnd));
 
     public static EventId BlobToolMoveStart = new EventId(10, nameof(BlobToolMoveStart));

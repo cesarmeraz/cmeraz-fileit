@@ -15,7 +15,7 @@ public class MiddlewareLogger : IFunctionsWorkerMiddleware
         context
             .GetLogger<MiddlewareLogger>()
             .LogInformation(
-                InfrastructureEvents.FunctionStart.Id,
+                InfrastructureEvents.FunctionStart,
                 "Start function {Function}, InvocationId {InvocationId}.",
                 functionName,
                 invocationId
@@ -27,7 +27,7 @@ public class MiddlewareLogger : IFunctionsWorkerMiddleware
         context
             .GetLogger<MiddlewareLogger>()
             .LogInformation(
-                InfrastructureEvents.FunctionEnd.Id,
+                InfrastructureEvents.FunctionEnd,
                 "End function {Function}, InvocationId {InvocationId}.",
                 functionName,
                 invocationId

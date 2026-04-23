@@ -26,7 +26,7 @@ public class BlobTool : IHandleFiles
         try
         {
             _logger.LogInformation(
-                InfrastructureEvents.BlobToolMoveStart.Id,
+                InfrastructureEvents.BlobToolMoveStart,
                 "Moving Blob '{BlobName}' from {source} to {destination}",
                 filename,
                 source,
@@ -49,7 +49,7 @@ public class BlobTool : IHandleFiles
             if (!existsResponse.Value)
             {
                 _logger.LogWarning(
-                    InfrastructureEvents.BlobToolBlobNotFound.Id,
+                    InfrastructureEvents.BlobToolBlobNotFound,
                     "Blob '{BlobName}' not found in container '{SourceContainer}'",
                     filename,
                     source
@@ -61,7 +61,7 @@ public class BlobTool : IHandleFiles
             await sourceBlobClient.DeleteAsync(cancellationToken: cancellationToken);
 
             _logger.LogInformation(
-                InfrastructureEvents.BlobToolMoved.Id,
+                InfrastructureEvents.BlobToolMoved,
                 "Moved blob '{BlobName}' from '{SourceContainer}' to '{DestinationContainer}'",
                 filename,
                 source,
@@ -71,7 +71,7 @@ public class BlobTool : IHandleFiles
         catch (Azure.RequestFailedException ex)
         {
             _logger.LogError(
-                InfrastructureEvents.BlobToolMoveFailed.Id,
+                InfrastructureEvents.BlobToolMoveFailed,
                 ex,
                 "Azure Storage request failed while moving blob '{BlobName}'",
                 filename
@@ -81,7 +81,7 @@ public class BlobTool : IHandleFiles
         catch (Exception ex)
         {
             _logger.LogError(
-                InfrastructureEvents.BlobToolUnexpected.Id,
+                InfrastructureEvents.BlobToolUnexpected,
                 ex,
                 "Unexpected error while moving blob '{BlobName}'",
                 filename
@@ -98,7 +98,7 @@ public class BlobTool : IHandleFiles
         }
 
         _logger.LogInformation(
-            InfrastructureEvents.BlobToolGetFile.Id,
+            InfrastructureEvents.BlobToolGetFile,
             "Getting '{FileName}' from {Location}",
             filename,
             location
@@ -112,7 +112,7 @@ public class BlobTool : IHandleFiles
             if (!existsResponse.Value)
             {
                 _logger.LogWarning(
-                    InfrastructureEvents.BlobToolGetFileNotFound.Id,
+                    InfrastructureEvents.BlobToolGetFileNotFound,
                     "Blob '{BlobName}' not found in container '{Container}'",
                     filename,
                     location
@@ -125,7 +125,7 @@ public class BlobTool : IHandleFiles
             ms.Position = 0;
 
             _logger.LogInformation(
-                InfrastructureEvents.BlobToolGetFileDownloaded.Id,
+                InfrastructureEvents.BlobToolGetFileDownloaded,
                 "Downloaded blob '{BlobName}' from container '{Container}' ({Length} bytes)",
                 filename,
                 location,
@@ -135,7 +135,7 @@ public class BlobTool : IHandleFiles
         catch (Azure.RequestFailedException ex)
         {
             _logger.LogError(
-                InfrastructureEvents.BlobToolGetFileRequestFailed.Id,
+                InfrastructureEvents.BlobToolGetFileRequestFailed,
                 ex,
                 "Azure Storage request failed while retrieving blob '{BlobName}'",
                 filename
@@ -145,7 +145,7 @@ public class BlobTool : IHandleFiles
         catch (Exception ex)
         {
             _logger.LogError(
-                InfrastructureEvents.BlobToolGetFileUnexpected.Id,
+                InfrastructureEvents.BlobToolGetFileUnexpected,
                 ex,
                 "Unexpected error while retrieving blob '{BlobName}'",
                 filename
@@ -159,7 +159,7 @@ public class BlobTool : IHandleFiles
     public async Task UploadAsync(Stream content, string filename, string location, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation(
-            InfrastructureEvents.BlobToolUploadStart.Id,
+            InfrastructureEvents.BlobToolUploadStart,
             "Uploading '{FileName}' from {Location}",
             filename,
             location
@@ -173,7 +173,7 @@ public class BlobTool : IHandleFiles
         catch (Exception ex)
         {
             _logger.LogError(
-                InfrastructureEvents.BlobToolUploadError.Id,
+                InfrastructureEvents.BlobToolUploadError,
                 ex,
                 "Error uploading {FileName}",
                 filename
@@ -184,7 +184,7 @@ public class BlobTool : IHandleFiles
     public async Task<Stream> DownloadAsync(string filename, string location, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation(
-            InfrastructureEvents.BlobToolGetFile.Id,
+            InfrastructureEvents.BlobToolGetFile,
             "Downloading '{FileName}' from {Location}",
             filename,
             location

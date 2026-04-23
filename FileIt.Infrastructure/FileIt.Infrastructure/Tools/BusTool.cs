@@ -23,7 +23,7 @@ namespace FileIt.Infrastructure.Tools
             if (string.IsNullOrEmpty(request.QueueName))
             {
                 _logger.LogError(
-                    InfrastructureEvents.BusToolSendMessageValidationError.Id,
+                    InfrastructureEvents.BusToolSendMessageValidationError,
                     "Queue name cannot be null or empty."
                 );
                 throw new ArgumentException(
@@ -32,7 +32,7 @@ namespace FileIt.Infrastructure.Tools
                 );
             }
             _logger.LogInformation(
-                InfrastructureEvents.BusToolSendMessageStart.Id,
+                InfrastructureEvents.BusToolSendMessageStart,
                 "Received message {MessageId} for {QueueName} queue",
                 request.MessageId,
                 request.QueueName
@@ -51,7 +51,7 @@ namespace FileIt.Infrastructure.Tools
             ServiceBusSender sender = _senderFactory.CreateClient(request.QueueName);
             await sender.SendMessageAsync(message, cancellationToken);
             _logger.LogInformation(
-                InfrastructureEvents.BusToolSendMessageEnqueued.Id,
+                InfrastructureEvents.BusToolSendMessageEnqueued,
                 "Enqueued message {MessageId} to {QueueName} queue",
                 request.MessageId,
                 request.QueueName

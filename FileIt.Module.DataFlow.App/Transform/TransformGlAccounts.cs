@@ -26,7 +26,7 @@ public class TransformGlAccounts : ITransformGlAccounts
     public async Task<string> RunAsync(Stream csvStream, string correlationId, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation(
-            DataFlowEvents.DataFlowTransform.Id,
+            DataFlowEvents.DataFlowTransform,
             "Starting GL Account transform for correlation {CorrelationId}",
             correlationId
         );
@@ -41,7 +41,7 @@ public class TransformGlAccounts : ITransformGlAccounts
             lines.Add(csvLine);
         }
 
-        // First line is the header — skip it but use it to find our column positions
+        // First line is the header â€” skip it but use it to find our column positions
         var headers = lines[0].Split(',');
         int companyCodeIndex = Array.IndexOf(headers, " COMPANYCODE");
         int accountGroupIndex = Array.IndexOf(headers, " GLACCOUNTGROUP");
@@ -95,7 +95,7 @@ public class TransformGlAccounts : ITransformGlAccounts
         }
 
         _logger.LogInformation(
-            DataFlowEvents.DataFlowTransformCompleted.Id,
+            DataFlowEvents.DataFlowTransformCompleted,
             "GL Account transform complete. {GroupCount} groups produced for correlation {CorrelationId}",
             summary.Count,
             correlationId
