@@ -1,0 +1,13 @@
+traces
+| where customDimensions.Application startswith "FileIt"
+| where isnotempty(customDimensions.InvocationId)
+| extend ChicagoTime = datetime_utc_to_local(timestamp, 'America/Chicago')
+| project ChicagoTime
+, InvocationId = customDimensions.InvocationId
+, CorrelationId = customDimensions.CorrelationId
+, Event = parse_json(tostring(customDimensions.EventId)).Name
+, SourceContext = customDimensions.SourceContext
+, Application = customDimensions.Application
+, Version = customDimensions.ApplicationVersion
+, Infrastructure = customDimensions.InfrastructureVersion
+, Message = message
