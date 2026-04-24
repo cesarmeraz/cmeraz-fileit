@@ -52,4 +52,49 @@ public class InfrastructureEvents
     public static EventId PublishToolEmitStart = new EventId(41, nameof(PublishToolEmitStart));
     public static EventId PublishToolEmitError = new EventId(42, nameof(PublishToolEmitError));
     public static EventId PublishToolEmitEnd = new EventId(43, nameof(PublishToolEmitEnd));
+
+    // Dead-letter reader lifecycle + message handling (#22).
+    // See docs/dead-letter-strategy.md Section 9.
+    public static EventId DeadLetterReaderStarted = new EventId(
+        50,
+        nameof(DeadLetterReaderStarted)
+    );
+    public static EventId DeadLetterReaderStopped = new EventId(
+        51,
+        nameof(DeadLetterReaderStopped)
+    );
+    public static EventId DeadLetterMessageReceived = new EventId(
+        52,
+        nameof(DeadLetterMessageReceived)
+    );
+    public static EventId DeadLetterRecordPersisted = new EventId(
+        53,
+        nameof(DeadLetterRecordPersisted)
+    );
+    public static EventId DeadLetterRecordPersistFailed = new EventId(
+        54,
+        nameof(DeadLetterRecordPersistFailed)
+    );
+    public static EventId DeadLetterClassified = new EventId(
+        55,
+        nameof(DeadLetterClassified)
+    );
+    public static EventId DeadLetterClassificationUnknown = new EventId(
+        56,
+        nameof(DeadLetterClassificationUnknown)
+    );
+
+    // Replay function lifecycle + per-record outcomes (#22).
+    public static EventId ReplayFunctionStarted = new EventId(
+        60,
+        nameof(ReplayFunctionStarted)
+    );
+    public static EventId ReplayFunctionStopped = new EventId(
+        61,
+        nameof(ReplayFunctionStopped)
+    );
+    public static EventId ReplayInitiated = new EventId(62, nameof(ReplayInitiated));
+    public static EventId ReplaySucceeded = new EventId(63, nameof(ReplaySucceeded));
+    public static EventId ReplayFailed = new EventId(64, nameof(ReplayFailed));
+    public static EventId ReplayExhausted = new EventId(65, nameof(ReplayExhausted));
 }
