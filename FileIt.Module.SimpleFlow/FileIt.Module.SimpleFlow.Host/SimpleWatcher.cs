@@ -1,17 +1,8 @@
-using System.Net;
-using System.Text;
-using System.Text.Json;
-using Azure.Messaging;
 using Azure.Messaging.EventGrid;
-using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
-using FileIt.Domain.Entities;
-using FileIt.Domain.Interfaces;
 using FileIt.Infrastructure.Extensions;
 using FileIt.Module.SimpleFlow.App;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Extensions.EventGrid;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
 namespace FileIt.Module.SimpleFlow;
@@ -54,7 +45,7 @@ public class SimpleWatcher
         )
         {
             _logger.LogInformation(
-                SimpleEvents.SimpleWatcher.Id,
+                SimpleEvents.SimpleWatcher,
                 "Received blob trigger for blob: {BlobName}",
                 blobName
             );
@@ -80,7 +71,7 @@ public class SimpleWatcher
         )
         {
             _logger.LogInformation(
-                SimpleEvents.SimpleWatcher.Id,
+                SimpleEvents.SimpleWatcher,
                 "Received blob trigger for blob: {BlobName}",
                 blobName
             );

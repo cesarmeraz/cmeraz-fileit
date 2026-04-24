@@ -47,22 +47,18 @@ public class SimpleSubscriber
         )
         {
             //LogFunctionStart(nameof(SimpleSubscriber));
-            _logger.LogDebug(
-                SimpleEvents.SimpleSubscriberReceive.Id,
-                "Receiving {@message}",
-                message
-            );
+            _logger.LogDebug(SimpleEvents.SimpleSubscriberReceive, "Receiving {@message}", message);
 
             var response = JsonSerializer.Deserialize<ApiAddResponse>(message.Body.ToString());
             if (response == null)
             {
                 _logger.LogWarning(
-                    SimpleEvents.SimpleSubscriberReceiveFailed.Id,
+                    SimpleEvents.SimpleSubscriberReceiveFailed,
                     "Failed to deserialize ApiAddResponse"
                 );
                 throw new ApplicationException("Failed to deserialize ApiAddResponse!");
             }
-            _logger.LogInformation(SimpleEvents.SimpleSubscriber.Id, "Processing ApiAddResponse");
+            _logger.LogInformation(SimpleEvents.SimpleSubscriber, "Processing ApiAddResponse");
             await _responseHandler.RunAsync(response);
             //LogFunctionEnd(nameof(SimpleSubscriber));
         }
