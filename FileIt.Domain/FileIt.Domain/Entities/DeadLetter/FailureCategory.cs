@@ -1,4 +1,4 @@
-namespace FileIt.Infrastructure.Classification;
+namespace FileIt.Domain.Entities.DeadLetter;
 
 /// <summary>
 /// Why a Service Bus message ended up in the dead-letter sub-queue.
@@ -6,11 +6,20 @@ namespace FileIt.Infrastructure.Classification;
 /// auto-replay engine would be allowed to touch.
 /// </summary>
 /// <remarks>
-/// Values are persisted to <c>dbo.DeadLetterRecord.FailureCategory</c> as their
-/// string names. The database enforces the same set via
+/// <para>
+/// This is a domain concept, not an infrastructure concept. It describes the kind
+/// of failure that occurred; the classifier (in FileIt.Infrastructure) is the
+/// mechanism that assigns a category.
+/// </para>
+/// <para>
+/// Persisted to <c>dbo.DeadLetterRecord.FailureCategory</c> as the string name via
+/// an EF value converter. The database enforces the same set via
 /// <c>CK_DeadLetterRecord_FailureCategory</c>. Do not rename or reorder without a
-/// coordinated migration; the string names are the contract.
+/// coordinated migration; the string names are the contract between C# and SQL.
+/// </para>
+/// <para>
 /// See docs/dead-letter-strategy.md Section 4.
+/// </para>
 /// </remarks>
 public enum FailureCategory
 {

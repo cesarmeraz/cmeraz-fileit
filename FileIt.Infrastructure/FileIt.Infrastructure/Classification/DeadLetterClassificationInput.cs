@@ -1,11 +1,13 @@
+using FileIt.Domain.Entities.DeadLetter;
+
 namespace FileIt.Infrastructure.Classification;
 
 /// <summary>
 /// All the signals the classifier reads from a dead-lettered message.
 /// Deliberately decoupled from <c>Azure.Messaging.ServiceBus.ServiceBusReceivedMessage</c>
 /// so the classifier can be unit tested without a Service Bus client, and so the same
-/// classifier runs against persisted <see cref="FileIt.Infrastructure.Classification"/>
-/// records if we ever re-classify historical rows.
+/// classifier runs against persisted <see cref="DeadLetterRecord"/> rows if we ever
+/// re-classify historical rows under new rules.
 /// </summary>
 /// <param name="DeadLetterReason">
 /// The <c>DeadLetterReason</c> application property set by Service Bus (or by an

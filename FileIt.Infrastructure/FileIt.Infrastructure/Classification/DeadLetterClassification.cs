@@ -1,3 +1,5 @@
+using FileIt.Domain.Entities.DeadLetter;
+
 namespace FileIt.Infrastructure.Classification;
 
 /// <summary>

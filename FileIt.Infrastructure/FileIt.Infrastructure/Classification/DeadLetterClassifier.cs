@@ -1,3 +1,5 @@
+using FileIt.Domain.Entities.DeadLetter;
+
 namespace FileIt.Infrastructure.Classification;
 
 /// <summary>
@@ -60,40 +62,30 @@ public sealed class DeadLetterClassifier : IDeadLetterClassifier
         ArgumentNullException.ThrowIfNull(input);
 
         // Rule 1: explicit handler hint wins over everything.
-        // A handler that knows exactly why it's rejecting a message is more trustworthy
-        // than any heuristic we could build.
         if (TryClassifyByExplicitHint(input) is { } explicit_)
         {
             return explicit_;
         }
 
         // Rule 2: deliberate poison marker.
-        // Documented in the design doc; lets integration tests and chaos scenarios tag
-        // messages without relying on payload-shape heuristics.
         if (TryClassifyByPoisonMarker(input) is { } markerResult)
         {
             return markerResult;
         }
 
         // Rule 3: poison payload prefix embedded in the error description.
-        // When a validator rejects a POISON_ payload the resulting exception message
-        // typically contains the prefix verbatim.
         if (TryClassifyByPoisonPayloadPrefix(input) is { } prefixResult)
         {
             return prefixResult;
         }
 
         // Rule 4: Service Bus built-in reason strings.
-        // These are the strongest deterministic signals available; matching them is
-        // unambiguous.
         if (TryClassifyByBuiltInReason(input) is { } builtInResult)
         {
             return builtInResult;
         }
 
         // Rule 5: heuristic pattern match on the error description.
-        // The description is handler-authored and not guaranteed stable, but common
-        // shapes appear often enough to be worth a targeted pass.
         if (TryClassifyByDescriptionHeuristic(input) is { } heuristicResult)
         {
             return heuristicResult;
@@ -190,11 +182,6 @@ public sealed class DeadLetterClassifier : IDeadLetterClassifier
 
         if (string.Equals(reason, ReasonMaxDeliveryCountExceeded, StringComparison.Ordinal))
         {
-            // MaxDeliveryCountExceeded alone is ambiguous: could be poison, a long
-            // downstream outage, or schema. Bias toward Poison because the handler failed
-            // on every single redelivery, which is the behavior of a logic bug more
-            // often than an outage. Downstream-outage patterns are better detected at
-            // the reporting layer (clusters of failures in a time window) than here.
             return new DeadLetterClassification(
                 Category: FailureCategory.Poison,
                 Reasoning: BuildReasoning(
@@ -253,8 +240,6 @@ public sealed class DeadLetterClassifier : IDeadLetterClassifier
             return null;
         }
 
-        // Schema-violation heuristics. These phrases come up overwhelmingly in
-        // deserialization and validation failures.
         var schemaMarkers = new[]
         {
             "JsonException",
@@ -282,8 +267,6 @@ public sealed class DeadLetterClassifier : IDeadLetterClassifier
             }
         }
 
-        // Transient heuristics. Conservative; missing a transient here just means the
-        // message is reviewed by a human, which is fine.
         var transientMarkers = new[]
         {
             "TimeoutException",
@@ -308,8 +291,6 @@ public sealed class DeadLetterClassifier : IDeadLetterClassifier
             }
         }
 
-        // Downstream-unavailable heuristics. Distinct from Transient: these imply the
-        // downstream was not merely slow but actively unreachable.
         var downstreamMarkers = new[]
         {
             "No such host is known",
