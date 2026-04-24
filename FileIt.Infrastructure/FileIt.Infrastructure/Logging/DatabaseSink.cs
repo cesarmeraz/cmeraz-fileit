@@ -75,7 +75,38 @@ public class DatabaseSink : ILogEventSink
         }
         return null;
     }
+    public string? GetEventIdName(LogEvent logEvent)
+    {
+        if (logEvent.Properties.TryGetValue("EventId", out var eventIdProperty))
+        {
+            if (eventIdProperty is StructureValue eventIdStructure)
+            {
+                var nameProperty = eventIdStructure.Properties.FirstOrDefault(p => p.Name == "Name");
+                if (
+                    nameProperty != null
+                    && nameProperty.Value is ScalarValue nameScalar
+                    && nameScalar.Value is string nameValue
+                )
+                {
+                    return nameValue;
+                }
+            }
+        }
+        return null;
+    }
 
+    private string SerializeProperties(IReadOnlyDictionary<string, LogEventPropertyValue> properties)
+    {
+        // logEvent.Properties values are Serilog types (ScalarValue, StructureValue, etc.)
+        // JsonSerializer does not know how to render them, so ToString() is the correct path.
+        // Produces a JSON-ish dict of property -> rendered value for forensic review.
+        var dict = new Dictionary<string, string>();
+        foreach (var kvp in properties)
+        {
+            dict[kvp.Key] = kvp.Value?.ToString() ?? string.Empty;
+        }
+        return JsonSerializer.Serialize(dict);
+    }
     public void Emit(LogEvent logEvent)
     {
         if (string.IsNullOrWhiteSpace(this._connectionString))
@@ -109,10 +140,10 @@ public class DatabaseSink : ILogEventSink
             CorrelationId = GetString(properties, "CorrelationId"),
             InvocationId = GetString(properties, "InvocationId"),
             EventId = GetEventIdId(logEvent),
-            //EventId = GetInt(properties, "EventId"),
+            EventName = GetEventIdName(logEvent),
             Exception = GetString(properties, "Exception"),
             SourceContext = GetString(properties, "SourceContext"),
-            Properties = JsonSerializer.Serialize(logEvent.Properties),
+            Properties = SerializeProperties(logEvent.Properties),
         };
 
         using (var db = new CommonLogDbContext(_connectionString))

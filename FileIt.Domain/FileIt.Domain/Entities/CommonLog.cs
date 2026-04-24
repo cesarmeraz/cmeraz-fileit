@@ -32,7 +32,7 @@ public class CommonLog : IAuditable
     public string? InvocationId { get; set; }
 
     public int? EventId { get; set; }
-
+    public string? EventName { get; set; }
     public DateTime? CreatedOn { get; set; }
 
     public DateTime? ModifiedOn { get; set; }
