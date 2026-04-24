@@ -2,6 +2,7 @@
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using FileIt.Domain.Interfaces;
+using FileIt.Infrastructure.Classification;
 using FileIt.Infrastructure.Data;
 using FileIt.Infrastructure.Tools;
 using Microsoft.Azure.Functions.Worker.Builder;
@@ -59,6 +60,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IApiLogRepo, ApiLogRepo>();
         services.AddScoped<ISimpleRequestLogRepo, SimpleRequestLogRepo>();
         services.AddScoped<IDataFlowRequestLogRepo, DataFlowRequestLogRepo>();
+        services.AddScoped<IDeadLetterRecordRepo, DeadLetterRecordRepo>();
+
+        // Dead-letter classifier. Singleton because the default implementation is pure
+        // and stateless; any future stateful classifier should revisit this lifetime.
+        services.AddSingleton<IDeadLetterClassifier, DeadLetterClassifier>();
+
         services.AddDbContextFactory<CommonDbContext>(options =>
             options.UseSqlServer(config.DbConnectionString)
         );
