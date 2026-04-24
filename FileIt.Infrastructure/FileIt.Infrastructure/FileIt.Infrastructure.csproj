@@ -33,5 +33,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\FileIt.Domain\FileIt.Domain\FileIt.Domain.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Classification\" />
+  </ItemGroup>
 </Project>
 
