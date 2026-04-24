@@ -16,9 +16,8 @@
   </ItemGroup>
   <ItemGroup>
     <Build Remove="fileit.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <PostDeploy Include="FileItDev.sql" />
+    <Build Remove="Scripts\**\*.sql" />
+    <None Include="Scripts\**\*.sql" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
