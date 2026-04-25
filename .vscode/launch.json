@@ -18,7 +18,22 @@
             "preLaunchTask": "start simple",
             "processId": "${command:azureFunctions.pickProcess}"
         },
-
+        {
+            "name": "Publish Services",
+            "type": "bashdb",
+            "request": "launch",
+            "preLaunchTask": "validate telemetry packages",
+            "program": "${workspaceFolder}/scripts/publish/publish-services.sh",
+            "terminalKind": "integrated"
+        },
+        {
+            "name": "Publish Simple Flow",
+            "type": "bashdb",
+            "request": "launch",
+            "preLaunchTask": "validate telemetry packages",
+            "program": "${workspaceFolder}/scripts/publish/publish-simple.sh",
+            "terminalKind": "integrated"
+        },
         {
             "type": "bashdb",
             "request": "launch",
@@ -29,4 +44,3 @@
         }
     ]
 }
-

@@ -40,5 +40,17 @@
                 "cwd": "${workspaceFolder}/FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow.Host"
             }
         },
+        {
+            "label": "validate telemetry packages",
+            "type": "shell",
+            "command": "./scripts/validate/telemetry-package-guard.sh",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        }
     ]
 }

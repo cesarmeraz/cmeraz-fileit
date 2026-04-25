@@ -1,6 +1,7 @@
 using System.Text;
 using FileIt.Domain.Interfaces;
 using FileIt.Infrastructure.Logging;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using Serilog;
 using Serilog.Events;
+using Serilog.Extensions.Logging;
 
 // A static class to hold the extension method
 public static class CommonLogExtensions
@@ -63,38 +65,47 @@ public static class CommonLogExtensions
         temp.Append("\n\t\"EventId\": {EventId}");
         temp.Append("\n}}{NewLine}{Exception}");
 
-        var loggerConfig = new LoggerConfiguration()
-            .MinimumLevel.Override("Azure", LogEventLevel.Warning)
-            .MinimumLevel.Override("Azure.Storage.Blobs", LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning) // Optional: control noise from built-in Microsoft logging
-            .MinimumLevel.Debug()
-            .WriteTo.DatabaseSink(featureConfig)
-            .WriteTo.Console(outputTemplate: temp.ToString())
-            .Enrich.FromLogContext()
-            .Enrich.WithEnvironmentName()
-            .Enrich.WithMachineName()
-            .Enrich.WithProperty("Application", featureConfig.Application)
-            .Enrich.WithProperty("ApplicationVersion", featureConfig.ApplicationVersion)
-            .Enrich.WithProperty(
-                "InfrastructureVersion",
-                System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
-            );
-        if (!string.IsNullOrWhiteSpace(featureConfig.LogFilePath))
+        builder.Services.AddSingleton<ILoggerProvider>(serviceProvider =>
         {
-            loggerConfig.WriteTo.File(featureConfig.LogFilePath);
-        }
+            var loggerConfig = new LoggerConfiguration()
+                .MinimumLevel.Override("Azure", LogEventLevel.Warning)
+                .MinimumLevel.Override("Azure.Storage.Blobs", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning) // Optional: control noise from built-in Microsoft logging
+                .MinimumLevel.Debug()
+                .WriteTo.DatabaseSink(featureConfig)
+                .WriteTo.Console(outputTemplate: temp.ToString())
+                .Enrich.With(new EventIdDimensionsEnricher())
+                .Enrich.FromLogContext()
+                .Enrich.WithEnvironmentName()
+                .Enrich.WithMachineName()
+                .Enrich.WithProperty("Application", featureConfig.Application)
+                .Enrich.WithProperty("ApplicationVersion", featureConfig.ApplicationVersion)
+                .Enrich.WithProperty(
+                    "InfrastructureVersion",
+                    System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
+                );
+
+            if (!string.IsNullOrWhiteSpace(featureConfig.LogFilePath))
+            {
+                loggerConfig.WriteTo.File(featureConfig.LogFilePath, shared: true);
+            }
 
 #if RELEASE
-        loggerConfig.WriteTo.ApplicationInsights(
-            featureConfig.AppInsightsConnectionString,
-            TelemetryConverter.Traces
-        );
+            // Resolve TelemetryConfiguration from DI so the sink does not require a raw connection string.
+            var telemetryConfiguration = serviceProvider.GetService<TelemetryConfiguration>();
+            if (telemetryConfiguration != null)
+            {
+                loggerConfig.WriteTo.ApplicationInsights(
+                    telemetryConfiguration,
+                    TelemetryConverter.Traces
+                );
+            }
 #endif
 
-        Log.Logger = loggerConfig.CreateLogger();
-
-        // Register your custom provider
-        builder.AddSerilog(Log.Logger, true);
+            var logger = loggerConfig.CreateLogger();
+            Log.Logger = logger;
+            return new SerilogLoggerProvider(logger, true);
+        });
 
         // Use the preconfigured Serilog Logger (Log.Logger) for the Functions application.
         // FunctionsApplicationBuilder doesn't expose Host, so attach Serilog through the ILoggingBuilder.
