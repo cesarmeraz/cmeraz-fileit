@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using FileIt.Domain.Entities;
 using FileIt.Domain.Interfaces;
 using FileIt.Infrastructure.Logging;
@@ -10,11 +9,10 @@ using Serilog.Parsing;
 
 namespace FileIt.Infrastructure.Integration;
 
-[TestClass]
 public class DatabaseSinkTest
 {
-    [TestMethod]
-    public void TestEmit()
+    [Test]
+    public async Task TestEmit()
     {
         string correlationId = Guid.NewGuid().ToString();
         string connString =
@@ -26,7 +24,10 @@ public class DatabaseSinkTest
             Environment = "LocalDev",
             Host = "cesario",
             DbConnectionString = connString,
-            ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString(),
+            ApplicationVersion = System
+                .Reflection.Assembly.GetExecutingAssembly()
+                .GetName()
+                .Version?.ToString(),
         };
         var target = new DatabaseSink(featureConfig);
         // Create message template tokens
@@ -94,13 +95,13 @@ public class DatabaseSinkTest
                     Console.WriteLine(ex.Message);
                 }
 
-                Assert.AreEqual(1, actual.Count);
-                Assert.AreEqual(correlationId, actual[0].CorrelationId);
-                Assert.AreEqual("LocalDev", actual[0].Environment);
-                // Assert.AreEqual("FileIt.Module.Services.Integration", actual[0].Feature);
-                Assert.AreEqual(logEvent.Level.ToString(), actual[0].Level);
-                Assert.AreEqual("cesario", actual[0].MachineName);
-                Assert.AreEqual("SourceContext", actual[0].SourceContext);
+                await Assert.That(actual.Count).IsEqualTo(1);
+                await Assert.That(actual[0].CorrelationId).IsEqualTo(correlationId);
+                await Assert.That(actual[0].Environment).IsEqualTo("LocalDev");
+                // await Assert.That(actual[0].Feature).IsEqualTo("FileIt.Module.Services.Integration");
+                await Assert.That(actual[0].Level).IsEqualTo(logEvent.Level.ToString());
+                await Assert.That(actual[0].MachineName).IsEqualTo("cesario");
+                await Assert.That(actual[0].SourceContext).IsEqualTo("SourceContext");
             }
         }
     }
