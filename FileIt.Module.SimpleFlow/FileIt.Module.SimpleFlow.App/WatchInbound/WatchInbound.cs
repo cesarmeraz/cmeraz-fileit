@@ -43,15 +43,15 @@ public class WatchInbound : IWatchInbound
     public async Task RunAsync(string blobName, string correlationId)
     {
         _logger.LogInformation(
-            SimpleEvents.SimpleWatcherAddRequestLog.Id,
+            SimpleEvents.SimpleWatcherAddRequestLog,
             "Adding RequestLog for {BlobName}",
             blobName
         );
         await _requestLogRepo.AddAsync(blobName, correlationId);
 
         _logger.LogInformation(
-            SimpleEvents.SimpleWatcherMoveToWorking.Id,
-            "Adding RequestLog for {BlobName}",
+            SimpleEvents.SimpleWatcherMoveToWorking,
+            "Moving {BlobName} to Working",
             blobName
         );
         await _blobTool.MoveAsync(blobName, _config.SourceContainer, _config.WorkingContainer);
@@ -59,7 +59,7 @@ public class WatchInbound : IWatchInbound
         string messageId = Guid.NewGuid().ToString();
 
         _logger.LogInformation(
-            SimpleEvents.SimpleWatcherQueueApiAdd.Id,
+            SimpleEvents.SimpleWatcherQueueApiAdd,
             "Add message for {BlobName} to API Add queue",
             blobName
         );
