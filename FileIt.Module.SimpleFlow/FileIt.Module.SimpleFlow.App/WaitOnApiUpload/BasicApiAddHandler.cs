@@ -11,7 +11,7 @@ namespace FileIt.Module.SimpleFlow.App.WaitOnApiUpload;
 
 public interface IBasicApiAddHandler
 {
-    Task RunAsync(ApiAddResponse message);
+    Task RunAsync(string? correlationId, string? messageBody);
 }
 
 public class BasicApiAddHandler : IBasicApiAddHandler
@@ -39,14 +39,23 @@ public class BasicApiAddHandler : IBasicApiAddHandler
     /// </summary>
     /// <param name="message">the ServiceBusReceivedMessage</param>
     /// <returns></returns>
-    public async Task RunAsync(ApiAddResponse message)
+    public async Task RunAsync(string? correlationId, string? messageBody)
     {
-        string clientRequestId = message.CorrelationId ?? string.Empty;
+        string clientRequestId = correlationId ?? string.Empty;
+        var message = JsonSerializer.Deserialize<ApiAddResponse>(messageBody ?? string.Empty);
+        if (message == null)
+        {
+            _logger.LogWarning(
+                SimpleEvents.SimpleSubscriberReceiveFailed,
+                "Failed to deserialize ApiAddResponse"
+            );
+            throw new ApplicationException("Failed to deserialize ApiAddResponse!");
+        }
 
         _logger.LogInformation(
             SimpleEvents.SimpleSubscriberGetRequestLog,
-            "Get RequestLog by CorrelationId {CorrelationId}",
-            message.CorrelationId
+            "Processing message {@Message}",
+            message
         );
         SimpleRequestLog? entry = await _requestLogRepo.GetByClientRequestIdAsync(clientRequestId);
         if (entry == null)
@@ -72,7 +81,7 @@ public class BasicApiAddHandler : IBasicApiAddHandler
         );
         await _blobTool.MoveAsync(entry.BlobName, _config.WorkingContainer, _config.FinalContainer);
 
-        entry.ApiId = message.NodeId;
+        entry.ApiId = message!.NodeId;
 
         _logger.LogInformation(
             SimpleEvents.SimpleSubscriberUpdateRequestLog,

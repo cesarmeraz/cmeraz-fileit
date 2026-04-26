@@ -10,12 +10,16 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.MTP" />
+    <PackageReference Include="TngTech.ArchUnitNET" />
     <PackageReference Include="TUnit" />
     <PackageReference Include="TUnit.Mocks" />
     <PackageReference Include="TUnit.Mocks.Logging" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../FileIt.Domain/FileIt.Domain/FileIt.Domain.csproj" />
+    <ProjectReference Include="../../FileIt.Infrastructure/FileIt.Infrastructure/FileIt.Infrastructure.csproj" />
+    <ProjectReference Include="../FileIt.Module.SimpleFlow.Host/FileIt.Module.SimpleFlow.Host.csproj" />
     <ProjectReference Include="..\FileIt.Module.SimpleFlow.App\FileIt.Module.SimpleFlow.App.csproj" />
   </ItemGroup>
 </Project>

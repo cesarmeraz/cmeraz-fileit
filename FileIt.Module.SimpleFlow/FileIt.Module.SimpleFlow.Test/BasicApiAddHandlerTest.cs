@@ -1,3 +1,4 @@
+using System.Text.Json;
 using FileIt.Domain.Entities;
 using FileIt.Domain.Entities.Api;
 using FileIt.Domain.Interfaces;
@@ -45,8 +46,6 @@ public class BasicApiAddHandlerTest
             ClientRequestId = correlationId,
             BlobName = blobName,
         };
-        var message = new ApiAddResponse { CorrelationId = correlationId, NodeId = nodeId };
-
         _requestLogRepoMock.GetByClientRequestIdAsync(correlationId).Returns(requestLog);
 
         _blobToolMock
@@ -65,7 +64,18 @@ public class BasicApiAddHandlerTest
             )
             .Returns(requestLog);
 
-        await _handler.RunAsync(message);
+        var respose = new ApiAddResponse
+        {
+            CorrelationId = correlationId,
+            NodeId = nodeId,
+            TopicName = "test-topic",
+            Subject = "test-subject",
+            StatusCode = "200",
+            Exception = null,
+        };
+        var messageBody = JsonSerializer.Serialize(respose);
+
+        await _handler.RunAsync(correlationId, messageBody);
 
         _requestLogRepoMock.VerifyAll();
         _blobToolMock.VerifyAll();
@@ -75,13 +85,11 @@ public class BasicApiAddHandlerTest
     public async Task RunAsync_WithNullRequestLog_ThrowsException()
     {
         var correlationId = "test-correlation-id";
-        var message = new ApiAddResponse { CorrelationId = correlationId };
-
         _requestLogRepoMock
             .GetByClientRequestIdAsync(correlationId)
             .Returns((SimpleRequestLog?)null);
 
-        await Assert.ThrowsAsync<Exception>(() => _handler.RunAsync(message));
+        await Assert.ThrowsAsync<Exception>(() => _handler.RunAsync(correlationId, string.Empty));
     }
 
     [Test]
@@ -89,11 +97,10 @@ public class BasicApiAddHandlerTest
     {
         var correlationId = "test-correlation-id";
         var requestLog = new SimpleRequestLog { ClientRequestId = correlationId, BlobName = null };
-        var message = new ApiAddResponse { CorrelationId = correlationId };
 
         _requestLogRepoMock.GetByClientRequestIdAsync(correlationId).Returns(requestLog);
 
-        await Assert.ThrowsAsync<Exception>(() => _handler.RunAsync(message));
+        await Assert.ThrowsAsync<Exception>(() => _handler.RunAsync(correlationId, string.Empty));
     }
 
     [Test]
@@ -106,8 +113,6 @@ public class BasicApiAddHandlerTest
             ClientRequestId = string.Empty,
             BlobName = blobName,
         };
-        var message = new ApiAddResponse { CorrelationId = null, NodeId = nodeId };
-
         _requestLogRepoMock.GetByClientRequestIdAsync(string.Empty).Returns(requestLog);
 
         _blobToolMock
@@ -121,7 +126,19 @@ public class BasicApiAddHandlerTest
             )
             .Returns(requestLog);
 
-        await _handler.RunAsync(message);
+        var messageBody = JsonSerializer.Serialize(
+            new ApiAddResponse
+            {
+                CorrelationId = string.Empty,
+                NodeId = nodeId,
+                TopicName = "test-topic",
+                Subject = "test-subject",
+                StatusCode = "200",
+                Exception = null,
+            }
+        );
+
+        await _handler.RunAsync(null, messageBody);
 
         _requestLogRepoMock.VerifyAll();
         _blobToolMock.VerifyAll();
