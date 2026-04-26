@@ -6,7 +6,7 @@ using FileIt.Module.Services.App.ApiAdd;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace FileIt.Module.Services.App.Test.ApiAdd;
+namespace FileIt.Module.Services.Test.ApiAdd;
 
 public class TestApiFunc
 {
@@ -46,15 +46,9 @@ public class TestApiFunc
             .Returns(new ApiLog() { Id = 1 });
 
         var messageId = "test-message-id";
-        var mockMessage = new ApiRequest(messageId)
-        {
-            Body = messageBody.ToString(),
-            ReplyTo = replyTo,
-            Subject = subject,
-            CorrelationId = clientRequestId,
-        };
+        var body = messageBody.ToString();
 
-        await target.ApiAdd(mockMessage);
+        await target.ApiAdd(messageId, null, subject, replyTo, clientRequestId, body);
 
         _apiLogRepoMock.VerifyAll();
         _broadcasterMock.VerifyAll();
