@@ -5,6 +5,8 @@ using FileIt.Domain.Interfaces;
 using FileIt.Infrastructure.Classification;
 using FileIt.Infrastructure.Data;
 using FileIt.Infrastructure.Tools;
+using FileIt.Infrastructure.DeadLetter.Ingestion;
+using FileIt.Infrastructure.DeadLetter.Replay;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
@@ -65,6 +67,17 @@ public static class ServiceCollectionExtensions
         // Dead-letter classifier. Singleton because the default implementation is pure
         // and stateless; any future stateful classifier should revisit this lifetime.
         services.AddSingleton<IDeadLetterClassifier, DeadLetterClassifier>();
+
+        // Dead-letter ingestion service. Scoped so each function invocation gets a
+        // fresh service whose ILogger is bound to that invocation's scope. The
+        // service itself is stateless; the lifetime is dictated by the logger and
+        // by the desire to mirror the repo's per-call DbContext discipline.
+        services.AddScoped<IDeadLetterIngestionService, DeadLetterIngestionService>();
+
+        // Dead-letter replay service. Scoped to mirror the ingestion service's
+        // lifetime contract; the service composes the repo and the named-sender
+        // factory and produces an outcome record per replay attempt.
+        services.AddScoped<IDeadLetterReplayService, DeadLetterReplayService>();
 
         services.AddDbContextFactory<CommonDbContext>(options =>
             options.UseSqlServer(config.DbConnectionString)

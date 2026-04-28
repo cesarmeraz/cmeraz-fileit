@@ -29,8 +29,8 @@ namespace FileIt.Infrastructure.Data
 
         public async Task<T?> AddAsync(T entity)
         {
-            entity.CreatedOn = DateTime.Now;
-            entity.ModifiedOn = DateTime.Now;
+            entity.CreatedOn = DateTime.UtcNow;
+            entity.ModifiedOn = DateTime.UtcNow;
             using var dbContext = Factory.CreateDbContext();
             await dbContext.Set<T>().AddAsync(entity);
             await dbContext.SaveChangesAsync();
@@ -45,13 +45,11 @@ namespace FileIt.Infrastructure.Data
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            T? existingEntity = null;
-            using (var dbContext = Factory.CreateDbContext())
-            {
-                existingEntity = dbContext.Set<T>().Find(entity.Id);
-            }
+            using var dbContext = Factory.CreateDbContext();
+
+            var existingEntity = dbContext.Set<T>().Find(entity.Id);
             if (existingEntity == null)
-                throw new ArgumentNullException(nameof(existingEntity));
+                throw new InvalidOperationException($"Entity with Id {entity.Id} not found.");
 
             if (dataDictionary != null)
             {
@@ -73,9 +71,8 @@ namespace FileIt.Infrastructure.Data
                 }
             }
 
-            using var dbContextUpdate = Factory.CreateDbContext();
-            dbContextUpdate.Entry(existingEntity).CurrentValues.SetValues(entity!);
-            foreach (var property in dbContextUpdate.Entry(existingEntity!).Properties)
+            dbContext.Entry(existingEntity).CurrentValues.SetValues(entity!);
+            foreach (var property in dbContext.Entry(existingEntity!).Properties)
             {
                 bool allowReiteration = false;
                 if (dataDictionary != null && dataDictionary.ContainsKey(property.Metadata.Name))
@@ -85,14 +82,14 @@ namespace FileIt.Infrastructure.Data
                 }
                 if (property.CurrentValue == null || !property.IsModified)
                 {
-                    dbContextUpdate
+                    dbContext
                         .Entry(existingEntity)
                         .Property(property.Metadata.Name)
                         .IsModified = allowReiteration;
                 }
             }
-            existingEntity.ModifiedOn = DateTime.Now;
-            await dbContextUpdate.SaveChangesAsync();
+            existingEntity.ModifiedOn = DateTime.UtcNow;
+            await dbContext.SaveChangesAsync();
             return existingEntity;
         }
     }

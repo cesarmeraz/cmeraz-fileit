@@ -1,5 +1,6 @@
 using System.Text;
 using FileIt.Domain.Interfaces;
+using FileIt.Infrastructure.DeadLetter.Ingestion;
 using FileIt.Infrastructure.Logging;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Configuration;

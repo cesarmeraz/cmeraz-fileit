@@ -436,3 +436,6 @@ FodyWeavers.xsd
 *.msm
 *.msp
 .vscode/settings.json
+
+# Demo artifact for #22 dead-letter pipeline verification
+GLAccount-POISONED*.csv

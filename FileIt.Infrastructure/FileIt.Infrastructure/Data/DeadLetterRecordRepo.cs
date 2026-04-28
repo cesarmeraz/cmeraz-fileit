@@ -78,6 +78,29 @@ namespace FileIt.Infrastructure.Data
                     cancellationToken);
         }
 
+        public async Task<DeadLetterRecord?> GetByIdentityAsync(
+            string messageId,
+            string sourceEntityName,
+            DateTime deadLetteredTimeUtc,
+            CancellationToken cancellationToken = default)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(messageId);
+            ArgumentException.ThrowIfNullOrEmpty(sourceEntityName);
+
+            // The unique index IX_DeadLetterRecord_MessageId_Source_DeadLetteredTime
+            // covers exactly this tuple, so this lookup uses an index seek and
+            // returns at most one row. AsNoTracking keeps the read out of the change
+            // tracker; the ingestion service treats the returned record as immutable.
+            using var dbContext = _factory.CreateDbContext();
+            return await dbContext.DeadLetterRecords
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    r => r.MessageId == messageId
+                        && r.SourceEntityName == sourceEntityName
+                        && r.DeadLetteredTimeUtc == deadLetteredTimeUtc,
+                    cancellationToken);
+        }
+
         public async Task<DeadLetterRecord?> GetByIdAsync(
             long deadLetterRecordId,
             CancellationToken cancellationToken = default)

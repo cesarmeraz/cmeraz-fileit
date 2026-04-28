@@ -16,6 +16,23 @@ public interface ITransformGlAccounts
 
 public class TransformGlAccounts : ITransformGlAccounts
 {
+    /// <summary>
+    /// Sentinel prefix that, when found at the start of any GL Account COMPANYCODE
+    /// value, causes the transform to throw a deterministic exception. Used by the
+    /// dead-letter pipeline to demonstrate end-to-end DLQ handling: a CSV containing
+    /// this prefix fails processing five times, gets dead-lettered by Service Bus,
+    /// is picked up by DataFlowDeadLetterReader, classified as Poison by the rule
+    /// in DeadLetterClassifier.PoisonPayloadPrefix, and surfaces in dbo.DeadLetterRecord
+    /// for operator review.
+    /// </summary>
+    /// <remarks>
+    /// The string value is intentionally aligned with
+    /// <c>DeadLetterClassifier.PoisonPayloadPrefix</c>; do not change one without
+    /// the other. See docs/dead-letter-strategy.md Section 10 for the full demo
+    /// procedure.
+    /// </remarks>
+    public const string PoisonCompanyCodePrefix = "POISON_";
+
     private readonly ILogger<TransformGlAccounts> _logger;
 
     public TransformGlAccounts(ILogger<TransformGlAccounts> logger)
@@ -63,6 +80,20 @@ public class TransformGlAccounts : ITransformGlAccounts
             string companyCode = fields[companyCodeIndex].Trim();
             string accountGroup = fields[accountGroupIndex].Trim();
             string isBalanceSheet = fields[balanceSheetIndex].Trim();
+
+            // Deliberate poison trigger for the dead-letter demo. Any row whose
+            // COMPANYCODE begins with PoisonCompanyCodePrefix causes the transform
+            // to throw a deterministic exception. The exception message embeds the
+            // same prefix so the dead-letter classifier categorizes the resulting
+            // DLQ record as Poison via its PoisonPayloadPrefix rule.
+            if (companyCode.StartsWith(PoisonCompanyCodePrefix, StringComparison.Ordinal))
+            {
+                throw new InvalidOperationException(
+                    $"Deliberate poison trigger fired: COMPANYCODE '{companyCode}' starts "
+                    + $"with '{PoisonCompanyCodePrefix}'. This row is a poison test marker; "
+                    + "see docs/dead-letter-strategy.md Section 10. Correlation "
+                    + $"{correlationId}.");
+            }
 
             string key = $"{companyCode}|{accountGroup}";
 

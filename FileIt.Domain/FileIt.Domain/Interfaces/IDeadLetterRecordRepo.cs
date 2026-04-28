@@ -47,6 +47,29 @@ public interface IDeadLetterRecordRepo
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Fetch the canonical record for a given identity tuple, or null if none exists.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Used on the idempotency path of dead-letter ingestion. When
+    /// <see cref="InsertAsync"/> raises a unique-index violation on
+    /// <c>IX_DeadLetterRecord_MessageId_Source_DeadLetteredTime</c>, the ingestion
+    /// service uses this method to fetch the row that already exists so it can
+    /// return the canonical entity to the caller without forcing the caller to
+    /// reason about the duplicate-delivery race.
+    /// </para>
+    /// <para>
+    /// Reads are <c>AsNoTracking</c>; callers receive a detached snapshot. Mutation
+    /// of dead-letter records goes through <see cref="UpdateLifecycleAsync"/>, never
+    /// through this method's return value.
+    /// </para>
+    /// </remarks>
+    Task<DeadLetterRecord?> GetByIdentityAsync(
+        string messageId,
+        string sourceEntityName,
+        DateTime deadLetteredTimeUtc,
+        CancellationToken cancellationToken = default);
+    /// <summary>
     /// Fetch a single record by its primary key, or null if none exists. Used by
     /// operator query paths and the replay function.
     /// </summary>

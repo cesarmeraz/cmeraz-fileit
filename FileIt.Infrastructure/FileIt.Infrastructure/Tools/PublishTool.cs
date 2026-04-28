@@ -36,7 +36,7 @@ public class PublishTool : IBroadcastResponses
         {
             if (string.IsNullOrWhiteSpace(response.TopicName))
             {
-                ;
+                
                 _logger.LogError(
                     InfrastructureEvents.PublishToolEmitInvalid,
                     "TopicName is missing."
@@ -56,6 +56,12 @@ public class PublishTool : IBroadcastResponses
                 ContentType = "application/json",
             };
 
+            // Stamp the publish-time UTC clock. Same rationale as BusTool: enables the
+            // dead-letter pipeline to compute true failure age. See
+            // FileIt.Infrastructure.FileItMessageProperties for the contract.
+            returnMessage.ApplicationProperties[FileItMessageProperties.EnqueuedTimeUtc] =
+                DateTime.UtcNow.ToString("O");
+
             ServiceBusSender sender;
             try
             {
@@ -74,7 +80,7 @@ public class PublishTool : IBroadcastResponses
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            await sender.SendMessageAsync(returnMessage, cancellationToken);
+            await sender.SendMessageAsync(returnMessage, cancellationToken).ConfigureAwait(false);
             _logger.LogInformation(
                 InfrastructureEvents.PublishToolEmitEnd,
                 "Returning response from Api"
