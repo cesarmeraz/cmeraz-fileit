@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "FileIt Team",
+  "classifications": [ "FileIt", "Module", "Azure Functions", "Service Bus" ],
+  "identity": "FileIt.Module.Template",
+  "name": "FileIt Module",
+  "shortName": "fileit-module",
+  "description": "Scaffolds a new FileIt module (Host, App, Test, Integration projects) following the SimpleFlow shape, with EventGrid blob watcher, Service Bus subscriber, dead-letter reader, and standard logging conventions.",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "FileItModule",
+  "preferNameDirectory": true,
+  "symbols": {
+    "QueuePrefix": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "Prefix for Service Bus queues, topics, and blob containers. Lowercase, hyphen-separated. Defaults to lowercased module name. Example: 'trade-recon' for module name 'TradeRecon'.",
+      "replaces": "fileitmodule",
+      "fileRename": "fileitmodule",
+      "defaultValue": "fileitmodule"
+    },
+    "EventIdBase": {
+      "type": "parameter",
+      "datatype": "integer",
+      "description": "Starting EventId for this module's logs. Existing modules use: SimpleFlow=2000, DataFlow=3000, Services=1000. Pick a unique 1000-block.",
+      "replaces": "9000",
+      "defaultValue": "9000"
+    },
+    "LocalHttpPort": {
+      "type": "parameter",
+      "datatype": "integer",
+      "description": "Local dev HTTP port for the function host. Existing modules use: SimpleFlow=7060, DataFlow=7061, Services=7062. Pick a unique port.",
+      "replaces": "7099",
+      "defaultValue": "7099"
+    },
+    "IncludeWatcher": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Include the EventGrid blob watcher (SimpleWatcher pattern). Set false for API-receiver-only modules.",
+      "defaultValue": "true"
+    },
+    "IncludeSubscriber": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Include the Service Bus topic subscriber (SimpleSubscriber pattern).",
+      "defaultValue": "true"
+    },
+    "IncludeDeadLetterReader": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Include the dead-letter reader function. Required if IncludeSubscriber is true.",
+      "defaultValue": "true"
+    },
+    "IncludeTestSeeder": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Include the timer-triggered blob seeder for local testing (SimpleTest pattern).",
+      "defaultValue": "true"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(!IncludeWatcher)",
+          "exclude": [ "**/FileItModuleWatcher.cs", "**/WatchInbound/**" ]
+        },
+        {
+          "condition": "(!IncludeSubscriber)",
+          "exclude": [ "**/FileItModuleSubscriber.cs", "**/WaitOnApiUpload/**" ]
+        },
+        {
+          "condition": "(!IncludeDeadLetterReader)",
+          "exclude": [ "**/FileItModuleDeadLetterReader.cs" ]
+        },
+        {
+          "condition": "(!IncludeTestSeeder)",
+          "exclude": [ "**/FileItModuleTest.cs", "**/HelloWorld.cs" ]
+        }
+      ]
+    }
+  ],
+  "primaryOutputs": [
+    { "path": "FileIt.Module.FileItModule.Host/FileIt.Module.FileItModule.Host.csproj" },
+    { "path": "FileIt.Module.FileItModule.App/FileIt.Module.FileItModule.App.csproj" },
+    { "path": "FileIt.Module.FileItModule.Test/FileIt.Module.FileItModule.Test.csproj" },
+    { "path": "FileIt.Module.FileItModule.Integration/FileIt.Module.FileItModule.Integration.csproj" }
+  ],
+  "postActions": []
+}
