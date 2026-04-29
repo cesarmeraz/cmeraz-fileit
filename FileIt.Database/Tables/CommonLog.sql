@@ -15,5 +15,12 @@ CREATE TABLE dbo.CommonLog(
 	InvocationId	    NVARCHAR(100)       NULL,
 	EventId             INT                 NULL,
     CreatedOn           DATETIME2           NOT NULL,
-    ModifiedOn          DATETIME2           NOT NULL
-)
+    ModifiedOn          DATETIME2           NOT NULL,
+	EventName           NVARCHAR(100)       NULL
+);
+GO
+
+CREATE NONCLUSTERED INDEX IX_CommonLog_EventName
+    ON dbo.CommonLog(EventName)
+    WHERE EventName IS NOT NULL;
+GO

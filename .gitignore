@@ -439,3 +439,6 @@ FodyWeavers.xsd
 
 # Demo artifact for #22 dead-letter pipeline verification
 GLAccount-POISONED*.csv
+
+# DACPAC deploy report (diagnostic, not source)
+db-deploy-report.xml

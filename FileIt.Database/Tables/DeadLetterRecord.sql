@@ -8,6 +8,14 @@
     Companion:   dbo.CommonLog (join via CorrelationId for the full upstream story).
 
     Related:     Design in docs/dead-letter-strategy.md, issue #22.
+
+    Note on CHECK constraints:
+        The IN-list constraints below are written as explicit OR chains in the
+        order SQL Server normalizes and stores them. Writing them as
+        "CHECK (col IN ('a','b'))" is semantically identical, but sqlpackage
+        diffs against the catalog's stored form (an OR chain), causing every
+        publish to drop and recreate the constraint. The OR-chain form makes
+        deploys idempotent. See issue #3.
 */
 CREATE TABLE dbo.DeadLetterRecord
 (
@@ -67,34 +75,22 @@ CREATE TABLE dbo.DeadLetterRecord
         PRIMARY KEY CLUSTERED (DeadLetterRecordId),
 
     -- Check constraints ---------------------------------------------------------
+    -- (See "Note on CHECK constraints" in header. OR chains, not IN lists.)
     CONSTRAINT CK_DeadLetterRecord_SourceEntityType
-        CHECK (SourceEntityType IN (N'Queue', N'Topic')),
+        CHECK ([SourceEntityType]='Topic' OR [SourceEntityType]='Queue'),
 
     CONSTRAINT CK_DeadLetterRecord_SubscriptionPresence
         CHECK (
-            (SourceEntityType = N'Queue' AND SourceSubscriptionName IS NULL)
+            ([SourceEntityType]=N'Queue' AND [SourceSubscriptionName] IS NULL)
             OR
-            (SourceEntityType = N'Topic' AND SourceSubscriptionName IS NOT NULL)
+            ([SourceEntityType]=N'Topic' AND [SourceSubscriptionName] IS NOT NULL)
         ),
 
     CONSTRAINT CK_DeadLetterRecord_FailureCategory
-        CHECK (FailureCategory IN (
-            N'Transient',
-            N'DownstreamUnavailable',
-            N'SchemaViolation',
-            N'Poison',
-            N'Unknown'
-        )),
+        CHECK ([FailureCategory]='Unknown' OR [FailureCategory]='Poison' OR [FailureCategory]='SchemaViolation' OR [FailureCategory]='DownstreamUnavailable' OR [FailureCategory]='Transient'),
 
     CONSTRAINT CK_DeadLetterRecord_Status
-        CHECK ([Status] IN (
-            N'New',
-            N'UnderReview',
-            N'PendingReplay',
-            N'Replayed',
-            N'Resolved',
-            N'Discarded'
-        )),
+        CHECK ([Status]='Discarded' OR [Status]='Resolved' OR [Status]='Replayed' OR [Status]='PendingReplay' OR [Status]='UnderReview' OR [Status]='New'),
 
     CONSTRAINT CK_DeadLetterRecord_DeliveryCount_NonNegative
         CHECK (DeliveryCount >= 0),
