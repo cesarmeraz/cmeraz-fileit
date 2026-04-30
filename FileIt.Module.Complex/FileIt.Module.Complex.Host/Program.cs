@@ -1,10 +1,12 @@
 using FileIt.Domain.Interfaces;
-using FileIt.Infrastructure.HttpClients;
 using FileIt.Infrastructure.Extensions;
 using FileIt.Infrastructure.Logging;
 using FileIt.Infrastructure.Middleware;
-using FileIt.Module.Services.App;
-using FileIt.Module.Services.App.ApiAdd;
+using FileIt.Module.Complex.App;
+using FileIt.Module.Complex.App.Behavior;
+using FileIt.Module.Complex.App.Commands;
+using FileIt.Module.Complex.App.Queries;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,40 +20,38 @@ builder.UseMiddleware<SerilogInvocationIdMiddleware>();
 builder.UseMiddleware<ExceptionHandlingMiddleware>();
 
 #if RELEASE
-// Add Application Insights telemetry if deployed to Azure
 builder.Services.AddApplicationInsightsTelemetryWorkerService();
 #endif
 
+// Bind feature config
 var sectionName = builder.Configuration.GetValue<string>("FeatureSection") ?? "Feature";
-ServicesConfig? config = builder.Configuration.GetSection(sectionName).Get<ServicesConfig>();
+ComplexConfig? config = builder.Configuration.GetSection(sectionName).Get<ComplexConfig>();
 if (config == null)
 {
-    throw new ApplicationException("Appsettings.json is missing Feature config.");
+    throw new ApplicationException("appsettings.json is missing Feature config for Complex module.");
 }
-
 builder.Services.AddSingleton(config);
-builder.Services.AddScoped<IApiAddCommand, ApiAddCommand>();
-// Complex API typed HttpClient (issue #10).
-// Base URL comes from AppHost via ConnectionStrings__ComplexApi env var.
-builder.Services.AddHttpClient<IComplexApiClient, ComplexApiClient>(client =>
-{
-    var baseUrl = builder.Configuration.GetConnectionString("ComplexApi")
-        ?? throw new ApplicationException(
-            "Missing ConnectionStrings__ComplexApi. AppHost must provide this.");
-    if (!baseUrl.EndsWith('/'))
-    {
-        baseUrl += "/";
-    }
-    client.BaseAddress = new Uri(baseUrl);
-    client.Timeout = TimeSpan.FromSeconds(30);
-});
 
+// Behaviors
+builder.Services.AddSingleton<ILatencyInjector, LatencyInjector>();
+builder.Services.AddSingleton<IChaosInjector, ChaosInjector>();
+builder.Services.AddScoped<IIdempotencyManager, IdempotencyManager>();
+
+// Commands
+builder.Services.AddScoped<ICreateDocumentCommand, CreateDocumentCommand>();
+builder.Services.AddScoped<IDeleteDocumentCommand, DeleteDocumentCommand>();
+
+// Queries
+builder.Services.AddScoped<IGetDocumentQuery, GetDocumentQuery>();
+builder.Services.AddScoped<IListDocumentsQuery, ListDocumentsQuery>();
+builder.Services.AddScoped<IExportDocumentsQuery, ExportDocumentsQuery>();
+
+// Infrastructure (DbContext, repos, etc.)
 var infrastructureConfig = builder.GetInfrastructureConfig();
 builder.Services.AddInfrastructure(infrastructureConfig);
-builder.Services.AddIBroadcastResponses();
 
-// Configure logging
-builder.Logging.ClearProviders(); // Remove default logging providers
+// Logging
+builder.Logging.ClearProviders();
 ICommonLogConfig logConfig = builder.Configuration.GetCommonLogConfig();
 logConfig.Environment = logConfig.Environment ?? builder.Environment.EnvironmentName;
 logConfig.Application = builder.Environment.ApplicationName;

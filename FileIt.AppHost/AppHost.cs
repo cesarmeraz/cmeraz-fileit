@@ -20,12 +20,20 @@ var azureSql = builder.AddConnectionString("azureSql");
 // --- Azure Service Bus (cloud) ---
 var serviceBus = builder.AddConnectionString("serviceBus");
 
+var complex = builder.AddProject<Projects.FileIt_Module_Complex_Host>("complex-host")
+    .WithReference(blobs)
+    .WithEnvironment("FileItDbConnection", azureSql)
+    .WithEnvironment("FileItServiceBus", serviceBus)
+    .WithEnvironment("ConnectionStrings__ServiceBus", serviceBus)
+    .WaitFor(blobs);
 // --- Func Apps with full wiring ---
 var services = builder.AddProject<Projects.FileIt_Module_Services_Host>("services-host")
     .WithReference(blobs)
     .WithEnvironment("FileItDbConnection", azureSql)
     .WithEnvironment("FileItServiceBus", serviceBus)
     .WithEnvironment("ConnectionStrings__ServiceBus", serviceBus)
+    .WithEnvironment("ConnectionStrings__ComplexApi", "http://localhost:7064")
+    .WaitFor(complex)
     .WaitFor(blobs);
 
 var simpleflow = builder.AddProject<Projects.FileIt_Module_SimpleFlow_Host>("simpleflow-host")

@@ -1,6 +1,7 @@
 using FileIt.Domain.Entities;
 using FileIt.Domain.Entities.Api;
 using FileIt.Domain.Entities.DeadLetter;
+using FileIt.Domain.Entities.Complex;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -21,6 +22,9 @@ namespace FileIt.Infrastructure.Data
         // Dead-letter records. Written by DLQ reader functions, read and updated by
         // operators and the replay function. See docs/dead-letter-strategy.md.
         public DbSet<DeadLetterRecord> DeadLetterRecords { get; set; }
+        // Complex module document API. See docs/complex-api.md and issue #10.
+        public DbSet<ComplexDocument> ComplexDocuments { get; set; } = null!;
+        public DbSet<ComplexIdempotencyRecord> ComplexIdempotencyRecords { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -52,6 +56,38 @@ namespace FileIt.Infrastructure.Data
                 .ValueGeneratedOnAdd();
 
             ConfigureDeadLetterRecord(modelBuilder);
+            ConfigureComplex(modelBuilder);
+        }
+
+        /// <summary>
+        /// Maps <see cref="ComplexDocument"/> and the idempotency cache record
+        /// to dbo.ComplexDocument and dbo.ComplexIdempotency. See issue #10.
+        /// </summary>
+        private static void ConfigureComplex(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ComplexDocument>(e =>
+            {
+                e.ToTable("ComplexDocument", "dbo");
+                e.HasKey(d => d.DocumentId);
+                e.Property(d => d.DocumentId).ValueGeneratedOnAdd();
+                e.Property(d => d.PublicId).HasDefaultValueSql("NEWID()");
+                e.HasIndex(d => d.PublicId).IsUnique();
+                e.Property(d => d.Name).IsRequired().HasMaxLength(260);
+                e.Property(d => d.ContentType).IsRequired().HasMaxLength(128);
+                e.Property(d => d.CreatedBy).IsRequired().HasMaxLength(128);
+                e.Property(d => d.RowVersion).HasColumnName("Version").IsRowVersion();
+            });
+
+            modelBuilder.Entity<ComplexIdempotencyRecord>(e =>
+            {
+                e.ToTable("ComplexIdempotency", "dbo");
+                e.HasKey(r => r.IdempotencyId);
+                e.Property(r => r.IdempotencyId).ValueGeneratedOnAdd();
+                e.Property(r => r.Key).HasColumnName("Key").IsRequired().HasMaxLength(128);
+                e.HasIndex(r => r.Key).IsUnique();
+                e.Property(r => r.RequestHash).IsRequired().HasMaxLength(64).IsFixedLength();
+                e.Property(r => r.ResponseLocation).HasMaxLength(2048);
+            });
         }
 
         /// <summary>

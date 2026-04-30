@@ -6,17 +6,16 @@
     <Nullable>enable</Nullable>
     <UserSecretsId>3190353d-07e7-4380-bcd2-559a589e72f6</UserSecretsId>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.Azure.ServiceBus" />
     <PackageReference Include="Aspire.Hosting.Azure.Storage" />
     <PackageReference Include="Aspire.Hosting.SqlServer" />
     <PackageReference Include="Azure.Storage.Blobs" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\FileIt.Module.Services\FileIt.Module.Services.Host\FileIt.Module.Services.Host.csproj" />
     <ProjectReference Include="..\FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.Host\FileIt.Module.SimpleFlow.Host.csproj" />
     <ProjectReference Include="..\FileIt.Module.DataFlow.Host\FileIt.Module.DataFlow.Host.csproj" />
+    <ProjectReference Include="..\FileIt.Module.Complex\FileIt.Module.Complex.Host\FileIt.Module.Complex.Host.csproj" />
   </ItemGroup>
 </Project>

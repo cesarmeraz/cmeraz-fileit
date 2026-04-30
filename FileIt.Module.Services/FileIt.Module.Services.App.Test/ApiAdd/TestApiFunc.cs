@@ -19,7 +19,9 @@ public class TestApiFunc
     public required Mock<IAzureClientFactory<ServiceBusSender>> _senderFactoryMock;
     public required Mock<IApiLogRepo> _apiLogRepoMock;
     public required Mock<IBroadcastResponses> _broadcasterMock;
+    public required Mock<IComplexApiClient> _complexApiMock;
     public required ApiAddCommand target;
+  
 
     [TestInitialize]
     public void Setup()
@@ -40,6 +42,18 @@ public class TestApiFunc
         _senderFactoryMock = new Mock<IAzureClientFactory<ServiceBusSender>>();
         _apiLogRepoMock = new Mock<IApiLogRepo>();
         _broadcasterMock = new Mock<IBroadcastResponses>();
+        _complexApiMock = new Mock<IComplexApiClient>();
+        _complexApiMock
+            .Setup(x => x.CreateDocumentAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ComplexCreateResult(
+                Guid.NewGuid(),
+                "/api/documents/test",
+                WasIdempotentReplay: false));
 
         var config = new ServicesConfig()
         {
@@ -65,7 +79,8 @@ public class TestApiFunc
             _apiLogRepoMock.Object,
             _senderFactoryMock.Object,
             _loggerMock.Object,
-            _broadcasterMock.Object
+            _broadcasterMock.Object,
+            _complexApiMock.Object
         );
     }
 

@@ -63,6 +63,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISimpleRequestLogRepo, SimpleRequestLogRepo>();
         services.AddScoped<IDataFlowRequestLogRepo, DataFlowRequestLogRepo>();
         services.AddScoped<IDeadLetterRecordRepo, DeadLetterRecordRepo>();
+        // Complex module (issue #10)
+        services.AddScoped<IComplexDocumentRepo, FileIt.Infrastructure.Data.ComplexDocumentRepo>();
+        services.AddScoped<IComplexIdempotencyRepo, FileIt.Infrastructure.Data.ComplexIdempotencyRepo>();
 
         // Dead-letter classifier. Singleton because the default implementation is pure
         // and stateless; any future stateful classifier should revisit this lifetime.
