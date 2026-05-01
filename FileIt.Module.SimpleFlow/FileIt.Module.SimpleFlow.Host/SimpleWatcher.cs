@@ -1,20 +1,11 @@
-using System.Net;
-using System.Text;
-using System.Text.Json;
-using Azure.Messaging;
 using Azure.Messaging.EventGrid;
-using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
-using FileIt.Domain.Entities;
-using FileIt.Domain.Interfaces;
 using FileIt.Infrastructure.Extensions;
 using FileIt.Module.SimpleFlow.App;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Extensions.EventGrid;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.Module.SimpleFlow;
+namespace FileIt.Module.SimpleFlow.Host;
 
 public class SimpleWatcher
 {
@@ -54,7 +45,7 @@ public class SimpleWatcher
         )
         {
             _logger.LogInformation(
-                SimpleEvents.SimpleWatcher.Id,
+                SimpleEvents.SimpleWatcher,
                 "Received blob trigger for blob: {BlobName}",
                 blobName
             );
@@ -67,9 +58,6 @@ public class SimpleWatcher
     [Function(nameof(SimpleWatcher))]
     public async Task Run([EventGridTrigger] EventGridEvent eventGridEvent)
     {
-        _logger.LogInformation("Received EventGridEvent: {@EventGridEvent}", eventGridEvent);
-        var blobName = (eventGridEvent.Subject ?? string.Empty).Split('/').Last();
-
         // use the blobClient to get the x-ms-client-request-id property from the original request header
         string clientRequestId = eventGridEvent.Id;
 
@@ -79,8 +67,9 @@ public class SimpleWatcher
             )
         )
         {
+            var blobName = (eventGridEvent.Subject ?? string.Empty).Split('/').Last();
             _logger.LogInformation(
-                SimpleEvents.SimpleWatcher.Id,
+                SimpleEvents.SimpleWatcher,
                 "Received blob trigger for blob: {BlobName}",
                 blobName
             );

@@ -3,6 +3,7 @@ using FileIt.Infrastructure.Logging;
 using FileIt.Infrastructure.Middleware;
 using FileIt.Module.Services.App;
 using FileIt.Module.Services.App.ApiAdd;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

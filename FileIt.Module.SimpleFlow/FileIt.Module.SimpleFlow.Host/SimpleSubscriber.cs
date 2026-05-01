@@ -1,12 +1,11 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
-using FileIt.Domain.Entities.Api;
 using FileIt.Module.SimpleFlow.App;
 using FileIt.Module.SimpleFlow.App.WaitOnApiUpload;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.Module.SimpleFlow;
+namespace FileIt.Module.SimpleFlow.Host;
 
 public class SimpleSubscriber
 {
@@ -32,7 +31,8 @@ public class SimpleSubscriber
     /// <returns></returns>
     [Function(nameof(SimpleSubscriber))]
     public async Task Run(
-        [ServiceBusTrigger("api-add-topic", "api-add-simple-sub")] ServiceBusReceivedMessage message
+        [ServiceBusTrigger("api-add-topic", "api-add-simple-sub", Connection = "FileItServiceBus")]
+            ServiceBusReceivedMessage message
     )
     {
         string clientRequestId = message.CorrelationId ?? string.Empty;
@@ -46,25 +46,10 @@ public class SimpleSubscriber
             )
         )
         {
-            //LogFunctionStart(nameof(SimpleSubscriber));
-            _logger.LogDebug(
-                SimpleEvents.SimpleSubscriberReceive.Id,
-                "Receiving {@message}",
-                message
-            );
+            _logger.LogDebug(SimpleEvents.SimpleSubscriberReceive, "Receiving {@message}", message);
 
-            var response = JsonSerializer.Deserialize<ApiAddResponse>(message.Body.ToString());
-            if (response == null)
-            {
-                _logger.LogWarning(
-                    SimpleEvents.SimpleSubscriberReceiveFailed.Id,
-                    "Failed to deserialize ApiAddResponse"
-                );
-                throw new ApplicationException("Failed to deserialize ApiAddResponse!");
-            }
-            _logger.LogInformation(SimpleEvents.SimpleSubscriber.Id, "Processing ApiAddResponse");
-            await _responseHandler.RunAsync(response);
-            //LogFunctionEnd(nameof(SimpleSubscriber));
+            _logger.LogInformation(SimpleEvents.SimpleSubscriber, "Processing ApiAddResponse");
+            await _responseHandler.RunAsync(message.CorrelationId, message.Body?.ToString());
         }
     }
 }

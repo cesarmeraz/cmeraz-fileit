@@ -9,7 +9,14 @@ namespace FileIt.Module.Services.App.ApiAdd;
 
 public interface IApiAddCommand
 {
-    Task ApiAdd(ApiRequest request);
+    Task ApiAdd(
+        string messageId,
+        string? queueName,
+        string? subject,
+        string? replyTo,
+        string? correlationId,
+        object? body
+    );
 }
 
 public class ApiAddCommand : IApiAddCommand
@@ -32,11 +39,18 @@ public class ApiAddCommand : IApiAddCommand
         _logger = logger;
     }
 
-    public async Task ApiAdd(ApiRequest request)
+    public async Task ApiAdd(
+        string messageId,
+        string? queueName,
+        string? subject,
+        string? replyTo,
+        string? correlationId,
+        object? body
+    )
     {
-        _logger.LogInformation(ServicesEvents.LogApiAddRequest.Id, "Simulating API action");
+        _logger.LogInformation(ServicesEvents.LogApiAddRequest, "Simulating API action");
         var apiLogItem = await _apiLogRepo.AddAsync(
-            request.CorrelationId ?? string.Empty,
+            correlationId ?? string.Empty,
             "Request body",
             "Response body",
             "Imaginary"
@@ -46,12 +60,12 @@ public class ApiAddCommand : IApiAddCommand
         var response = new ApiAddResponse()
         {
             NodeId = apiLogItem!.Id,
-            CorrelationId = request.CorrelationId,
-            TopicName = request.ReplyTo!,
+            CorrelationId = correlationId,
+            TopicName = replyTo!,
         };
 
         _logger.LogDebug(
-            ServicesEvents.ApiAddResponsePublished.Id,
+            ServicesEvents.ApiAddResponsePublished,
             "Response published:\n{@ApiAddResponse}",
             response
         );

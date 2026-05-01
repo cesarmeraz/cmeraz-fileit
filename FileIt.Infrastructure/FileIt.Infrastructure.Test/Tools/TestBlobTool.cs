@@ -29,25 +29,9 @@ public class TestBlobTool
 
         var target = new BlobTool(NullLogger<BlobTool>.Instance, mockBlobServiceClient.Object);
 
-        var mockBlobContainerInfo = BlobsModelFactory.BlobContainerInfo(
-            new ETag("\"a1b2c3d4e5f6789\""),
-            new DateTimeOffset(2025, 10, 27, 10, 0, 0, TimeSpan.Zero)
-        );
-
         mockBlobServiceClient
             .GetBlobContainerClient(Arg.Is<string>(x => x == sourceContainerName))
             .Returns(mockSourceBlobContainerClient.Object);
-
-        // mockSourceBlobContainerClient
-        //     .CreateIfNotExistsAsync(
-        //         Arg.Any<PublicAccessType>(),
-        //         Arg.Any<IDictionary<string, string>>(),
-        //         Arg.Any<BlobContainerEncryptionScopeOptions>(),
-        //         Arg.Any<CancellationToken>()
-        //     )
-        //     .ReturnsAsync(
-        //         Task.FromResult(Response.FromValue(mockBlobContainerInfo, mockResponse.Object))
-        //     );
 
         mockSourceBlobContainerClient
             .ExistsAsync(Arg.Any<CancellationToken>())
@@ -56,17 +40,6 @@ public class TestBlobTool
         mockBlobServiceClient
             .GetBlobContainerClient(Arg.Is<string>(x => x == destinationContainerName))
             .Returns(mockDestBlobContainerClient.Object);
-
-        // mockDestBlobContainerClient
-        //     .CreateIfNotExistsAsync(
-        //         Arg.Any<PublicAccessType>(),
-        //         Arg.Any<IDictionary<string, string>>(),
-        //         Arg.Any<BlobContainerEncryptionScopeOptions>(),
-        //         Arg.Any<CancellationToken>()
-        //     )
-        //     .ReturnsAsync(
-        //         Task.FromResult(Response.FromValue(mockBlobContainerInfo, mockResponse.Object))
-        //     );
 
         mockDestBlobContainerClient
             .ExistsAsync(Arg.Any<CancellationToken>())

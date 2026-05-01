@@ -9,9 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Serilog;
-using Serilog.Extensions.Logging;
 
 namespace FileIt.Infrastructure.Extensions;
 
@@ -121,8 +118,6 @@ public static class ServiceCollectionExtensions
                 )
                 .WithName("api-add-topic");
         });
-
-        services.AddSingleton<ILoggerProvider>(new SerilogLoggerProvider(Log.Logger));
 
         return services;
     }

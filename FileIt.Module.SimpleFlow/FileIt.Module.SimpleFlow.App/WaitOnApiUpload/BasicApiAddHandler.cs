@@ -11,7 +11,7 @@ namespace FileIt.Module.SimpleFlow.App.WaitOnApiUpload;
 
 public interface IBasicApiAddHandler
 {
-    Task RunAsync(ApiAddResponse message);
+    Task RunAsync(string? correlationId, string? messageBody);
 }
 
 public class BasicApiAddHandler : IBasicApiAddHandler
@@ -39,20 +39,29 @@ public class BasicApiAddHandler : IBasicApiAddHandler
     /// </summary>
     /// <param name="message">the ServiceBusReceivedMessage</param>
     /// <returns></returns>
-    public async Task RunAsync(ApiAddResponse message)
+    public async Task RunAsync(string? correlationId, string? messageBody)
     {
-        string clientRequestId = message.CorrelationId ?? string.Empty;
+        string clientRequestId = correlationId ?? string.Empty;
+        var message = JsonSerializer.Deserialize<ApiAddResponse>(messageBody ?? string.Empty);
+        if (message == null)
+        {
+            _logger.LogWarning(
+                SimpleEvents.SimpleSubscriberReceiveFailed,
+                "Failed to deserialize ApiAddResponse"
+            );
+            throw new ApplicationException("Failed to deserialize ApiAddResponse!");
+        }
 
         _logger.LogInformation(
-            SimpleEvents.SimpleSubscriberGetRequestLog.Id,
-            "Get RequestLog by CorrelationId {CorrelationId}",
-            message.CorrelationId
+            SimpleEvents.SimpleSubscriberGetRequestLog,
+            "Processing message {@Message}",
+            message
         );
         SimpleRequestLog? entry = await _requestLogRepo.GetByClientRequestIdAsync(clientRequestId);
         if (entry == null)
         {
             _logger.LogError(
-                SimpleEvents.SimpleSubscriberRequestLogNotFound.Id,
+                SimpleEvents.SimpleSubscriberRequestLogNotFound,
                 "SimpleRequestLog entry not found"
             );
             throw new Exception("SimpleRequestLog entry not found");
@@ -60,28 +69,28 @@ public class BasicApiAddHandler : IBasicApiAddHandler
         if (string.IsNullOrWhiteSpace(entry.BlobName))
         {
             _logger.LogError(
-                SimpleEvents.SimpleSubscriberBlobNameMissing.Id,
+                SimpleEvents.SimpleSubscriberBlobNameMissing,
                 "SimpleRequestLog entry is missing BlobName"
             );
             throw new Exception("SimpleRequestLog entry is missing BlobName");
         }
         _logger.LogInformation(
-            SimpleEvents.SimpleSubscriberMoveToFinal.Id,
+            SimpleEvents.SimpleSubscriberMoveToFinal,
             "Moving {BlobName} to Final",
             entry.BlobName
         );
         await _blobTool.MoveAsync(entry.BlobName, _config.WorkingContainer, _config.FinalContainer);
 
-        entry.ApiId = message.NodeId;
+        entry.ApiId = message!.NodeId;
 
         _logger.LogInformation(
-            SimpleEvents.SimpleSubscriberUpdateRequestLog.Id,
+            SimpleEvents.SimpleSubscriberUpdateRequestLog,
             "Update RequestLog with {ApiId}",
             entry.ApiId
         );
         await _requestLogRepo.UpdateAsync(entry);
         _logger.LogDebug(
-            SimpleEvents.SimpleSubscriberCompleted.Id,
+            SimpleEvents.SimpleSubscriberCompleted,
             "Processed Simple Request Log: {@entry}",
             entry
         );

@@ -8,11 +8,22 @@
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.27.0" />
     <PackageVersion Include="coverlet.MTP" Version="8.0.1" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker" Version="2.51.0" />
-    <PackageVersion Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="2.50.0" />
-    <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.EventGrid" Version="3.6.0" />
-    <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.1.0" />
-    <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.24.0" />
-    <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs" Version="6.8.0" />
+    <PackageVersion
+      Include="Microsoft.Azure.Functions.Worker.Extensions.EventGrid"
+      Version="3.6.0"
+    />
+    <PackageVersion
+      Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore"
+      Version="2.1.0"
+    />
+    <PackageVersion
+      Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus"
+      Version="5.24.0"
+    />
+    <PackageVersion
+      Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs"
+      Version="6.8.0"
+    />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.3.1" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.7" />
     <PackageVersion Include="Microsoft.Azure.WebJobs" Version="3.0.45" />
@@ -32,8 +43,20 @@
     <PackageVersion Include="Microsoft.Data.SqlClient.SNI.runtime" Version="6.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.5" />
     <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.17.0" />
+    <PackageVersion Include="Serilog.Expressions" Version="5.0.0" />
+    <PackageVersion Include="Serilog.Sinks.File.Header" Version="1.0.2" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0" />
-    <PackageVersion Include="Microsoft.ApplicationInsights.WorkerService" Version="3.1.0" />
+    <!--
+      Telemetry compatibility cluster (upgrade together):
+      - Microsoft.ApplicationInsights
+      - Microsoft.ApplicationInsights.WorkerService
+      - Serilog.Sinks.ApplicationInsights
+
+      This repository pins Microsoft.ApplicationInsights 2.23.x to keep runtime
+      compatibility with current function host behavior.
+    -->
+    <PackageVersion Include="Microsoft.ApplicationInsights" Version="2.23.0" />
+    <PackageVersion Include="Microsoft.ApplicationInsights.WorkerService" Version="2.23.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="Serilog" Version="4.3.1" />
     <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
@@ -46,7 +69,8 @@
     <PackageVersion Include="Serilog.Sinks.MSSqlServer" Version="5.8.0" />
     <PackageVersion Include="System.Configuration.ConfigurationManager" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.5" />
-    <PackageVersion Include="TUnit" Version="1.34.5" />
+    <PackageVersion Include="TngTech.ArchUnitNET" Version="0.13.3" />
+    <PackageVersion Include="TUnit" Version="1.41.0" />
     <PackageVersion Include="TUnit.Mocks" Version="1.34.5-beta" />
     <PackageVersion Include="TUnit.Mocks.Logging" Version="1.34.5-beta" />
   </ItemGroup>

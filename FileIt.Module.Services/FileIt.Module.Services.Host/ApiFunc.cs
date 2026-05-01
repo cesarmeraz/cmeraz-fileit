@@ -1,8 +1,6 @@
-using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using FileIt.Module.Services.App;
 using FileIt.Module.Services.App.ApiAdd;
-using FileIt.Domain.Entities.Api;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
@@ -36,28 +34,16 @@ public class ApiFunc
             )
         )
         {
-            _logger.LogInformation(ServicesEvents.AddEvent.Id, "ApiAdd started");
-            ApiAddPayload? payload = null;
+            _logger.LogInformation(ServicesEvents.AddEvent, "ApiAdd started");
             string? bodystr = message.Body?.ToString();
-            if (!string.IsNullOrWhiteSpace(bodystr))
-            {
-                payload = JsonSerializer.Deserialize<ApiAddPayload>(bodystr);
-                _logger.LogDebug(
-                    ServicesEvents.GetPayload.Id,
-                    "ApiAdd payload:\n{@ApiPayload}",
-                    payload
-                );
-            }
-            var request = new ApiRequest(message.MessageId)
-            {
-                Body = payload,
-                CorrelationId = message.CorrelationId,
-                QueueName = _config.ApiAddQueueName,
-                ReplyTo = _config.ApiAddTopicName,
-                Subject = message.Subject,
-            };
-            _logger.LogDebug(ServicesEvents.ExecApiAdd.Id, "ApiAdd request:\n{@ApiRequest}", request);
-            await _command.ApiAdd(request);
+            await _command.ApiAdd(
+                message.MessageId,
+                _config.ApiAddQueueName,
+                message.Subject,
+                _config.ApiAddTopicName,
+                message.CorrelationId,
+                bodystr
+            );
         }
     }
 }

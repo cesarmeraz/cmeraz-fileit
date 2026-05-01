@@ -12,6 +12,8 @@ public interface ICommonLogConfig
     string? SerilogSelfLogFilePath { get; set; }
     string? DbConnectionString { get; set; }
     string? AppInsightsConnectionString { get; set; }
+    string? LogFormatterKey { get; set; }
+    string? LogExpression { get; set; }
 }
 
 public class CommonLogConfig : ICommonLogConfig
@@ -26,4 +28,6 @@ public class CommonLogConfig : ICommonLogConfig
     public string? LogFilePath { get; set; }
     public string? SerilogSelfLogFilePath { get; set; }
     public string? AppInsightsConnectionString { get; set; }
+    public string? LogFormatterKey { get; set; }
+    public string? LogExpression { get; set; }
 }
