@@ -31,7 +31,8 @@ public class SimpleSubscriber
     /// <returns></returns>
     [Function(nameof(SimpleSubscriber))]
     public async Task Run(
-        [ServiceBusTrigger("api-add-topic", "api-add-simple-sub")] ServiceBusReceivedMessage message
+        [ServiceBusTrigger("api-add-topic", "api-add-simple-sub", Connection = "FileItServiceBus")]
+            ServiceBusReceivedMessage message
     )
     {
         string clientRequestId = message.CorrelationId ?? string.Empty;

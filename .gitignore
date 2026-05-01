@@ -20,6 +20,7 @@ AzuriteConfig
 # Serilog log files
 # log.txt
 serilog.txt
+logs/
 
 # User-specific files
 *.rsuser
