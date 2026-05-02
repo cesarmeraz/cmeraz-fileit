@@ -14,7 +14,7 @@ using Microsoft.Azure.Functions.Worker.Extensions.EventGrid;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.Module.SimpleFlow;
+namespace FileIt.Module.SimpleFlow.Host;
 
 public class SimpleWatcher
 {

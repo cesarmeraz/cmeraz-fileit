@@ -6,7 +6,7 @@ using FileIt.Module.SimpleFlow.App.WaitOnApiUpload;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace FileIt.Module.SimpleFlow;
+namespace FileIt.Module.SimpleFlow.Host;
 
 public class SimpleSubscriber
 {

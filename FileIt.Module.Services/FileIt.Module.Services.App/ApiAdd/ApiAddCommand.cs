@@ -1,8 +1,6 @@
 using System.Text.Json;
-using Azure.Messaging.ServiceBus;
 using FileIt.Domain.Entities.Api;
 using FileIt.Domain.Interfaces;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 
 namespace FileIt.Module.Services.App.ApiAdd;
@@ -16,13 +14,11 @@ public class ApiAddCommand : IApiAddCommand
 {
     private readonly IApiLogRepo _apiLogRepo;
     private readonly IBroadcastResponses _broadcaster;
-    private readonly IAzureClientFactory<ServiceBusSender> _senderFactory;
     private readonly IComplexApiClient _complexApi;
     private readonly ILogger<ApiAddCommand> _logger;
 
     public ApiAddCommand(
         IApiLogRepo apiLogRepo,
-        IAzureClientFactory<ServiceBusSender> senderFactory,
         ILogger<ApiAddCommand> logger,
         IBroadcastResponses broadcaster,
         IComplexApiClient complexApi
@@ -30,7 +26,6 @@ public class ApiAddCommand : IApiAddCommand
     {
         _broadcaster = broadcaster;
         _apiLogRepo = apiLogRepo;
-        _senderFactory = senderFactory;
         _logger = logger;
         _complexApi = complexApi;
     }

@@ -72,7 +72,6 @@ public class TestApiFunc
 
         target = new ApiAddCommand(
             _apiLogRepoMock.Object,
-            _senderFactoryMock.Object,
             _loggerMock.Object,
             _broadcasterMock.Object,
             _complexApiMock.Object

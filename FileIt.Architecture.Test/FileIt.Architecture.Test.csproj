@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="MSTest.TestAdapter" />
+    <PackageReference Include="MSTest.TestFramework" />
+    <PackageReference Include="NetArchTest.Rules" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FileIt.Domain\FileIt.Domain\FileIt.Domain.csproj" />
+    <ProjectReference Include="..\FileIt.Infrastructure\FileIt.Infrastructure\FileIt.Infrastructure.csproj" />
+    <ProjectReference Include="..\FileIt.Module.Services\FileIt.Module.Services.App\FileIt.Module.Services.App.csproj" />
+    <ProjectReference Include="..\FileIt.Module.Services\FileIt.Module.Services.Host\FileIt.Module.Services.Host.csproj" />
+    <ProjectReference Include="..\FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.App\FileIt.Module.SimpleFlow.App.csproj" />
+    <ProjectReference Include="..\FileIt.Module.SimpleFlow\FileIt.Module.SimpleFlow.Host\FileIt.Module.SimpleFlow.Host.csproj" />
+    <ProjectReference Include="..\FileIt.Module.DataFlow.App\FileIt.Module.DataFlow.App.csproj" />
+    <ProjectReference Include="..\FileIt.Module.DataFlow.Host\FileIt.Module.DataFlow.Host.csproj" />
+    <ProjectReference Include="..\FileIt.Module.Complex\FileIt.Module.Complex.App\FileIt.Module.Complex.App.csproj" />
+    <ProjectReference Include="..\FileIt.Module.Complex\FileIt.Module.Complex.Host\FileIt.Module.Complex.Host.csproj" />
+  </ItemGroup>
+</Project>
