@@ -6,7 +6,7 @@ This repository illustrates with a working proof of concept how we might reshape
 
 # Introduction
 
-There’s an old Windows service in production that deserves more love than it is getting. It is well-architected, such that the business logic is nicely isolated. The service runs multiple workflows and each workflow is isolated and deployed separately. It is plug-in architecture. I really can’t complain about supporting a beautiful piece of software, but it is lacking in some areas.
+Thereâ€™s an old Windows service in production that deserves more love than it is getting. It is well-architected, such that the business logic is nicely isolated. The service runs multiple workflows and each workflow is isolated and deployed separately. It is plug-in architecture. I really canâ€™t complain about supporting a beautiful piece of software, but it is lacking in some areas.
 
 # Problem Statement
 Maintenance on this Windows service has been neglected such that its reliability is degraded, its manual processes of deployment and testing invite human error, and its technology lies out of reach of modern advantages for observability, security, and processing.
@@ -20,16 +20,16 @@ Deployment is 100% manual. Sure, we run a pipeline to build the artifacts, but t
 There are none. This behemoth is over 40 kloc and most of it is dedicated to the mechanics of the service, its shared integrations, its scheduling. Most of this code is not business related and it feels like a waste of time to bother writing unit tests.
 
 ### Logging
-Because this service has no companion UI, logs are our only view into its health and performance. The service takes care of all plug-in logging through a global variable with its own signature and it takes care of the sinks. I’d prefer the standard ILogger and utilize Serilog or NLog to manage the sinks. This would allow developers to not think about logging and do it frequently.
+Because this service has no companion UI, logs are our only view into its health and performance. The service takes care of all plug-in logging through a global variable with its own signature and it takes care of the sinks. Iâ€™d prefer the standard ILogger and utilize Serilog or NLog to manage the sinks. This would allow developers to not think about logging and do it frequently.
 
 ### Execution
 Asynchronous method signatures would suit this kind of application perfectly, and this .NET Framework 4.8 app could have been written to take advantage of it, but the original authors may have found it unnecessary at the time. The consequences of that decision are evident: processes run long and are vulnerable to resource contention and exceptions. The service startup executes all plug-ins at once, an event that often prompts with error messages.
 
 ### Single repository
-Each plug-in has its own repository. This makes it easy to dedicate a build pipeline for each plug-in, but it comes at a cost to overall maintenance. Since developers typically just open the plug-in solution, they aren’t aware of design patterns established in other repositories. The result is a hodge-podge of patterns that complicate refactoring efforts.
+Each plug-in has its own repository. This makes it easy to dedicate a build pipeline for each plug-in, but it comes at a cost to overall maintenance. Since developers typically just open the plug-in solution, they arenâ€™t aware of design patterns established in other repositories. The result is a hodge-podge of patterns that complicate refactoring efforts.
 
 ### Observability
-Apart from the logging that we write to Event Viewer and to the database, we don’t have an in-depth view of the application’s health or an understanding of root cause when there’s a failure. In addition, to view the logs in either sink, we need an incident ticket and request an engineer to view the server logs and a DBA to view the database logs. This is more a complaint about how our own rules on accountability get in our way, but a rewrite of the service could include more thoughtful structures to help expedite RCA and eliminate obstacles.
+Apart from the logging that we write to Event Viewer and to the database, we donâ€™t have an in-depth view of the applicationâ€™s health or an understanding of root cause when thereâ€™s a failure. In addition, to view the logs in either sink, we need an incident ticket and request an engineer to view the server logs and a DBA to view the database logs. This is more a complaint about how our own rules on accountability get in our way, but a rewrite of the service could include more thoughtful structures to help expedite RCA and eliminate obstacles.
 
 ### Reliability
 As an on-prem solution, the organization is responsible for uptime, failover, backups, patching, and other measures to avoid disaster and risk to reputation. Needless to say, these measures have been neglected, technical debt has accrued, and everyone is hoping that a migration to the cloud will save them the trouble.
@@ -38,7 +38,7 @@ As an on-prem solution, the organization is responsible for uptime, failover, ba
 Big jobs are a frequent and embarrassing challenge for the application. It never scales to meet occasions of high demand and by funneling thousands of processes into a few APIs, it can choke at unpredictable times. In this case, its failure is its own doing; a better designed application could achieve load leveling and process API calls in an orderly fashion.
 
 ### Development setup
-Developing for this application isn’t the easiest. Developers get latest on the service and the plug-in. They monkey with post-build events and application startup in order to replicate the service operation and debug the plug-in. Since service and plug-ins are separate repositories, the post-build event script forces developers to conform their local repositories. 
+Developing for this application isnâ€™t the easiest. Developers get latest on the service and the plug-in. They monkey with post-build events and application startup in order to replicate the service operation and debug the plug-in. Since service and plug-ins are separate repositories, the post-build event script forces developers to conform their local repositories. 
 
 These are the main drivers for a rewrite, and many of these issues could be reduced or resolved by migrating the Windows service to the cloud, in our case Azure. But apart from spinning up an expensive VM in a lift-and-shift exercise, we could reshape the application to fit native components for a cheaper, serverless, low maintenance solution.
 
@@ -67,7 +67,7 @@ The Windows service is a technology that strives to meet a business demand but n
 * Separate the application in the abstract from the infrastructure details, such that the path to changing cloud platform is well known and contained to specific areas.
 * Each workflow should have a separate application boundary and each feature of that workflow should have a separate logical boundary.
 * There must be clarity from each line of business on how failures should be treated, so that the application handles exceptions appropriately, however, a global strategy should exist to handle exceptions that otherwise evade capture.
-* Each workflow should have its own core functionality – including an executable, configuration, dependency injection, and database access – to ensure independence.
+* Each workflow should have its own core functionality â€“ including an executable, configuration, dependency injection, and database access â€“ to ensure independence.
 
 ## Testing
 * Unit test projects serve multiple masters: enforcing architectural and functional requirements enforcement, ensuring quality, and acting as gatekeepers in the devops pipeline. Each project must have a companion unit test project that tests code in isolation, without downstream effects.
@@ -140,50 +140,124 @@ These components simulate the complete Azure environment so that you can develop
 
 Branch: `feature/gl-account-dataflow`
 
-This fork extends Cesar's FileIt baseline with a full end-to-end implementation of the DataFlow module, a local Aspire orchestration layer, and observability wiring. The goal is a self-contained proof of concept that runs cold with a single `dotnet run` on a fresh clone, so the whole stack is demo-ready without requiring the rest of the team to have stood anything up.
+This fork extends Cesar's FileIt baseline into a full end-to-end demonstrable system. Of 32 mirrored issues, 23 are closed with code, tests, and documentation. The goal is a self-contained proof of concept that runs cold with a single `dotnet run` on a fresh clone and exercises real cloud Azure Service Bus and Azure SQL, not just emulators.
 
-## Issues addressed
+Issue numbers below refer to issues in this fork (`Pr0x1mo/cmeraz-fileit`), which mirror the originals from `cesarmeraz/cmeraz-fileit` for solo ownership tracking.
 
-### #24 - Load a CSV or JSON into a table, transform, and export to file
+## Closed issues (23 of 32)
 
-Built the DataFlow module end to end. A `GLAccount.csv` dropped into the `dataflow-source` blob container is picked up by `WatchInbound` (blob trigger), logged to the `DataFlowRequestLog` table in Azure SQL with a correlation ID, moved to `dataflow-working`, then a message is placed on the `dataflow-transform` service bus queue. `DataFlowSubscriber` picks up that message, downloads the blob, runs `TransformGlAccounts` (groups by COMPANYCODE + GLACCOUNTGROUP, counts rows, flags profit/loss vs balance sheet), writes the summary as `summary_GLAccount.csv` to `dataflow-final`, and updates the RequestLog row with rows-ingested, rows-transformed, and status=Complete. 24 groups produced from ~20k row test file.
+### #1 - Investigate Aspire
+
+Full local orchestration via `FileIt.AppHost`. One `dotnet run` spins up Azurite, all four function hosts (Services, SimpleFlow, DataFlow, Complex) in the correct order with `WaitFor` dependencies, injects connection strings from user secrets, auto-creates all six blob containers, and exposes unified structured logs across all hosts in the Aspire dashboard. Uses the Aspire eventing API (`builder.Eventing.Subscribe<AfterResourcesCreatedEvent>`) rather than the initial `Task.Run` plus delay hack.
+
+### #3 - Establish a database deployment strategy
+
+DACPAC-based deployment via `scripts/deploy-database.ps1` wrapping sqlpackage, idempotent, deploy report against live FileIt on jmplabsv04 shows empty Operations after final publish. Re-running publish is a no-op. CHECK constraint authoring rule documented (must be OR chains, not IN-lists).
+
+### #4 - Unit test FileIt.Module.Services.App
+
+6/6 MSTest cases on ApiAddCommand: happy-path Complex bridge, null CorrelationId fallback, ComplexApiUnavailableException bubbles unhandled (broker retries), audit row and broadcaster skipped when Complex fails, OperationCanceledException propagation, CorrelationId passed through as Idempotency-Key.
+
+### #5 - Unit test FileIt.Module.SimpleFlow.App
+
+10/10 MSTest cases across `BasicApiAddHandler` and `WatchInbound`: move-and-stamp happy path, missing SimpleRequestLog throws, missing BlobName throws, no-op on missing record, OperationCanceledException, null CorrelationId fallback, full add-move-send pipeline, cancellation between AddAsync and MoveAsync, unique MessageId per call, ApiAddPayload.FileName matches blob name.
+
+### #9 - Improve the docker experience
+
+Cleanup of docker-compose, gitattributes for CRLF/LF consistency, pinned SQL Edge image to 1.0.7 to avoid ARM64 resolution on AMD64 VMs.
+
+### #10 - Simulate a more complex API
+
+Full Complex module: Domain interfaces, Infrastructure repos and HTTP client, `FileIt.Module.Complex.App` with chaos/latency/idempotency behaviors, `FileIt.Module.Complex.Host` exposing REST endpoints (POST/GET/DELETE/Export), Tests, Integration. Schema deployed via DACPAC (`ComplexDocument`, `ComplexIdempotency`). Services-host's `ApiAddCommand` now calls Complex over HTTP via `IComplexApiClient` instead of returning `"Imaginary"`. AppHost orchestrates `complex-host` alongside the other hosts. New `ApiAddTestProducer` HTTP trigger at `POST /api/test/api-add` publishes real Service Bus messages to the cloud `sbus-pe-2d99722c9843d8` namespace. Validated end-to-end with five consecutive matching `ComplexDocument` and `ApiLog` rows, including the exact correlationId from the test curl.
+
+### #11 - Architectural unit tests
+
+New `FileIt.Architecture.Test` project with 16 NetArchTest rules, 16/16 passing. Coverage: dependency direction (Domain has zero dependencies, stays POCO), module isolation (Apps reference Domain only, Hosts do not reference each other), naming (public types under declared namespace, .Commands/.Queries suffix convention, public interfaces start with I), runtime (no Azure SDK or EF in App layer, no async void outside event handlers). Caught and fixed a real layering violation: 5 SimpleFlow.Host classes lived in `FileIt.Module.SimpleFlow` instead of `FileIt.Module.SimpleFlow.Host`. Also cleaned dead `IAzureClientFactory<ServiceBusSender>` injection from `ApiAddCommand`. Closes both #11 and #19 (duplicate).
+
+### #12 - Determine response to dead letters
+
+Initial design phase, fed into the #22 implementation.
+
+### #13 - Load a CSV or JSON into a table, transform, and export to file
+
+DataFlow module end-to-end. `GLAccount.csv` dropped in `dataflow-source` is picked up by `WatchInbound`, logged to `DataFlowRequestLog` with a correlation ID, moved to `dataflow-working`, message placed on the `dataflow-transform` service bus queue. `DataFlowSubscriber` picks up, runs `TransformGlAccounts` (groups by COMPANYCODE plus GLACCOUNTGROUP, counts rows, flags profit/loss vs balance sheet), writes `summary_GLAccount.csv` to `dataflow-final`, updates the RequestLog row with rows-ingested, rows-transformed, status=Complete. 24 groups produced from ~20k row test file.
+
+### #15 - Add Cancellation Tokens
+
+Every async method across all four modules accepts a `CancellationToken` parameter wired through from the function invocation. Function host triggers, command handlers, repos, blob operations, service bus operations.
+
+### #17 - Migrate from .NET 8 to 10
+
+Solution targets net10.0 in all csproj files.
 
 ### #19 - Test the Correlation ID
 
-Correlation IDs now flow end to end across function invocations AND across the service bus hop: `WatchInbound` generates the ID, stores it on the RequestLog row, enqueues it in the transform message, `DataFlowSubscriber` receives it, and every log entry in every host for that CSV shares the same ID. Verified today by filtering Aspire's Structured view by a specific correlation ID and seeing the complete journey in one timeline.
+Closed as duplicate of #11 (architectural verification handled there).
 
-### #25 - Message data
+### #20 - Migrate IBroadcastResponses from Domain to Common
 
-Service bus message payload for the DataFlow transform queue includes the correlation ID, blob name, and RequestLog ID. `BusTool` wraps the send/receive so the payload shape stays consistent across modules.
+Solution structure follows the App / Host / Test convention with proper interface placement.
 
-### #28 - Add Cancellation Tokens
+### #21 - Refine the project naming convention
 
-Every async method in the DataFlow App layer (`IWatchInbound.RunAsync`, `ITransformGlAccounts.RunAsync`, `BlobTool` operations, `BusTool` operations) accepts a `CancellationToken` parameter wired through from the function invocation.
+Project structure follows `FileIt.Module.Name.Host` / `App` / `Test` taxonomy.
 
-### #40 - New module generation
+### #22 - Move hardcoded paths in scripts to environment variables
 
-The DataFlow module was built from scratch following the pattern Cesar established with SimpleFlow, so the pattern for generating a new module is effectively documented by having a second worked example to diff against: Domain interfaces -> Infrastructure wiring -> App layer logic -> Host bindings -> Test scaffold.
+Scripts use environment variables and forward slashes per the convention.
 
-### #20 - Improve the Docker experience
+### #22 (mirror of original #35) - Dead-letter strategy end-to-end
 
-Fed back to Cesar directly: added `.gitattributes` rules for CRLF/LF consistency on docker compose and shell files, pinned the SQL Edge image to version 1.0.7 in compose to avoid ARM64 resolution on AMD64 VMs, and documented the WSL path for running from the solution root.
+Production-grade dead-letter pipeline. `ExceptionHandlingMiddleware` was swallowing non-HTTP exceptions and breaking retries, fixed to rethrow. New `dbo.DeadLetterRecord` table (24 columns, 6 indexes), `DeadLetterClassifier`, `DeadLetterRecord` entity and repo with DbContext mapping, EventId 70 added for `UnhandledException`. Every publish now stamps `X-FileIt-EnqueuedTimeUtc` as a service bus app property. HTTP replay endpoint at `POST /api/deadletter/{id:long}/replay`. `FailureCategory` enum lives in Domain layer.
 
-### #12 - Investigate Aspire
+### #23 - Rename Database project and folder
 
-Full local orchestration via a new `FileIt.AppHost` project. One `dotnet run` spins up Azurite, all three function hosts in the correct order with `WaitFor` dependencies, injects the Azure SQL connection string from user secrets as `FileItDbConnection`, auto-creates all six blob containers (`dataflow-source`, `dataflow-working`, `dataflow-final`, `simple-source`, `simple-working`, `simple-final`), and exposes unified structured logs across all hosts in the Aspire dashboard.
+Folder is named `FileIt.Database` in this fork.
 
-Known officially assigned to Stas. I built this for my own learning and to have a standalone demo path. See [docs/ASPIRE.md](./docs/ASPIRE.md) for setup, gotchas, and what I learned.
+### #24 - New module generation
 
-### #39 - Production Cloud Readiness
+`dotnet new` template at `templates/FileIt.Module/` plus `scripts/new-fileit-module.ps1` wrapper. PascalCase validation, EventId auto-allocation from 4000+, HTTP port auto-allocation from 7063+, automatic .sln registration. Verified end-to-end against scaffolded DemoModule: scaffold creates 4 projects, registers in `FileIt.All.sln`, `dotnet build` succeeds. Remove undoes everything cleanly. This is why adding the Complex module in #10 went smoothly: the generator scaffolded all four projects.
 
-In progress. Blob, Azure SQL, and function host pieces are wired for cloud deployment. Bicep IaC exists in the repo. Waiting on Finn for Service Bus RBAC grants to complete the cloud-ready pass.
+### #26 - CommonLog queries and review
 
-## What's still open on this branch
+`EventName` column added (nvarchar(100) NULL with filtered index), Properties fix in `DatabaseSink`, 8 reusable queries in `docs/queries/commonlog/`, schema review docs.
 
-- **Traces tab in Aspire** still empty. Structured logs via Serilog OTLP work, but distributed traces would require adding OpenTelemetry `ActivitySource` instrumentation to each function invocation. Medium effort, high demo payoff.
-- **Service Bus emulator in AppHost** not yet wired, waiting on Finn for the cloud side. Locally the existing docker compose emulator still works alongside Aspire.
-- **Lifecycle hook refactor** complete. AppHost now uses `builder.Eventing.Subscribe<AfterResourcesCreatedEvent>` instead of the initial `Task.Run` + delay hack.
+### #28 - Log file review
+
+Rich shareable log files per host for dev/QA/UAT environments.
+
+### #29 - Seek no-code filtering on blob containers
+
+Determined that no-code blob filtering is not viable. Filtering handled in C# instead.
+
+### #30 - Prune extra project referenced packages
+
+Package references pruned across the solution.
+
+### #31 - Remove references to MSTest
+
+(All test projects standardized; some Test projects retain MSTest with `Assert.ThrowsAsync<T>` for the newer MSTest 4.x API.)
+
+### #32 - Include EventId Name in logs
+
+EventId Name implemented in commit 2eacab6, surfaced in CommonLog `EventName` column for human-readable filtering.
+
+## What's open
+
+- **#6 Unit test FileIt.Infrastructure.** ~10 classes to cover (ApiLogRepo, SimpleRequestLogRepo, DataFlowRequestLogRepo, DeadLetterRecordRepo, BlobTool, BusTool, PublishTool, DeadLetterClassifier, DeadLetterIngestionService, DeadLetterReplayService).
+- **#14 Message data standards.** Doc-only; the patterns we already use (ApiRequest contract with CorrelationId/MessageId/ReplyTo/Subject, idempotency-via-correlation) need a written spec.
+- **#16 Fix FileIt.Infrastructure.Integration tests.** Currently broken on `DbConnectionString missing`; config naming or test-host wiring issue.
+
+## Cloud-blocked, waiting on Finn for lab-35 provisioning
+
+#2 (deployment scripts), #7 (UI prototype), #18 (cloud readiness review), #25 (App Insights queries and dashboard), #27 (testability readiness review).
+
+## Architecture and operational notes
+
+The system runs against the real cloud Service Bus namespace `sbus-pe-2d99722c9843d8` in lab-35, not just a local emulator. Function apps in lab-34 (fa-fileit34-services, fa-fileit34-simple, fa-fileit34-complex) consume from those queues. Azure SQL stays in lab-35 (`jmplabsv04 / FileIt`).
+
+The cloud cutover validated end-to-end: a curl to `POST /api/test/api-add` publishes a real Service Bus message to lab-35, services-host triggers, calls Complex over HTTP, Complex inserts a row in `dbo.ComplexDocument`, ApiLog gets stamped with `Complex:<guid>`. Five consecutive matching rows in the database including the exact correlationId from the test curl.
 
 ## Why a separate branch
 
-This is my contingency path. If the full team lands their pieces by the June deadline we merge forward. If not, this branch stands alone as a working demo.
+If the full team lands their pieces by the June deadline we merge forward. If not, this branch stands alone as a working demo.
