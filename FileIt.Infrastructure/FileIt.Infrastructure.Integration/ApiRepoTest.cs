@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace FileIt.Infrastructure.Integration;
 
 [TestClass]
-public class ApiLogRepoTest : BaseTest
+public class ApiLogRepoTest
 {
     [TestMethod]
     public async Task TestAdd()
