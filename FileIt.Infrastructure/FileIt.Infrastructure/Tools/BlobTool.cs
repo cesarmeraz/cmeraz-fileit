@@ -57,7 +57,7 @@ public class BlobTool : IHandleFiles
                 return;
             }
 
-            var copyOperation = await destinationBlobClient.StartCopyFromUriAsync(sourceBlobClient.Uri, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var copyOperation = await destinationBlobClient.StartCopyFromUriAsync(sourceBlobClient.Uri, options: null, cancellationToken: cancellationToken).ConfigureAwait(false);
             await copyOperation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
             await sourceBlobClient.DeleteAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
