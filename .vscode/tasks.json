@@ -3,6 +3,47 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "build",
+            "type": "shell",
+            "command": "dotnet build FileIt.All.sln",
+            "problemMatcher": "$msCompile",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "publish-db-local",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "${workspaceFolder}/scripts/publish/publish-database-local.sh"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "publish-db-azure",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "${workspaceFolder}/scripts/publish/publish-database-azure.sh"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
             "label": "start services",
             "type": "shell",
             "command": "func start",
@@ -39,6 +80,6 @@
             "options": {
                 "cwd": "${workspaceFolder}/FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow.Host"
             }
-        },
+        }
     ]
 }

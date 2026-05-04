@@ -1,4 +1,3 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -9,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.Services.Host
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.Services.App", "FileIt.Module.Services\FileIt.Module.Services.App\FileIt.Module.Services.App.csproj", "{EBA45633-B46C-47BB-AA98-6A525329F982}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.Services.App.Test", "FileIt.Module.Services\FileIt.Module.Services.App.Test\FileIt.Module.Services.App.Test.csproj", "{6C8E9118-F7AC-4E77-A934-9F675FC341F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.Services.Test", "FileIt.Module.Services\FileIt.Module.Services.Test\FileIt.Module.Services.Test.csproj", "{6C8E9118-F7AC-4E77-A934-9F675FC341F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileIt.Module.Services.Integration", "FileIt.Module.Services\FileIt.Module.Services.Integration\FileIt.Module.Services.Integration.csproj", "{A32CD7A6-033B-4A3B-96B3-9ACA18AA698C}"
 EndProject

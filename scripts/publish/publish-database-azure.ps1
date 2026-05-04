@@ -9,13 +9,14 @@ Set-Location "$env:FILEIT_REPO_HOME/cmeraz-fileit/FileIt.Database/"
 dotnet build
 
 # Configuration Variables
-$DACPAC_PATH = "./bin/Debug/fileit.dacpac"
-
-# For Azure SQL, use a connection string for better control
-$CONN_STR = "Server=tcp:$sql_server_name.database.windows.net;Database=$database_name;Authentication=Active Directory Interactive;Encrypt=True;"
+$DACPAC_PATH = "./bin/Debug/FileIt.Database.dacpac"
+$PROFILE_PATH = "./fileit_azure.publish.xml"
 
 # Execute deployment using SqlPackage
+# /ua:True triggers Azure AD Interactive (Universal Authentication) — no password needed.
 sqlpackage /Action:Publish `
     /SourceFile:"$DACPAC_PATH" `
-    /TargetConnectionString:"$CONN_STR" `
-    /p:AllowIncompatiblePlatform=True
+    /Profile:"$PROFILE_PATH" `
+    /TargetServerName:"$sql_server_name.database.windows.net" `
+    /TargetDatabaseName:"$database_name" `
+    /ua:True

@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <AllowIncompatiblePlatform>True</AllowIncompatiblePlatform>
+    <DoNotDropLogins>True</DoNotDropLogins>
+    <DropPermissionsNotInSource>False</DropPermissionsNotInSource>
+    <DropObjectsNotInSource>True</DropObjectsNotInSource>
+    <DropRoleMembersNotInSource>False</DropRoleMembersNotInSource>
+    <IgnoreKeywordCasing>False</IgnoreKeywordCasing>
+    <IgnoreSemicolonBetweenStatements>False</IgnoreSemicolonBetweenStatements>
+    <AllowDropBlockingAssemblies>True</AllowDropBlockingAssemblies>
+    <AlwaysCreateNewDatabase>False</AlwaysCreateNewDatabase>
+    <BlockOnPossibleDataLoss>False</BlockOnPossibleDataLoss>
+    <BlockOnPossibleSchemaChanges>False</BlockOnPossibleSchemaChanges>
+    <ExcludeAudits>True</ExcludeAudits>
+    <ExcludeCredentials>True</ExcludeCredentials>
+    <ExcludeDatabaseScopedCredentials>True</ExcludeDatabaseScopedCredentials>
+    <ExcludeCryptographicProviders>True</ExcludeCryptographicProviders>
+    <ExcludeDatabaseAuditSpecifications>True</ExcludeDatabaseAuditSpecifications>
+    <ExcludeEndpoints>True</ExcludeEndpoints>
+    <ExcludeErrorMessages>True</ExcludeErrorMessages>
+    <ExcludeEventNotifications>True</ExcludeEventNotifications>
+    <ExcludeEventSessions>True</ExcludeEventSessions>
+    <ExcludeFiles>True</ExcludeFiles>
+    <ExcludeLinkedServerLogins>True</ExcludeLinkedServerLogins>
+    <ExcludeLinkedServers>True</ExcludeLinkedServers>
+    <ExcludeLogins>True</ExcludeLogins>
+    <ExcludeRoutes>True</ExcludeRoutes>
+    <ExcludeServerAuditSpecifications>True</ExcludeServerAuditSpecifications>
+    <ExcludeServerRoleMembership>True</ExcludeServerRoleMembership>
+    <ExcludeServerRoles>True</ExcludeServerRoles>
+    <ExcludeServerTriggers>True</ExcludeServerTriggers>
+    <ProfileVersionNumber>1</ProfileVersionNumber>
+    <ScriptDatabaseOptions>False</ScriptDatabaseOptions>
+  </PropertyGroup>
+</Project>

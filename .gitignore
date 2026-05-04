@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# LiteSpeed
+*.lscache
+
 # Azurite files
 __blobstorage__
 __queuestorage__
@@ -215,7 +218,6 @@ publish/
 !scripts/publish/
 
 # Publish Web Output
-*.[Pp]ublish.xml
 *.azurePubxml
 # Note: Comment the next line if you want to checkin your web deploy settings,
 # but database connection strings (with potential passwords) will be unencrypted
