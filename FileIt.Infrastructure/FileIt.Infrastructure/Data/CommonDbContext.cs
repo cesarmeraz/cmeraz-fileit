@@ -1,7 +1,7 @@
 using FileIt.Domain.Entities;
 using FileIt.Domain.Entities.Api;
-using FileIt.Domain.Entities.DeadLetter;
 using FileIt.Domain.Entities.Complex;
+using FileIt.Domain.Entities.DeadLetter;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -22,6 +22,7 @@ namespace FileIt.Infrastructure.Data
         // Dead-letter records. Written by DLQ reader functions, read and updated by
         // operators and the replay function. See docs/dead-letter-strategy.md.
         public DbSet<DeadLetterRecord> DeadLetterRecords { get; set; }
+
         // Complex module document API. See docs/complex-api.md and issue #10.
         public DbSet<ComplexDocument> ComplexDocuments { get; set; } = null!;
         public DbSet<ComplexIdempotencyRecord> ComplexIdempotencyRecords { get; set; } = null!;
@@ -104,20 +105,15 @@ namespace FileIt.Infrastructure.Data
             // code and database is impossible: a rename in C# produces a compile error
             // at the call site, and a rename in SQL produces a runtime parse error on
             // the first read.
-            var failureCategoryConverter =
-                new EnumToStringConverter<FailureCategory>();
-            var statusConverter =
-                new EnumToStringConverter<DeadLetterRecordStatus>();
-            var sourceEntityTypeConverter =
-                new EnumToStringConverter<SourceEntityType>();
+            var failureCategoryConverter = new EnumToStringConverter<FailureCategory>();
+            var statusConverter = new EnumToStringConverter<DeadLetterRecordStatus>();
+            var sourceEntityTypeConverter = new EnumToStringConverter<SourceEntityType>();
 
             var entity = modelBuilder.Entity<DeadLetterRecord>();
 
             entity.ToTable("DeadLetterRecord");
 
-            entity
-                .Property(e => e.DeadLetterRecordId)
-                .ValueGeneratedOnAdd();
+            entity.Property(e => e.DeadLetterRecordId).ValueGeneratedOnAdd();
 
             entity
                 .Property(e => e.FailureCategory)

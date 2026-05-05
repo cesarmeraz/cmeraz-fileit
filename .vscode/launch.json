@@ -20,18 +20,12 @@
         },
         {
             "name": "Start AppHost",
-            "type": "coreclr",
+            "type": "dotnet",
             "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/FileIt.AppHost/bin/Debug/net10.0/FileIt.AppHost.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/FileIt.AppHost",
+            "projectPath": "${workspaceFolder}/FileIt.AppHost/FileIt.AppHost.csproj",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
                 "DOTNET_ENVIRONMENT": "Development"
-            },
-            "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
             }
         },
         {

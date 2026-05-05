@@ -23,7 +23,7 @@ public class HelloWorld
     /// <param name="req">the HttpRequestData</param>
     /// <param name="executionContext">the FunctionContext</param>
     /// <returns></returns>
-    [Function(nameof(HelloWorld))]
+    //[Function(nameof(HelloWorld))]
     public async Task Run([TimerTrigger("%EveryMinuteSchedule%")] TimerInfo myTimer)
     {
         using (
