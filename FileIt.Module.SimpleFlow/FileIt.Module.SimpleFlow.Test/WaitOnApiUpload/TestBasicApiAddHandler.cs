@@ -11,16 +11,16 @@ namespace FileIt.Module.SimpleFlow.Test.WaitOnApiUpload;
 [TestClass]
 public class TestBasicApiAddHandler
 {
-    public required Mock<ILogger<BasicApiAddHandler>> _loggerMock;
-    public required Mock<IHandleFiles> _blobToolMock;
-    public required Mock<ISimpleRequestLogRepo> _requestLogRepoMock;
+    public required Moq.Mock<ILogger<BasicApiAddHandler>> _loggerMock;
+    public required Moq.Mock<IHandleFiles> _blobToolMock;
+    public required Moq.Mock<ISimpleRequestLogRepo> _requestLogRepoMock;
     public required SimpleConfig _config;
     public required BasicApiAddHandler target;
 
     [TestInitialize]
     public void Setup()
     {
-        _loggerMock = new Mock<ILogger<BasicApiAddHandler>>();
+        _loggerMock = new Moq.Mock<ILogger<BasicApiAddHandler>>();
         _loggerMock.Setup(m =>
             m.Log(
                 It.IsAny<LogLevel>(),
@@ -30,8 +30,8 @@ public class TestBasicApiAddHandler
                 (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()
             )
         );
-        _blobToolMock = new Mock<IHandleFiles>();
-        _requestLogRepoMock = new Mock<ISimpleRequestLogRepo>();
+        _blobToolMock = new Moq.Mock<IHandleFiles>();
+        _requestLogRepoMock = new Moq.Mock<ISimpleRequestLogRepo>();
 
         _config = new SimpleConfig()
         {
@@ -64,19 +64,32 @@ public class TestBasicApiAddHandler
     public async Task RunAsync_HappyPath_MovesBlobAndStampsApiId()
     {
         var correlationId = Guid.NewGuid().ToString();
-        var entry = new SimpleRequestLog { Id = 7, BlobName = "good.txt", ClientRequestId = correlationId };
+        var entry = new SimpleRequestLog
+        {
+            Id = 7,
+            BlobName = "good.txt",
+            ClientRequestId = correlationId,
+        };
         _requestLogRepoMock
             .Setup(x => x.GetByClientRequestIdAsync(correlationId))
             .ReturnsAsync(entry);
 
         await target.RunAsync(BuildMessage(correlationId, nodeId: 555));
 
-        _blobToolMock.Verify(x => x.MoveAsync(
-            "good.txt", "simple-working", "simple-final", It.IsAny<CancellationToken>()
-        ), Times.Once);
-        _requestLogRepoMock.Verify(x => x.UpdateAsync(
-            It.Is<SimpleRequestLog>(e => e.Id == 7 && e.ApiId == 555)
-        ), Times.Once);
+        _blobToolMock.Verify(
+            x =>
+                x.MoveAsync(
+                    "good.txt",
+                    "simple-working",
+                    "simple-final",
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+        _requestLogRepoMock.Verify(
+            x => x.UpdateAsync(It.Is<SimpleRequestLog>(e => e.Id == 7 && e.ApiId == 555)),
+            Times.Once
+        );
     }
 
     [TestMethod]
@@ -86,8 +99,9 @@ public class TestBasicApiAddHandler
             .Setup(x => x.GetByClientRequestIdAsync(It.IsAny<string>()))
             .ReturnsAsync((SimpleRequestLog?)null);
 
-        await Assert.ThrowsAsync<Exception>(
-            () => target.RunAsync(BuildMessage(Guid.NewGuid().ToString())));
+        await Assert.ThrowsAsync<Exception>(() =>
+            target.RunAsync(BuildMessage(Guid.NewGuid().ToString()))
+        );
     }
 
     [TestMethod]
@@ -96,10 +110,16 @@ public class TestBasicApiAddHandler
         var correlationId = Guid.NewGuid().ToString();
         _requestLogRepoMock
             .Setup(x => x.GetByClientRequestIdAsync(correlationId))
-            .ReturnsAsync(new SimpleRequestLog { Id = 7, BlobName = "", ClientRequestId = correlationId });
+            .ReturnsAsync(
+                new SimpleRequestLog
+                {
+                    Id = 7,
+                    BlobName = "",
+                    ClientRequestId = correlationId,
+                }
+            );
 
-        await Assert.ThrowsAsync<Exception>(
-            () => target.RunAsync(BuildMessage(correlationId)));
+        await Assert.ThrowsAsync<Exception>(() => target.RunAsync(BuildMessage(correlationId)));
     }
 
     [TestMethod]
@@ -109,15 +129,23 @@ public class TestBasicApiAddHandler
             .Setup(x => x.GetByClientRequestIdAsync(It.IsAny<string>()))
             .ReturnsAsync((SimpleRequestLog?)null);
 
-        try { await target.RunAsync(BuildMessage(Guid.NewGuid().ToString())); }
+        try
+        {
+            await target.RunAsync(BuildMessage(Guid.NewGuid().ToString()));
+        }
         catch (Exception) { }
 
-        _blobToolMock.Verify(x => x.MoveAsync(
-            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()
-        ), Times.Never);
-        _requestLogRepoMock.Verify(x => x.UpdateAsync(
-            It.IsAny<SimpleRequestLog>()
-        ), Times.Never);
+        _blobToolMock.Verify(
+            x =>
+                x.MoveAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Never
+        );
+        _requestLogRepoMock.Verify(x => x.UpdateAsync(It.IsAny<SimpleRequestLog>()), Times.Never);
     }
 
     [TestMethod]
@@ -126,16 +154,31 @@ public class TestBasicApiAddHandler
         var correlationId = Guid.NewGuid().ToString();
         _requestLogRepoMock
             .Setup(x => x.GetByClientRequestIdAsync(correlationId))
-            .ReturnsAsync(new SimpleRequestLog { Id = 7, BlobName = "good.txt", ClientRequestId = correlationId });
+            .ReturnsAsync(
+                new SimpleRequestLog
+                {
+                    Id = 7,
+                    BlobName = "good.txt",
+                    ClientRequestId = correlationId,
+                }
+            );
         var cts = new CancellationTokenSource();
         cts.Cancel();
 
-        await Assert.ThrowsAsync<OperationCanceledException>(
-            () => target.RunAsync(BuildMessage(correlationId), cts.Token));
+        await Assert.ThrowsAsync<OperationCanceledException>(() =>
+            target.RunAsync(BuildMessage(correlationId), cts.Token)
+        );
 
-        _blobToolMock.Verify(x => x.MoveAsync(
-            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()
-        ), Times.Never);
+        _blobToolMock.Verify(
+            x =>
+                x.MoveAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -143,7 +186,14 @@ public class TestBasicApiAddHandler
     {
         _requestLogRepoMock
             .Setup(x => x.GetByClientRequestIdAsync(string.Empty))
-            .ReturnsAsync(new SimpleRequestLog { Id = 1, BlobName = "x.txt", ClientRequestId = string.Empty });
+            .ReturnsAsync(
+                new SimpleRequestLog
+                {
+                    Id = 1,
+                    BlobName = "x.txt",
+                    ClientRequestId = string.Empty,
+                }
+            );
 
         await target.RunAsync(BuildMessage(correlationId: null));
 

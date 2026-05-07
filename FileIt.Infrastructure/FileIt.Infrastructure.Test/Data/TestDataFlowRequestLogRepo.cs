@@ -91,7 +91,7 @@ public class TestDataFlowRequestLogRepo
     public async Task UpdateTransformResultAsync_StampsModifiedOn()
     {
         await target.AddAsync("gl.csv", "corr-X");
-        var before = DateTime.UtcNow.AddSeconds(-1);
+        var before = DateTime.Now.AddSeconds(-1);
         // Sleep briefly so the ModifiedOn after the update is observably later.
         await Task.Delay(20);
 
