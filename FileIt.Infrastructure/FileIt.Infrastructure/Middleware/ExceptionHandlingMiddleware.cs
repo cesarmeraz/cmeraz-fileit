@@ -26,28 +26,50 @@ namespace FileIt.Infrastructure.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unhandled exception while processing request");
+                _logger.LogError(
+                    InfrastructureEvents.UnhandledException,
+                    ex,
+                    "Unhandled exception while processing request");
+
                 var httpContext = context.GetHttpContext();
-                if (httpContext == null)
+
+                if (httpContext is null)
                 {
-                    // that's unexpected
+                    // Non-HTTP trigger (Service Bus, Timer, Blob, etc).
+                    // We MUST rethrow so the Functions runtime treats this as a
+                    // failed invocation. For Service Bus triggers, that triggers
+                    // delivery-count increment and eventual dead-lettering once
+                    // MaxDeliveryCount is exceeded - which is the entire foundation
+                    // of the dead-letter strategy in docs/dead-letter-strategy.md.
+                    // Swallowing here would silently complete failed messages and
+                    // make the DLQ pipeline unreachable.
+                    throw;
                 }
-                else if (!httpContext.Response.HasStarted)
+
+                if (!httpContext.Response.HasStarted)
                 {
+                    // HTTP trigger and we still own the response. Format a generic
+                    // 500 for the client; full exception detail is in the log above.
                     httpContext.Response.Clear();
                     httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
                     httpContext.Response.ContentType = "application/json";
 
-                    var payload = JsonSerializer.Serialize(new { ex.Message, ex.StackTrace });
-
+                    var payload = JsonSerializer.Serialize(new
+                    {
+                        error = "An internal server error occurred.",
+                        timestamp = DateTime.UtcNow
+                    });
                     await httpContext.Response.WriteAsync(payload);
+                    return;
                 }
-                else
-                {
-                    _logger.LogWarning(
-                        "Response has already started, cannot modify the response for the unhandled exception."
-                    );
-                }
+
+                // HTTP trigger but the response has already started streaming.
+                // We cannot retroactively change status; rethrow so the runtime
+                // logs the failure and aborts the response stream cleanly.
+                _logger.LogWarning(
+                    "Response has already started; rethrowing exception so runtime "
+                    + "can mark the invocation as failed.");
+                throw;
             }
         }
     }

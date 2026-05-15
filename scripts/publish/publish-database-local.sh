@@ -8,13 +8,19 @@ cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Database/
 dotnet build
 
 # Configuration Variables
-DACPAC_PATH="./bin/Debug/fileit.dacpac"
-
-# For Azure SQL, use a connection string for better control
-CONN_STR="Server=localhost;Database=${AZURE_SQL_DATABASE};User Id=${LOCAL_SQL_ADMIN};Password=${LOCAL_SQL_PASSWORD};Encrypt=True;"
+DACPAC_PATH="./bin/Debug/FileIt.Database.dacpac"
 
 # Execute deployment using SqlPackage
 sqlpackage /Action:Publish \
     /SourceFile:"$DACPAC_PATH" \
-    /TargetConnectionString:"$CONN_STR" \
-    /p:AllowIncompatiblePlatform=True
+    /TargetDatabaseName:"$AZURE_SQL_DATABASE" \
+    /TargetServerName:"localhost" \
+    /TargetUser:"$LOCAL_SQL_ADMIN" \
+    /TargetPassword:"$LOCAL_SQL_PASSWORD" \
+    /TargetEncryptConnection:False \
+    /TargetTrustServerCertificate:True \
+    /p:AllowIncompatiblePlatform=True \
+    /p:BlockOnPossibleDataLoss=False \
+    /p:DropObjectsNotInSource=True \
+    /p:ExcludeObjectTypes="Users;Logins;RoleMembership;Permissions"
+

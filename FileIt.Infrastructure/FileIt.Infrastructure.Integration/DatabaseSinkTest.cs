@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using FileIt.Domain.Entities;
 using FileIt.Domain.Interfaces;
+using FileIt.Infrastructure.Data;
 using FileIt.Infrastructure.Logging;
 using Microsoft.Data.SqlClient;
 using Serilog.Events;
@@ -9,14 +10,16 @@ using Serilog.Parsing;
 
 namespace FileIt.Infrastructure.Integration;
 
+[TestClass]
 public class DatabaseSinkTest
 {
-    [Test]
-    public async Task TestEmit()
+    [TestMethod]
+    public void TestEmit()
     {
         string correlationId = Guid.NewGuid().ToString();
         string connString =
             "Data Source=localhost;Initial Catalog=FileIt;User ID=FileItDev;Password=123qwe!@#QWE;TrustServerCertificate=True;Encrypt=True;";
+
         ICommonLogConfig featureConfig = new CommonLogConfig()
         {
             Agent = "Integration",
@@ -41,7 +44,7 @@ public class DatabaseSinkTest
         var properties = new List<LogEventProperty>
         {
             new LogEventProperty("Name", new ScalarValue("World")),
-            new LogEventProperty("EventId", new ScalarValue(1)),
+            new LogEventProperty("EventName", new ScalarValue("Test")),
             new LogEventProperty("CorrelationId", new ScalarValue(correlationId)),
             new LogEventProperty("SourceContext", new ScalarValue("SourceContext")),
         };
@@ -56,7 +59,20 @@ public class DatabaseSinkTest
         );
 
         //Act
-        target.Emit(logEvent);
+        try
+        {
+            target.Emit(logEvent);
+            Console.WriteLine("Emit completed successfully");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Emit threw exception: {ex}");
+            throw;
+        }
+
+        // Give the database time to process the write
+        System.Threading.Thread.Sleep(500);
+
         List<CommonLog> actual = new List<CommonLog>();
         string sqlText = $"SELECT * FROM CommonLog where CorrelationId = '{correlationId}';";
         Console.WriteLine($"sqlText: {sqlText}");
@@ -79,12 +95,12 @@ public class DatabaseSinkTest
                             {
                                 CorrelationId = reader["CorrelationId"].ToString(),
                                 Environment = reader["Environment"].ToString(),
-                                Application = reader["Feature"].ToString(),
+                                Application = reader["Application"].ToString(),
                                 Level = reader["Level"].ToString(),
                                 MachineName = reader["MachineName"].ToString(),
                                 SourceContext = reader["SourceContext"].ToString(),
                                 Message = reader["Message"].ToString(),
-                                ApplicationVersion = reader["FeatureVersion"].ToString(),
+                                ApplicationVersion = reader["ApplicationVersion"].ToString(),
                             };
                             actual.Add(log);
                         }
@@ -95,13 +111,13 @@ public class DatabaseSinkTest
                     Console.WriteLine(ex.Message);
                 }
 
-                await Assert.That(actual.Count).IsEqualTo(1);
-                await Assert.That(actual[0].CorrelationId).IsEqualTo(correlationId);
-                await Assert.That(actual[0].Environment).IsEqualTo("LocalDev");
-                // await Assert.That(actual[0].Feature).IsEqualTo("FileIt.Module.Services.Integration");
-                await Assert.That(actual[0].Level).IsEqualTo(logEvent.Level.ToString());
-                await Assert.That(actual[0].MachineName).IsEqualTo("cesario");
-                await Assert.That(actual[0].SourceContext).IsEqualTo("SourceContext");
+                Assert.AreEqual(1, actual.Count);
+                Assert.AreEqual(correlationId, actual[0].CorrelationId);
+                Assert.AreEqual("LocalDev", actual[0].Environment);
+                // Assert.AreEqual("FileIt.Module.Services.Integration", actual[0].Feature);
+                Assert.AreEqual(logEvent.Level.ToString(), actual[0].Level);
+                Assert.AreEqual("cesario", actual[0].MachineName);
+                Assert.AreEqual("SourceContext", actual[0].SourceContext);
             }
         }
     }
