@@ -31,6 +31,20 @@
                             "RequiresDuplicateDetection": false,
                             "RequiresSession": false
                         }
+                    },
+                    {
+                        "Name": "dataflow-transform",
+                        "Properties": {
+                            "DeadLetteringOnMessageExpiration": false,
+                            "DefaultMessageTimeToLive": "PT1H",
+                            "DuplicateDetectionHistoryTimeWindow": "PT20S",
+                            "ForwardDeadLetteredMessagesTo": "",
+                            "ForwardTo": "",
+                            "LockDuration": "PT1M",
+                            "MaxDeliveryCount": 3,
+                            "RequiresDuplicateDetection": false,
+                            "RequiresSession": false
+                        }
                     }
                 ],
                 "Topics": [
@@ -44,6 +58,28 @@
                         "Subscriptions": [
                             {
                                 "Name": "api-add-simple-sub",
+                                "Properties": {
+                                    "DeadLetteringOnMessageExpiration": false,
+                                    "DefaultMessageTimeToLive": "PT1H",
+                                    "LockDuration": "PT1M",
+                                    "MaxDeliveryCount": 3,
+                                    "ForwardDeadLetteredMessagesTo": "",
+                                    "ForwardTo": "",
+                                    "RequiresSession": false
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "Name": "dataflow-transform-topic",
+                        "Properties": {
+                            "DefaultMessageTimeToLive": "PT1H",
+                            "DuplicateDetectionHistoryTimeWindow": "PT20S",
+                            "RequiresDuplicateDetection": false
+                        },
+                        "Subscriptions": [
+                            {
+                                "Name": "dataflow-transform-sub",
                                 "Properties": {
                                     "DeadLetteringOnMessageExpiration": false,
                                     "DefaultMessageTimeToLive": "PT1H",

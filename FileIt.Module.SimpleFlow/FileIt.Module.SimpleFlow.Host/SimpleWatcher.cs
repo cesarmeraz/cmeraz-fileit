@@ -71,10 +71,7 @@ public class SimpleWatcher
     public async Task Run([EventGridTrigger] EventGridEvent eventGridEvent, FunctionContext context)
     {
         var cancellationToken = context.CancellationToken;
-
-        _logger.LogInformation("Received EventGridEvent: {@EventGridEvent}", eventGridEvent);
         var blobName = (eventGridEvent.Subject ?? string.Empty).Split('/').Last();
-
         // use the blobClient to get the x-ms-client-request-id property from the original request header
         string clientRequestId = eventGridEvent.Id;
 

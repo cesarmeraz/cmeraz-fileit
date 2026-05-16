@@ -5,7 +5,7 @@ echo "Running $0"
 # Configuration found in Environment Variables
 PROJECT_PATH="${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Database/"
 DACPAC_PATH="$PROJECT_PATH/bin/Debug/FileIt.Database.dacpac"
-TARGET_CONNECTION_STRING="Data Source=localhost;Initial Catalog=${AZURE_SQL_DATABASE};User ID=${LOCAL_SQL_ADMIN};Password=${LOCAL_SQL_PASSWORD};Encrypt=False;TrustServerCertificate=True;"
+TARGET_CONNECTION_STRING="Server=tcp:${AZURE_SQL_SERVER}.database.windows.net,1433;Initial Catalog=${AZURE_SQL_DATABASE};Authentication=Active Directory Interactive;Encrypt=True;TrustServerCertificate=True;"
 
 # Build the project to generate the DACPAC
 dotnet build
@@ -16,7 +16,7 @@ dotnet build
 sqlpackage /Action:Publish \
     /SourceFile:"$DACPAC_PATH" \
     /TargetConnectionString:"$TARGET_CONNECTION_STRING" \
-    /p:AllowIncompatiblePlatform=True \
+    /p:AllowIncompatiblePlatform=False \
     /p:BlockOnPossibleDataLoss=False \
     /p:CreateNewDatabase=False \
     /p:DropObjectsNotInSource=True \

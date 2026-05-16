@@ -82,6 +82,7 @@ public static class CommonLogExtensions
                 "InfrastructureVersion",
                 System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
             );
+#if !RELEASE
         // Rich rolling log file for dev/QA/business sharing (#43).
         // One file per host (derived from Application name), rolling daily,
         // 30-day retention, 100MB per-file cap.
@@ -140,6 +141,7 @@ public static class CommonLogExtensions
             shared: false,
             flushToDiskInterval: TimeSpan.FromSeconds(2)
         );
+#endif
 
         // Ship logs to Aspire dashboard via OTLP when running under Aspire.
         // OTEL_EXPORTER_OTLP_ENDPOINT is auto-injected by Aspire into each child process.
