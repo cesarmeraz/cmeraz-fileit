@@ -2,7 +2,7 @@
     "UserConfig": {
         "Namespaces": [
             {
-                "Name": "fileit",
+                "Name": "sbemulatorns",
                 "Queues": [
                     {
                         "Name": "simple",

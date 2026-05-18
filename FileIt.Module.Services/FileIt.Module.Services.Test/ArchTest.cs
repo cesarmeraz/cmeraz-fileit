@@ -1,5 +1,7 @@
+using System.Linq;
 using ArchUnitNET.Domain;
 using ArchUnitNET.Fluent;
+using ArchUnitNET.Fluent.Extensions;
 using ArchUnitNET.Loader;
 // Use static import for a more readable fluent API
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
@@ -27,7 +29,7 @@ public class ArchitectureTests
 
         var rule = Types().That().Are(testLayer).Should().NotDependOnAny(targetLayer);
 
-        Assert.IsTrue(rule.HasNoViolations(Architecture));
+        AssertNoViolations(rule, nameof(Domain_Should_Not_Have_Dependency_On_Infrastructure));
     }
 
     [TestMethod]
@@ -38,7 +40,7 @@ public class ArchitectureTests
 
         var rule = Types().That().Are(testLayer).Should().NotDependOnAny(targetLayer);
 
-        Assert.IsTrue(rule.HasNoViolations(Architecture));
+        AssertNoViolations(rule, nameof(Domain_Should_Not_Have_Dependency_On_Host));
     }
 
     [TestMethod]
@@ -49,7 +51,7 @@ public class ArchitectureTests
 
         var rule = Types().That().Are(testLayer).Should().NotDependOnAny(targetLayer);
 
-        Assert.IsTrue(rule.HasNoViolations(Architecture));
+        AssertNoViolations(rule, nameof(Domain_Should_Not_Have_Dependency_On_App));
     }
 
     [TestMethod]
@@ -60,7 +62,7 @@ public class ArchitectureTests
 
         var rule = Types().That().Are(testLayer).Should().NotDependOnAny(targetLayer);
 
-        Assert.IsTrue(rule.HasNoViolations(Architecture));
+        AssertNoViolations(rule, nameof(Host_Should_Not_Have_Dependency_On_Domain));
     }
 
     [TestMethod]
@@ -71,6 +73,18 @@ public class ArchitectureTests
 
         var rule = Types().That().Are(testLayer).Should().NotDependOnAny(targetLayer);
 
-        Assert.IsTrue(rule.HasNoViolations(Architecture));
+        AssertNoViolations(rule, nameof(App_Should_Not_Have_Dependency_On_Infrastructure));
+    }
+
+    private static void AssertNoViolations(IArchRule rule, string ruleName)
+    {
+        var results = rule.Evaluate(Architecture).ToList();
+        if (results.Any(result => !result.Passed))
+        {
+            var details = results.ToErrorMessage();
+            Assert.Fail(
+                $"Architecture rule failed: {ruleName}{Environment.NewLine}{Environment.NewLine}{details}"
+            );
+        }
     }
 }

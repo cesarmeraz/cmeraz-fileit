@@ -6,7 +6,6 @@
 // See docs/dead-letter-strategy.md for the full design.
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
-using FileIt.Domain.Entities.DeadLetter;
 using FileIt.Infrastructure;
 using FileIt.Infrastructure.DeadLetter.Ingestion;
 using Microsoft.Azure.Functions.Worker;
@@ -26,7 +25,8 @@ public class FileItModuleDeadLetterReader
 
     public FileItModuleDeadLetterReader(
         IDeadLetterIngestionService ingestion,
-        ILogger<FileItModuleDeadLetterReader> logger)
+        ILogger<FileItModuleDeadLetterReader> logger
+    )
     {
         _ingestion = ingestion ?? throw new ArgumentNullException(nameof(ingestion));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -36,17 +36,22 @@ public class FileItModuleDeadLetterReader
     public async Task Run(
         [ServiceBusTrigger(TopicName, SubscriptionName + "/$deadletterqueue")]
             ServiceBusReceivedMessage message,
-        FunctionContext context)
+        FunctionContext context
+    )
     {
         ArgumentNullException.ThrowIfNull(message);
         var cancellationToken = context.CancellationToken;
         var correlationId = message.CorrelationId ?? string.Empty;
 
-        using (_logger.BeginScope(new Dictionary<string, object>
-        {
-            { "CorrelationId", correlationId },
-            { "DeadLetterSource", DeadLetterPath },
-        }))
+        using (
+            _logger.BeginScope(
+                new Dictionary<string, object>
+                {
+                    { "CorrelationId", correlationId },
+                    { "DeadLetterSource", DeadLetterPath },
+                }
+            )
+        )
         {
             _logger.LogInformation(
                 InfrastructureEvents.DeadLetterMessageReceived,
@@ -57,23 +62,23 @@ public class FileItModuleDeadLetterReader
                 SubscriptionName,
                 message.MessageId,
                 message.DeliveryCount,
-                message.DeadLetterReason ?? "<null>");
+                message.DeadLetterReason ?? "<null>"
+            );
 
             var envelope = BuildEnvelope(message);
 
-            var record = await _ingestion.IngestAsync(envelope, cancellationToken)
+            await _ingestion
+                .IngestWithoutResultAsync(envelope, cancellationToken)
                 .ConfigureAwait(false);
 
             _logger.LogInformation(
                 InfrastructureEvents.DeadLetterRecordPersisted,
                 "Dead-letter ingestion complete for {TopicName}/{SubscriptionName} "
-                    + "MessageId={MessageId}; DeadLetterRecordId={DeadLetterRecordId}, "
-                    + "Category={FailureCategory}.",
+                    + "MessageId={MessageId}.",
                 TopicName,
                 SubscriptionName,
-                message.MessageId,
-                record.DeadLetterRecordId,
-                record.FailureCategory);
+                message.MessageId
+            );
         }
     }
 
@@ -94,11 +99,10 @@ public class FileItModuleDeadLetterReader
         var serializedAppProps = SerializeApplicationProperties(message.ApplicationProperties);
         var classifierProps = ProjectApplicationProperties(message.ApplicationProperties);
 
-        return DeadLetterIngestionEnvelope.Create(
+        return DeadLetterIngestionEnvelope.CreateForTopic(
             messageId: message.MessageId,
             correlationId: message.CorrelationId,
             sessionId: message.SessionId,
-            sourceEntityType: SourceEntityType.Topic,
             sourceEntityName: TopicName,
             sourceSubscriptionName: SubscriptionName,
             deadLetterReason: message.DeadLetterReason,
@@ -109,11 +113,13 @@ public class FileItModuleDeadLetterReader
             messageBody: body,
             messageProperties: serializedAppProps,
             contentType: message.ContentType,
-            applicationProperties: classifierProps);
+            applicationProperties: classifierProps
+        );
     }
 
     private static string? SerializeApplicationProperties(
-        IReadOnlyDictionary<string, object> applicationProperties)
+        IReadOnlyDictionary<string, object> applicationProperties
+    )
     {
         if (applicationProperties is null || applicationProperties.Count == 0)
         {
@@ -129,7 +135,8 @@ public class FileItModuleDeadLetterReader
     }
 
     private static IReadOnlyDictionary<string, object?> ProjectApplicationProperties(
-        IReadOnlyDictionary<string, object> applicationProperties)
+        IReadOnlyDictionary<string, object> applicationProperties
+    )
     {
         if (applicationProperties is null || applicationProperties.Count == 0)
         {
@@ -146,7 +153,8 @@ public class FileItModuleDeadLetterReader
 
     private static bool TryReadStampedEnqueuedTime(
         IReadOnlyDictionary<string, object> applicationProperties,
-        out DateTime value)
+        out DateTime value
+    )
     {
         value = default;
 
@@ -155,9 +163,10 @@ public class FileItModuleDeadLetterReader
             return false;
         }
 
-        if (!applicationProperties.TryGetValue(
-                FileItMessageProperties.EnqueuedTimeUtc, out var raw)
-            || raw is null)
+        if (
+            !applicationProperties.TryGetValue(FileItMessageProperties.EnqueuedTimeUtc, out var raw)
+            || raw is null
+        )
         {
             return false;
         }
@@ -168,11 +177,14 @@ public class FileItModuleDeadLetterReader
             return false;
         }
 
-        if (!DateTime.TryParse(
+        if (
+            !DateTime.TryParse(
                 asString,
                 System.Globalization.CultureInfo.InvariantCulture,
                 System.Globalization.DateTimeStyles.RoundtripKind,
-                out var parsed))
+                out var parsed
+            )
+        )
         {
             return false;
         }

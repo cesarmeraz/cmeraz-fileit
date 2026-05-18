@@ -1,13 +1,18 @@
 using FileIt.Domain.Entities;
-using FileIt.Domain.Entities.Api;
 using FileIt.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace FileIt.Module.FileItModule.App.WaitOnApiUpload;
 
+public sealed class BasicApiAddResponse
+{
+    public string? CorrelationId { get; set; }
+    public string? NodeId { get; set; }
+}
+
 public interface IBasicApiAddHandler
 {
-    Task RunAsync(ApiAddResponse message, CancellationToken cancellationToken = default);
+    Task RunAsync(BasicApiAddResponse message, CancellationToken cancellationToken = default);
 }
 
 public class BasicApiAddHandler : IBasicApiAddHandler
@@ -21,7 +26,8 @@ public class BasicApiAddHandler : IBasicApiAddHandler
         ILogger<BasicApiAddHandler> logger,
         IHandleFiles blobTool,
         ISimpleRequestLogRepo requestLogRepo,
-        FileItModuleConfig config)
+        FileItModuleConfig config
+    )
     {
         _blobTool = blobTool;
         _requestLogRepo = requestLogRepo;
@@ -34,27 +40,33 @@ public class BasicApiAddHandler : IBasicApiAddHandler
     /// move the blob to the final container, and update the request log with
     /// the API node id returned by the upstream service.
     /// </summary>
-    public async Task RunAsync(ApiAddResponse message, CancellationToken cancellationToken = default)
+    public async Task RunAsync(
+        BasicApiAddResponse message,
+        CancellationToken cancellationToken = default
+    )
     {
         string clientRequestId = message.CorrelationId ?? string.Empty;
 
         _logger.LogInformation(
             FileItModuleEvents.FileItModuleSubscriberGetRequestLog,
             "Get RequestLog by CorrelationId {CorrelationId}",
-            message.CorrelationId);
+            message.CorrelationId
+        );
         SimpleRequestLog? entry = await _requestLogRepo.GetByClientRequestIdAsync(clientRequestId);
         if (entry == null)
         {
             _logger.LogError(
                 FileItModuleEvents.FileItModuleSubscriberRequestLogNotFound,
-                "SimpleRequestLog entry not found");
+                "SimpleRequestLog entry not found"
+            );
             throw new Exception("SimpleRequestLog entry not found");
         }
         if (string.IsNullOrWhiteSpace(entry.BlobName))
         {
             _logger.LogError(
                 FileItModuleEvents.FileItModuleSubscriberBlobNameMissing,
-                "SimpleRequestLog entry is missing BlobName");
+                "SimpleRequestLog entry is missing BlobName"
+            );
             throw new Exception("SimpleRequestLog entry is missing BlobName");
         }
 
@@ -63,20 +75,28 @@ public class BasicApiAddHandler : IBasicApiAddHandler
         _logger.LogInformation(
             FileItModuleEvents.FileItModuleSubscriberMoveToFinal,
             "Moving {BlobName} to Final",
-            entry.BlobName);
-        await _blobTool.MoveAsync(entry.BlobName, _config.WorkingContainer, _config.FinalContainer, cancellationToken);
+            entry.BlobName
+        );
+        await _blobTool.MoveAsync(
+            entry.BlobName,
+            _config.WorkingContainer,
+            _config.FinalContainer,
+            cancellationToken
+        );
 
         entry.ApiId = message.NodeId;
 
         _logger.LogInformation(
             FileItModuleEvents.FileItModuleSubscriberUpdateRequestLog,
             "Update RequestLog with {ApiId}",
-            entry.ApiId);
+            entry.ApiId
+        );
         await _requestLogRepo.UpdateAsync(entry);
 
         _logger.LogDebug(
             FileItModuleEvents.FileItModuleSubscriberCompleted,
             "Processed Simple Request Log: {@entry}",
-            entry);
+            entry
+        );
     }
 }

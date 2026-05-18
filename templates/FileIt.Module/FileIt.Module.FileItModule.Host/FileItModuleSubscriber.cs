@@ -1,6 +1,5 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
-using FileIt.Domain.Entities.Api;
 using FileIt.Module.FileItModule.App;
 using FileIt.Module.FileItModule.App.WaitOnApiUpload;
 using Microsoft.Azure.Functions.Worker;
@@ -21,7 +20,8 @@ public class FileItModuleSubscriber
     public FileItModuleSubscriber(
         ILogger<FileItModuleSubscriber> logger,
         FileItModuleConfig config,
-        IBasicApiAddHandler responseHandler)
+        IBasicApiAddHandler responseHandler
+    )
     {
         _config = config;
         _logger = logger;
@@ -32,28 +32,34 @@ public class FileItModuleSubscriber
     public async Task Run(
         [ServiceBusTrigger("api-add-topic", "api-add-fileitmodule-sub")]
             ServiceBusReceivedMessage message,
-        FunctionContext context)
+        FunctionContext context
+    )
     {
         var cancellationToken = context.CancellationToken;
         string clientRequestId = message.CorrelationId ?? string.Empty;
 
-        using (_logger.BeginScope(
-            new Dictionary<string, object>()
-            {
-                { "CorrelationId", clientRequestId ?? string.Empty },
-            }))
+        using (
+            _logger.BeginScope(
+                new Dictionary<string, object>()
+                {
+                    { "CorrelationId", clientRequestId ?? string.Empty },
+                }
+            )
+        )
         {
             _logger.LogDebug(
                 FileItModuleEvents.FileItModuleSubscriberReceive,
                 "Receiving {@message}",
-                message);
+                message
+            );
 
-            var response = JsonSerializer.Deserialize<ApiAddResponse>(message.Body.ToString());
+            var response = JsonSerializer.Deserialize<BasicApiAddResponse>(message.Body.ToString());
             if (response == null)
             {
                 _logger.LogWarning(
                     FileItModuleEvents.FileItModuleSubscriberReceiveFailed,
-                    "Failed to deserialize ApiAddResponse");
+                    "Failed to deserialize ApiAddResponse"
+                );
                 throw new ApplicationException("Failed to deserialize ApiAddResponse!");
             }
 
@@ -61,7 +67,8 @@ public class FileItModuleSubscriber
 
             _logger.LogInformation(
                 FileItModuleEvents.FileItModuleSubscriber,
-                "Processing ApiAddResponse");
+                "Processing ApiAddResponse"
+            );
             await _responseHandler.RunAsync(response, cancellationToken);
         }
     }

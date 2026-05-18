@@ -11,7 +11,6 @@
 // See docs/dead-letter-strategy.md for the full design.
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
-using FileIt.Domain.Entities.DeadLetter;
 using FileIt.Infrastructure;
 using FileIt.Infrastructure.DeadLetter.Ingestion;
 using Microsoft.Azure.Functions.Worker;
@@ -89,20 +88,17 @@ public class SimpleFlowDeadLetterReader
 
             var envelope = BuildEnvelope(message);
 
-            var record = await _ingestion
-                .IngestAsync(envelope, cancellationToken)
+            await _ingestion
+                .IngestWithoutResultAsync(envelope, cancellationToken)
                 .ConfigureAwait(false);
 
             _logger.LogInformation(
                 InfrastructureEvents.DeadLetterRecordPersisted,
                 "Dead-letter ingestion complete for {TopicName}/{SubscriptionName} "
-                    + "MessageId={MessageId}; DeadLetterRecordId={DeadLetterRecordId}, "
-                    + "Category={FailureCategory}.",
+                    + "MessageId={MessageId}.",
                 TopicName,
                 SubscriptionName,
-                message.MessageId,
-                record.DeadLetterRecordId,
-                record.FailureCategory
+                message.MessageId
             );
         }
     }
@@ -127,11 +123,10 @@ public class SimpleFlowDeadLetterReader
         var serializedAppProps = SerializeApplicationProperties(message.ApplicationProperties);
         var classifierProps = ProjectApplicationProperties(message.ApplicationProperties);
 
-        return DeadLetterIngestionEnvelope.Create(
+        return DeadLetterIngestionEnvelope.CreateForTopic(
             messageId: message.MessageId,
             correlationId: message.CorrelationId,
             sessionId: message.SessionId,
-            sourceEntityType: SourceEntityType.Topic,
             sourceEntityName: TopicName,
             sourceSubscriptionName: SubscriptionName,
             deadLetterReason: message.DeadLetterReason,

@@ -47,7 +47,23 @@ dotnet user-secrets set "ConnectionStrings:azureSql" "Data Source=jmplabsv04.dat
 
 Note: PowerShell will try to interpret `$` as variable markers in your password. If your password contains `$`, escape each one with a backtick.
 
-### 3. Run
+### 3. Choose local lifecycle mode (optional)
+
+`FileIt.AppHost/appsettings.json` now controls startup/shutdown cleanup behavior:
+
+```json
+"LocalLifecycle": {
+	"Mode": "CleanThenPreserve"
+}
+```
+
+Supported values:
+
+- `IsolatedCleanRun`: cleanup before start, cleanup after stop.
+- `CleanThenPreserve`: cleanup before start, preserve data after stop.
+- `DirtyStartPreserve`: no cleanup before start, preserve data after stop.
+
+### 4. Run
 
 ```powershell
 cd FileIt.AppHost

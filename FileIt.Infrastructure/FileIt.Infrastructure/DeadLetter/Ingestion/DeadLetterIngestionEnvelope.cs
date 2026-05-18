@@ -167,6 +167,83 @@ public sealed record DeadLetterIngestionEnvelope
     }
 
     /// <summary>
+    /// Constructs an envelope for queue-sourced dead letters.
+    /// </summary>
+    public static DeadLetterIngestionEnvelope CreateForQueue(
+        string messageId,
+        string? correlationId,
+        string? sessionId,
+        string sourceEntityName,
+        string? deadLetterReason,
+        string? deadLetterErrorDescription,
+        int deliveryCount,
+        DateTime enqueuedTimeUtc,
+        DateTime deadLetteredTimeUtc,
+        string messageBody,
+        string? messageProperties,
+        string? contentType,
+        IReadOnlyDictionary<string, object?> applicationProperties
+    )
+    {
+        return Create(
+            messageId: messageId,
+            correlationId: correlationId,
+            sessionId: sessionId,
+            sourceEntityType: SourceEntityType.Queue,
+            sourceEntityName: sourceEntityName,
+            sourceSubscriptionName: null,
+            deadLetterReason: deadLetterReason,
+            deadLetterErrorDescription: deadLetterErrorDescription,
+            deliveryCount: deliveryCount,
+            enqueuedTimeUtc: enqueuedTimeUtc,
+            deadLetteredTimeUtc: deadLetteredTimeUtc,
+            messageBody: messageBody,
+            messageProperties: messageProperties,
+            contentType: contentType,
+            applicationProperties: applicationProperties
+        );
+    }
+
+    /// <summary>
+    /// Constructs an envelope for topic-subscription-sourced dead letters.
+    /// </summary>
+    public static DeadLetterIngestionEnvelope CreateForTopic(
+        string messageId,
+        string? correlationId,
+        string? sessionId,
+        string sourceEntityName,
+        string sourceSubscriptionName,
+        string? deadLetterReason,
+        string? deadLetterErrorDescription,
+        int deliveryCount,
+        DateTime enqueuedTimeUtc,
+        DateTime deadLetteredTimeUtc,
+        string messageBody,
+        string? messageProperties,
+        string? contentType,
+        IReadOnlyDictionary<string, object?> applicationProperties
+    )
+    {
+        return Create(
+            messageId: messageId,
+            correlationId: correlationId,
+            sessionId: sessionId,
+            sourceEntityType: SourceEntityType.Topic,
+            sourceEntityName: sourceEntityName,
+            sourceSubscriptionName: sourceSubscriptionName,
+            deadLetterReason: deadLetterReason,
+            deadLetterErrorDescription: deadLetterErrorDescription,
+            deliveryCount: deliveryCount,
+            enqueuedTimeUtc: enqueuedTimeUtc,
+            deadLetteredTimeUtc: deadLetteredTimeUtc,
+            messageBody: messageBody,
+            messageProperties: messageProperties,
+            contentType: contentType,
+            applicationProperties: applicationProperties
+        );
+    }
+
+    /// <summary>
     /// Mirrors <c>CK_DeadLetterRecord_SubscriptionPresence</c>: SourceSubscriptionName
     /// must be null for queues and non-null for topics. Catching this in code keeps
     /// failures out of the database round-trip and produces a clean error message.
