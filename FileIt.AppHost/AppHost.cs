@@ -21,13 +21,13 @@ var azureSql = builder.AddConnectionString("azureSql");
 // --- Azure Service Bus (cloud) ---
 var serviceBus = builder.AddConnectionString("serviceBus");
 
-// var complex = builder
-//     .AddProject<Projects.FileIt_Module_Complex_Host>("complex-host")
-//     .WithReference(blobs)
-//     .WithEnvironment("FileItDbConnection", azureSql)
-//     .WithEnvironment("FileItServiceBus", serviceBus)
-//     .WithEnvironment("ConnectionStrings__ServiceBus", serviceBus)
-//     .WaitFor(blobs);
+var complex = builder
+    .AddProject<Projects.FileIt_Module_Complex_Host>("complex-host")
+    .WithReference(blobs)
+    .WithEnvironment("FileItDbConnection", azureSql)
+    .WithEnvironment("FileItServiceBus", serviceBus)
+    .WithEnvironment("ConnectionStrings__ServiceBus", serviceBus)
+    .WaitFor(blobs);
 
 // --- Func Apps with full wiring ---
 var services = builder
@@ -36,8 +36,8 @@ var services = builder
     .WithEnvironment("FileItDbConnection", azureSql)
     .WithEnvironment("FileItServiceBus", serviceBus)
     .WithEnvironment("ConnectionStrings__ServiceBus", serviceBus)
-    //.WithEnvironment("ConnectionStrings__ComplexApi", "http://localhost:7064")
-    //.WaitFor(complex)
+    .WithEnvironment("ConnectionStrings__ComplexApi", "http://localhost:7064")
+    .WaitFor(complex)
     .WaitFor(blobs);
 
 var simpleflow = builder
@@ -49,13 +49,13 @@ var simpleflow = builder
     .WaitFor(services)
     .WaitFor(blobs);
 
-// var dataflow = builder.AddProject<Projects.FileIt_Module_DataFlow_Host>("dataflow-host")
-//     .WithReference(blobs)
-//     .WithEnvironment("FileItDbConnection", azureSql)
-//     .WithEnvironment("FileItServiceBus", serviceBus)
-//     .WithEnvironment("ConnectionStrings__ServiceBus", serviceBus)
-//     .WaitFor(services)
-//     .WaitFor(blobs);
+var dataflow = builder.AddProject<Projects.FileIt_Module_DataFlow_Host>("dataflow-host")
+    .WithReference(blobs)
+    .WithEnvironment("FileItDbConnection", azureSql)
+    .WithEnvironment("FileItServiceBus", serviceBus)
+    .WithEnvironment("ConnectionStrings__ServiceBus", serviceBus)
+    .WaitFor(services)
+    .WaitFor(blobs);
 
 // --- Ensure blob containers exist once Aspire has created the resources ---
 // Uses Aspire's eventing API (the modern replacement for IDistributedApplicationLifecycleHook).
