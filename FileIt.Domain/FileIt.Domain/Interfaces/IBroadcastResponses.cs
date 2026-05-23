@@ -6,5 +6,5 @@ namespace FileIt.Domain.Interfaces;
 
 public interface IBroadcastResponses
 {
-    Task EmitAsync(ApiAddResponse response);
+    Task EmitAsync(ApiAddResponse response, CancellationToken cancellationToken = default);
 }

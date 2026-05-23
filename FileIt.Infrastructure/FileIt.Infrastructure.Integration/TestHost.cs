@@ -16,7 +16,7 @@ public static class TestHost
         var _configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile(@"appsettings.json", false, false)
-            .AddJsonFile(@"FileIt.Infrastructure.Integration.testconfig.json", false, false)
+            .AddJsonFile(@"testconfig.json", true, false)
             .AddEnvironmentVariables()
             .Build();
 

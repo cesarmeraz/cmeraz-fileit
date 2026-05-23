@@ -4,5 +4,5 @@ namespace FileIt.Domain.Interfaces;
 
 public interface ITalkToApi
 {
-    Task SendMessageAsync(ApiRequest message);
+    Task SendMessageAsync(ApiRequest message, CancellationToken cancellationToken = default);
 }

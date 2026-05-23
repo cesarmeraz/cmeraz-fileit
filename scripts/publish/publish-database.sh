@@ -1,21 +1,26 @@
 #!/usr/bin/env bash
-. ${FILEIT_REPO_HOME}/cmeraz-fileit/scripts/base.sh
-
 echo "PWD: $(pwd)"
 echo "Running $0"
-az version
 
-cd ${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Database/
+# Configuration found in Environment Variables
+PROJECT_PATH="${FILEIT_REPO_HOME}/cmeraz-fileit/FileIt.Database/"
+DACPAC_PATH="$PROJECT_PATH/bin/Debug/FileIt.Database.dacpac"
+
+# Build the project to generate the DACPAC
 dotnet build
 
-# Configuration Variables
-DACPAC_PATH="./bin/Debug/fileit.dacpac"
+# Deploy using sqlpackage with all options as command-line properties
+# If sqlpackage errors, diagnose with the /Diagnostics and /DiagnosticsLevel parameters
 
-# For Azure SQL, use a connection string for better control
-CONN_STR="Server=tcp:$sql_server_name.database.windows.net;Database=$database_name;Authentication=Active Directory Interactive;Encrypt=True;"
-
-# Execute deployment using SqlPackage
 sqlpackage /Action:Publish \
     /SourceFile:"$DACPAC_PATH" \
-    /TargetConnectionString:"$CONN_STR" \
-    /p:AllowIncompatiblePlatform=True
+    /TargetDatabaseName:"${AZURE_SQL_DATABASE}" \
+    /TargetServerName:"${AZURE_SQL_SERVER}.database.windows.net" \
+    /UniversalAuthentication:True \
+    /TargetEncryptConnection:True \
+    /TargetTrustServerCertificate:True \
+    /p:AllowIncompatiblePlatform=False \
+    /p:BlockOnPossibleDataLoss=False \
+    /p:CreateNewDatabase=False \
+    /p:DropObjectsNotInSource=True \
+    /p:DoNotDropObjectTypes="Users;Logins;RoleMembership;Permissions"

@@ -1,0 +1,16 @@
+CREATE TABLE [dbo].[DataFlowRequestLog]
+(
+  [Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+  Environment NVARCHAR(100) NOT NULL,
+  Host NVARCHAR(100) NOT NULL,
+  Agent NVARCHAR(100) NOT NULL,
+  BlobName NVARCHAR(500) NOT NULL,
+  ClientRequestId NVARCHAR(100) NOT NULL,
+  Comment NVARCHAR(500) NULL,
+  RowsIngested INT NOT NULL,
+  RowsTransformed INT NOT NULL,
+  ExportBlobName NVARCHAR(500) NULL,
+  [Status] NVARCHAR(100) NOT NULL,
+  CreatedOn DATETIME2 NOT NULL,
+  ModifiedOn DATETIME2 NOT NULL
+)

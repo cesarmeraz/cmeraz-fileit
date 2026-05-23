@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Aspire",
+            "type": "coreclr",
+            "request": "attach",
+            "preLaunchTask": "start aspire",
+            "processId": "${command:azureFunctions.pickProcess}"
+        },
+        {
             "name": "Start Services",
             "type": "coreclr",
             "request": "attach",

@@ -12,9 +12,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FileIt.Infrastructure.Integration;
 
+[TestClass]
 public class ApiLogRepoTest : BaseTest
 {
-    [Test]
+    [TestMethod]
     public async Task TestAdd()
     {
         using var host = TestHost.CreateHost();
@@ -23,28 +24,28 @@ public class ApiLogRepoTest : BaseTest
         string responseBody = "test response";
         string status = "Integration test";
         var target = host.Services.GetService<IApiLogRepo>();
-        await Assert.That(target).IsNotNull();
+        Assert.IsNotNull(target);
 
         var log = await target!.AddAsync(clientRequestId, requestBody, responseBody, status);
-        await Assert.That(log).IsNotNull();
-        await Assert.That(log!.RequestBody).IsEqualTo(requestBody);
-        await Assert.That(log.ClientRequestId).IsEqualTo(clientRequestId);
+        Assert.IsNotNull(log);
+        Assert.AreEqual(requestBody, log!.RequestBody);
+        Assert.AreEqual(clientRequestId, log.ClientRequestId);
 
         var logGetById = await target.GetByIdAsync(log.Id);
-        await Assert.That(logGetById).IsNotNull();
+        Assert.IsNotNull(logGetById);
 
         var logGetByClientRequestId = await target.GetByClientRequestIdAsync(clientRequestId);
-        await Assert.That(logGetByClientRequestId).IsNotNull();
+        Assert.IsNotNull(logGetByClientRequestId);
 
         string logGetByIdJson = JsonSerializer.Serialize(logGetById);
         Debug.WriteLine(logGetByIdJson);
         string logGetByClientRequestIdJson = JsonSerializer.Serialize(logGetByClientRequestId);
         Debug.WriteLine(logGetByClientRequestIdJson);
-        await Assert.That(log.RequestBody).IsEqualTo(logGetById!.RequestBody);
-        await Assert.That(logGetByClientRequestIdJson).IsEqualTo(logGetByIdJson);
+        Assert.AreEqual(logGetById!.RequestBody, log.RequestBody);
+        Assert.AreEqual(logGetByIdJson, logGetByClientRequestIdJson);
     }
 
-    [Test]
+    [TestMethod]
     public async Task TestUpdate()
     {
         using var host = TestHost.CreateHost();
@@ -53,22 +54,22 @@ public class ApiLogRepoTest : BaseTest
         string status = "Integration test";
         string clientRequestId = Guid.NewGuid().ToString();
         var target = host.Services.GetService<IApiLogRepo>();
-        await Assert.That(target).IsNotNull();
+        Assert.IsNotNull(target);
 
         var log = await target!.AddAsync(clientRequestId, requestBody, responseBody, status);
-        await Assert.That(log).IsNotNull();
-        await Assert.That(log!.RequestBody).IsEqualTo(requestBody);
-        await Assert.That(log.ClientRequestId).IsEqualTo(clientRequestId);
+        Assert.IsNotNull(log);
+        Assert.AreEqual(requestBody, log!.RequestBody);
+        Assert.AreEqual(clientRequestId, log.ClientRequestId);
 
         var foundLog = await target.GetByIdAsync(log.Id);
-        await Assert.That(foundLog).IsNotNull();
+        Assert.IsNotNull(foundLog);
         foundLog!.RequestBody = "test RequestBody after update";
 
         var updatedLog = await target.UpdateAsync(foundLog);
-        await Assert.That(updatedLog).IsNotNull();
-        await Assert.That(updatedLog!.RequestBody).IsEqualTo(foundLog.RequestBody);
-        await Assert.That(updatedLog.RequestBody).IsNotEqualTo(log.RequestBody);
-        await Assert.That(updatedLog.ClientRequestId).IsEqualTo(log.ClientRequestId);
-        await Assert.That(log.ModifiedOn < updatedLog.ModifiedOn).IsTrue();
+        Assert.IsNotNull(updatedLog);
+        Assert.AreEqual(foundLog.RequestBody, updatedLog!.RequestBody);
+        Assert.AreNotEqual(log.RequestBody, updatedLog.RequestBody);
+        Assert.AreEqual(log.ClientRequestId, updatedLog.ClientRequestId);
+        Assert.IsTrue(log.ModifiedOn < updatedLog.ModifiedOn);
     }
 }

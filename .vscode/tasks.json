@@ -3,6 +3,38 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "build",
+            "type": "shell",
+            "command": "dotnet build",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "start aspire",
+            "type": "shell",
+            "command": "dotnet run",
+            "isBackground": true,
+            "dependsOn": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/FileIt.AppHost"
+            }
+        },
+        {
             "label": "start services",
             "type": "shell",
             "command": "func start",

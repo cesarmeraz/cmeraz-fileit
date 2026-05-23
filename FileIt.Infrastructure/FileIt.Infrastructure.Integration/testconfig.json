@@ -1,4 +1,7 @@
 {
+    "ConnectionStrings": {
+        "DbConnectionString": "Data Source=localhost;Initial Catalog=FileIt;User ID=FileItDev;Password=123qwe!@#QWE;TrustServerCertificate=True;Encrypt=True;"
+    },
     "platformOptions": {
         "AzureWebJobsStorage": "UseDevelopmentStorage=true",
         "AZURE_FUNCTIONS_ENVIRONMENT": "LocalDev",

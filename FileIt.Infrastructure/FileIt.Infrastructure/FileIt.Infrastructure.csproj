@@ -29,9 +29,14 @@
     <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="Serilog.Sinks.File" />
     <PackageReference Include="Serilog.Sinks.File.Header" />
+    <PackageReference Include="Serilog.Sinks.OpenTelemetry" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\FileIt.Domain\FileIt.Domain\FileIt.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Classification\" />
   </ItemGroup>
 </Project>

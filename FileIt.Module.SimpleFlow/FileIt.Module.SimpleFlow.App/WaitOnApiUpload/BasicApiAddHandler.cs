@@ -11,7 +11,11 @@ namespace FileIt.Module.SimpleFlow.App.WaitOnApiUpload;
 
 public interface IBasicApiAddHandler
 {
-    Task RunAsync(string? correlationId, string? messageBody);
+    Task RunAsync(
+        string? correlationId,
+        string? messageBody,
+        CancellationToken cancellationToken = default
+    );
 }
 
 public class BasicApiAddHandler : IBasicApiAddHandler
@@ -38,8 +42,13 @@ public class BasicApiAddHandler : IBasicApiAddHandler
     /// A ServiceBusTrigger that processes the file ingested
     /// </summary>
     /// <param name="message">the ServiceBusReceivedMessage</param>
+    /// <param name="cancellationToken">token to observe for graceful cancellation</param>
     /// <returns></returns>
-    public async Task RunAsync(string? correlationId, string? messageBody)
+    public async Task RunAsync(
+        string? correlationId,
+        string? messageBody,
+        CancellationToken cancellationToken = default
+    )
     {
         string clientRequestId = correlationId ?? string.Empty;
         var message = JsonSerializer.Deserialize<ApiAddResponse>(messageBody ?? string.Empty);
@@ -74,14 +83,22 @@ public class BasicApiAddHandler : IBasicApiAddHandler
             );
             throw new Exception("SimpleRequestLog entry is missing BlobName");
         }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
         _logger.LogInformation(
             SimpleEvents.SimpleSubscriberMoveToFinal,
             "Moving {BlobName} to Final",
             entry.BlobName
         );
-        await _blobTool.MoveAsync(entry.BlobName, _config.WorkingContainer, _config.FinalContainer);
+        await _blobTool.MoveAsync(
+            entry.BlobName,
+            _config.WorkingContainer,
+            _config.FinalContainer,
+            cancellationToken
+        );
 
-        entry.ApiId = message!.NodeId;
+        entry.ApiId = message.NodeId;
 
         _logger.LogInformation(
             SimpleEvents.SimpleSubscriberUpdateRequestLog,
@@ -89,6 +106,7 @@ public class BasicApiAddHandler : IBasicApiAddHandler
             entry.ApiId
         );
         await _requestLogRepo.UpdateAsync(entry);
+
         _logger.LogDebug(
             SimpleEvents.SimpleSubscriberCompleted,
             "Processed Simple Request Log: {@entry}",

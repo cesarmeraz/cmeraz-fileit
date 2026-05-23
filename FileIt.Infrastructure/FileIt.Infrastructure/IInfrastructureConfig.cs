@@ -28,6 +28,8 @@ public class InfrastructureConfig : IInfrastructureConfig
     private const string APPLICATIONINSIGHTS_CONNECTION_STRING =
         "APPLICATIONINSIGHTS_CONNECTION_STRING";
 
+    private const string AZURE_CLIENT_ID = "AZURE_CLIENT_ID";
+
     public InfrastructureConfig(IConfiguration configuration)
     {
         this.configuration = configuration;
@@ -55,6 +57,17 @@ public class InfrastructureConfig : IInfrastructureConfig
 
         if (ParseConfigValue(APPLICATIONINSIGHTS_CONNECTION_STRING, out parsedValue))
             AppInsightsConnectionString = parsedValue;
+
+        var clientId = configuration!.GetValue<string>(AZURE_CLIENT_ID);
+        // For local development, throw exception if any required configuration values are missing
+        // This provides clear feedback at startup rather than cryptic NullReferenceExceptions later
+        if (missing.Count > 0 && string.IsNullOrEmpty(clientId))
+        {
+            throw new InvalidOperationException(
+                $"Required configuration values are missing: {string.Join(", ", missing)}. "
+                    + "Ensure these are set in local.settings.json."
+            );
+        }
     }
 
     private bool ParseConfigValue(string key, out string? parsedValue)

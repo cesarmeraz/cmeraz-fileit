@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <TestPlatform>
+    <!-- Increase timeout for test host connection (in seconds) -->
+    <NewTestAdapterTimeout>120</NewTestAdapterTimeout>
+  </TestPlatform>
+  <LoggerRunSettings>
+    <Verbosity>minimal</Verbosity>
+  </LoggerRunSettings>
+</RunSettings>

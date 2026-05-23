@@ -8,13 +8,13 @@ Set-Location "$env:FILEIT_REPO_HOME/cmeraz-fileit/FileIt.Database/"
 dotnet build
 
 # Configuration Variables
-$DACPAC_PATH = "./bin/Debug/fileit.dacpac"
-
-# For Azure SQL, use a connection string for better control
-$CONN_STR = "Server=localhost;Database=$env:AZURE_SQL_DATABASE;User Id=$env:LOCAL_SQL_ADMIN;Password=$env:LOCAL_SQL_PASSWORD;Encrypt=True;"
+$DACPAC_PATH = "./bin/Debug/FileIt.Database.dacpac"
 
 # Execute deployment using SqlPackage
 sqlpackage /Action:Publish `
+    /TargetDatabaseName:"$env:AZURE_SQL_DATABASE" `
+    /TargetServerName:"$env:LOCAL_SQL_SERVER" `
+    /TargetUser:"$env:LOCAL_SQL_ADMIN" `
+    /TargetPassword:"$env:LOCAL_SQL_PASSWORD" `
     /SourceFile:"$DACPAC_PATH" `
-    /TargetConnectionString:"$CONN_STR" `
     /p:AllowIncompatiblePlatform=True

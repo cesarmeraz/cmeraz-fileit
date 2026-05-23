@@ -17,8 +17,10 @@
   - Run the bash script `scripts/azurite/create-containers.sh` for the simple flow containers.
 - Install Docker Desktop
   - Edit the `emulator/config.json` with new queues or topics
+  - Keep the namespace name as `sbemulatorns` in `emulator/config.json`. The Service Bus emulator preset namespace cannot be renamed.
   - Run the bash script `emulator/up.sh` to start up the emulator
   - Stop the emulator with `emulator/down.sh`
+- When using AppHost, set `FileIt.AppHost/appsettings.json` -> `LocalLifecycle:Mode` to control cleanup/preserve behavior (`IsolatedCleanRun`, `CleanThenPreserve`, `DirtyStartPreserve`).
 - Build the solution with `dotnet build`
 - Run the solution
   - cd to FileIt.Module.SimpleFlow/FileIt.Module.SimpleFlow.Host

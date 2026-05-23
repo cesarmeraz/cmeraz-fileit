@@ -1,25 +1,29 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <UseMSBuildTestInfrastructure>true</UseMSBuildTestInfrastructure>
-    <TestingPlatformDisableCustomTestTarget>true</TestingPlatformDisableCustomTestTarget>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <EnableMSTestRunner>false</EnableMSTestRunner>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="coverlet.MTP" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="MSTest.TestAdapter" />
+    <PackageReference Include="MSTest.TestFramework" />
     <PackageReference Include="TngTech.ArchUnitNET" />
-    <PackageReference Include="TUnit" />
-    <PackageReference Include="TUnit.Mocks" />
-    <PackageReference Include="TUnit.Mocks.Logging" />
+    <PackageReference Include="TngTech.ArchUnitNET.xUnit" />
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="../../FileIt.Domain/FileIt.Domain/FileIt.Domain.csproj" />
-    <ProjectReference Include="../../FileIt.Infrastructure/FileIt.Infrastructure/FileIt.Infrastructure.csproj" />
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="../FileIt.Module.SimpleFlow.Host/FileIt.Module.SimpleFlow.Host.csproj" />
     <ProjectReference Include="..\FileIt.Module.SimpleFlow.App\FileIt.Module.SimpleFlow.App.csproj" />
+    <ProjectReference Include="..\..\FileIt.Infrastructure\FileIt.Infrastructure\FileIt.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\FileIt.Domain\FileIt.Domain\FileIt.Domain.csproj" />
   </ItemGroup>
 </Project>
