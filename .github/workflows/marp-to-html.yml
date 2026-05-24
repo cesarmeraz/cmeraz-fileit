@@ -37,84 +37,25 @@ jobs:
       - name: Install Marp CLI
         run: npm install --no-save @marp-team/marp-cli
 
-      - name: Build all slide decks
+      - name: Build slide deck
         shell: bash
         run: |
-          shopt -s nullglob
           mkdir -p build
 
-          files=(slides/*.md)
-          if [ ${#files[@]} -eq 0 ]; then
-            echo "No slide decks found in slides/"
+          if [ ! -f "slides/index.md" ]; then
+            echo "Missing slides/index.md"
             exit 1
           fi
 
-          for file in "${files[@]}"; do
-            name="$(basename "${file%.md}")"
-            echo "Building $file -> build/${name}.html"
-            npx marp "$file" --html --output "build/${name}.html"
-          done
+          echo "Building slides/index.md -> build/index.html"
+          npx marp slides/index.md --allow-local-files --html --output build/index.html
 
           ls -lah build
-
-      - name: Create index page
-        shell: bash
-        run: |
-          cat > build/index.html <<'EOF'
-          <!doctype html>
-          <html lang="en">
-          <head>
-            <meta charset="utf-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <title>Slides</title>
-            <style>
-              body {
-                font-family: Arial, sans-serif;
-                max-width: 900px;
-                margin: 40px auto;
-                padding: 0 16px;
-                line-height: 1.5;
-              }
-              h1 {
-                margin-bottom: 1rem;
-              }
-              ul {
-                padding-left: 1.25rem;
-              }
-              li {
-                margin: 0.5rem 0;
-              }
-              a {
-                text-decoration: none;
-              }
-              a:hover {
-                text-decoration: underline;
-              }
-            </style>
-          </head>
-          <body>
-            <h1>Slide Decks</h1>
-            <ul>
-          EOF
-
-          for f in build/*.html; do
-            name="$(basename "$f")"
-            if [ "$name" != "index.html" ]; then
-              echo "      <li><a href=\"$name\">$name</a></li>" >> build/index.html
-            fi
-          done
-
-          cat >> build/index.html <<'EOF'
-            </ul>
-          </body>
-          </html>
-          EOF
 
       - name: Verify generated site
         shell: bash
         run: |
           test -f build/index.html
-          test -n "$(find build -maxdepth 1 -name '*.html' -not -name 'index.html')"
           ls -lah build
 
       - name: Upload Artifact

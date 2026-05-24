@@ -1,5 +1,0 @@
-inputFiles:
-	- slides/index.md
-output: build/index.html
-allowLocalFiles: true
-html: true
