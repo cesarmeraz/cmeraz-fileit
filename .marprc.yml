@@ -1,0 +1,5 @@
+inputFiles:
+	- slides/project-intro.md
+output: build/index.html
+allowLocalFiles: true
+html: true
