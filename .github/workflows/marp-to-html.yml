@@ -3,16 +3,14 @@ name: Deploy Marp Slides to GitHub Pages
 on:
   push:
     branches:
-      - develop # Or your default branch name
-  workflow_dispatch: # Allows manual triggering from the Actions tab
+      - develop
+  workflow_dispatch:
 
-# Set permissions required for secure GitHub Pages deployment
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Prevent concurrent deployments from colliding
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -23,32 +21,106 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Copy Assets (Optional)
-        run: |
-          mkdir -p build
-          # If you have an images folder, uncomment the line below:
-          # cp -r images build/ 
-
-      - name: Convert Markdown to Marp HTML
-        uses: KoharaKazuya/marp-cli-action@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          # Use repository Marp configuration
-          config-file: .marprc.yml
+          node-version: 20
 
-      - name: Fix Index File (Optional)
+      - name: Prepare build folder
+        run: mkdir -p build
+
+      - name: Install Marp CLI
+        run: npm install --no-save @marp-team/marp-cli
+
+      - name: Build all slide decks
+        shell: bash
         run: |
-          # index.html is generated directly by marp-cli via .marprc.yml
+          shopt -s nullglob
+          mkdir -p build
+
+          files=(slides/*.md)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No slide decks found in slides/"
+            exit 1
+          fi
+
+          for file in "${files[@]}"; do
+            name="$(basename "${file%.md}")"
+            echo "Building $file -> build/${name}.html"
+            npx marp "$file" --html --output "build/${name}.html"
+          done
+
+          ls -lah build
+
+      - name: Create index page
+        shell: bash
+        run: |
+          cat > build/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Slides</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                max-width: 900px;
+                margin: 40px auto;
+                padding: 0 16px;
+                line-height: 1.5;
+              }
+              h1 {
+                margin-bottom: 1rem;
+              }
+              ul {
+                padding-left: 1.25rem;
+              }
+              li {
+                margin: 0.5rem 0;
+              }
+              a {
+                text-decoration: none;
+              }
+              a:hover {
+                text-decoration: underline;
+              }
+            </style>
+          </head>
+          <body>
+            <h1>Slide Decks</h1>
+            <ul>
+          EOF
+
+          for f in build/*.html; do
+            name="$(basename "$f")"
+            if [ "$name" != "index.html" ]; then
+              echo "      <li><a href=\"$name\">$name</a></li>" >> build/index.html
+            fi
+          done
+
+          cat >> build/index.html <<'EOF'
+            </ul>
+          </body>
+          </html>
+          EOF
+
+      - name: Verify generated site
+        shell: bash
+        run: |
           test -f build/index.html
+          test -n "$(find build -maxdepth 1 -name '*.html' -not -name 'index.html')"
           ls -lah build
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'build'
+          path: build
 
       - name: Deploy to GitHub Pages
         id: deployment
