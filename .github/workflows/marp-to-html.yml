@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - develop
+    paths:
+      - 'slides/**'
+      - '.github/workflows/marp-to-html.yml'
   workflow_dispatch:
 
 permissions:
