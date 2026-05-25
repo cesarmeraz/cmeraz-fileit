@@ -1,31 +1,31 @@
 ---
 marp: true
-theme: gaia
+theme: default
 paginate: true
 size: 16:9
-title: cmeraz-fileit
+title: FileIt
 description: Windows service migration to Azure-native serverless workflows
----
 
-# cmeraz-fileit
+---
+# FileIt
 ## Migrating a Windows service to Azure Service Bus + Functions
 
-- Proof of concept for cloud-native workflow processing
+- Proof of concept for cloud-native workflows
 - Modular function apps, shared platform resources
-- Built to run in Azure and locally with emulators
+- Built to run locally with emulators
 
 ---
-
+<!-- class: -->
 # Why this exists
 
-Legacy pain points (real project constraints):
+## Legacy pain points (real project constraints):
 
 - Manual deployment and fragile operations
-- Limited observability and no fast RCA loop
+- Limited observability / limited root cause analysis
 - Heavy-load failures without safe load leveling
-- Hard-to-test architecture with scattered repos
+- Scattered repos: hard to test, refactor, improve
 
-Target outcome:
+## Target outcome:
 
 - Repeatable delivery, scalable execution, and traceable workflows
 
@@ -33,42 +33,120 @@ Target outcome:
 
 # What makes this different
 
-- Multi-module serverless architecture with clear boundaries
-- Shared infrastructure, independent workflow deployment
-- Local-first dev with Azurite + Service Bus emulator + SQL
-- Strong message and event conventions for traceability
+- Available for DevSecOps pipelines
+- Structured logs with multiple sinks
+- Short-lived, asynchronous queue processing
 - Dead-letter lifecycle designed as an operational feature, not an afterthought
+- Single repository
 
 ---
 
 # High-level architecture
-
-Core components:
-
-- Function Apps (Services, SimpleFlow, DataFlow)
-- Service Bus (queues/topics for decoupling + load leveling)
-- Blob Storage (source/working/final containers)
-- Azure SQL (request logs + dead-letter records)
-- Application Insights (cross-host observability)
-- User-defined managed identities (platform auth)
+- Each module accesses shared resources with its own Managed Identity
+- Module communication mediated by messages to Service Bus
+<style scoped>
+/* Scale up the diagram container and center it */
+div.mermaid {
+  width: 90%;
+  height: 80%;
+  margin: 0 auto;
+}
+div.mermaid svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+}
+</style>
+<div class="mermaid">
+block
+  columns 4
+    block:common:2
+      columns 1
+      FA1["FileIt.Module.Services"] 
+      MI1<["Managed Identity 1"]>(down) 
+      end
+    block:simple:2
+      columns 1
+      FA2["FileIt.Module.Simple"] 
+      MA2<["Managed Identity 2"]>(down) 
+    end
+  block:shared:4
+    DB["Azure SQL Database"] 
+    SB["Service Bus"] 
+    BS["Blob Storage"] 
+    AI["App Insights"]
+  end
+  classDef shape color:black, stroke-width:1px, stroke:black
+  class FA1,MI1,FA2,MA2,DB,SB,BS,AI shape
+  style common fill:cornflowerblue,stroke-width:4px
+  style simple fill:coral,stroke-width:4px,
+  style shared fill:goldenrod,stroke-width:4px
+</div>
 
 ---
 
-# Flow in 9 steps (SimpleFlow)
+# Service Bus Sequence
 
-1. Test trigger drops file in source container
-2. Watcher receives blob event
-3. Request log created with CorrelationId
-4. File moved to working
-5. Message sent to `api-add` queue
-6. Services module simulates API and publishes result
-7. Subscriber reads topic subscription
-8. Request log updated by CorrelationId
-9. File moved to final container
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.flow {
+  font-size: 0.95em;
+}
+.flow ol {
+  margin-top: 0;
+}
+.diagram {
+  padding-top: 4px;
+}
+.diagram .mermaid {
+  width: 100%;
+}
+.diagram .mermaid svg {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100% !important;
+}
+</style>
+<div class="cols">
+<div class="flow">
+
+- File ingestion triggers the flow
+- Mail check pattern using blob URI
+- Flow traceable with CorrelationId 
+- Service Bus messages require blob URI and CorrelationId
+
+</div>
+<div class="diagram">
+<div class="mermaid">
+%%{init: {'theme': 'forest' } }%%
+sequenceDiagram
+  autonumber
+  participant SF as SimpleFlow
+  participant SB as Service Bus
+  participant SVC as Services Module
+
+  SF->>SB: Enqueue message
+
+  SB->>SVC: Deliver queued message
+  SVC->>SVC: Process request
+  SVC->>SVC: Call downstream API
+  SVC->>SB: Publish response event
+
+  SB->>SF: Subscribe to response
+  SF-->>SF: Complete flow
+
+</div>
+</div>
+</div>
 
 ---
 
-# Code example: watcher trigger + correlation scope
+# <!-- fit --> Code example: watcher trigger + correlation scope
 
 ```csharp
 [Function("DataFlowWatcherLocal")]
