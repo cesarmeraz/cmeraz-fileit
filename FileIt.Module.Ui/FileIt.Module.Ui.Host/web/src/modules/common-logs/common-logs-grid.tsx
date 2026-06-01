@@ -3,10 +3,10 @@ import { Grid, GridColumn } from '@progress/kendo-react-grid';
 import type { GridDataStateChangeEvent } from '@progress/kendo-react-grid';
 import { process } from '@progress/kendo-data-query';
 import type { State } from '@progress/kendo-data-query';
-import type { CommonLog } from './models';
+import type { CommonLogServer } from '../../core/models/common-log.model';
 
 export interface CommonLogsGridProps {
-  data: CommonLog[];
+  data: CommonLogServer[];
 }
 
 export const CommonLogsGrid = ({ data }: CommonLogsGridProps) => {
@@ -37,9 +37,7 @@ export const CommonLogsGrid = ({ data }: CommonLogsGridProps) => {
         field="createdOn"
         title="Created"
         cells={{
-          data: (props) => (
-            <td>{new Date(props.dataItem.createdOn).toLocaleString()}</td>
-          ),
+          data: (props) => <td>{new Date(props.dataItem.createdOn).toLocaleString()}</td>,
         }}
         width={160}
       />

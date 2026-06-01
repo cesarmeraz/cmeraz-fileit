@@ -15,7 +15,7 @@ public class Health
 
     [Function(nameof(Health))]
     public async Task<HttpResponseData> Run(
-        [HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req
+        [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "api/health")] HttpRequestData req
     )
     {
         using (

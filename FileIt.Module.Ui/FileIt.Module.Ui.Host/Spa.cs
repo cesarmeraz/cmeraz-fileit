@@ -11,7 +11,7 @@ public class Spa
 
     [Function("Spa")]
     public IActionResult Serve(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "ui/{*path}")] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{*path}")] HttpRequest req,
         string? path)
     {
         var root = Path.Combine(AppContext.BaseDirectory, "wwwroot");

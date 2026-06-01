@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import Page from '../../common/Page';
-import PageTitle from '../../common/PageTitle';
-import type { CommonLog } from './models';
+import PageTitle from '../../shared/page-title';
 import logData from '../../data/log-query-highlevel-output.json';
-import { CommonLogsGrid } from './CommonLogsGrid';
+import { CommonLogsGrid } from './common-logs-grid';
+import type { CommonLogServer } from '../../core/models/common-log.model';
+import Page from '../../shared/page';
 
 const CommonLogsPage: React.FC = () => {
-  const [commonLogs, setCommonLogs] = useState<CommonLog[]>([]);
+  const [commonLogs, setCommonLogs] = useState<CommonLogServer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {

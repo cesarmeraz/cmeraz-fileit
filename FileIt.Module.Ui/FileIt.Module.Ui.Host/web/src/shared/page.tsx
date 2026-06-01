@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import PageTitle from './PageTitle';
+import PageTitle from './page-title';
 
 interface PageProps {
   title?: string;

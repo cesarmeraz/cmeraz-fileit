@@ -1,8 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import TopBar from './layout/TopBar';
-import NotFoundPage from './NotFoundPage';
-import DashboardPage from './features/Dashboard/DashboardPage';
-import CommonLogsPage from './features/CommonLogs/CommonLogsPage';
+import TopBar from './layout/top-bar';
+import NotFoundPage from './not-found-page';
+import CommonLogsPage from './modules/common-logs/common-logs-page';
 import '@progress/kendo-theme-material/dist/all.css';
 
 const App: React.FC = () => {
@@ -13,7 +12,6 @@ const App: React.FC = () => {
         <Routes>
           <Route path="" element={<CommonLogsPage />} />
           <Route path="/logs" element={<CommonLogsPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
