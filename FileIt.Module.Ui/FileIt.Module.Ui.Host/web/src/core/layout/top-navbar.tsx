@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { StyledNavLink, StyledBrandLink } from '../Styles';
-import { DeepNavy } from '../colors';
+import { StyledNavLink, StyledBrandLink } from '../../Styles';
+import { DeepNavy } from '../../colors';
 
-const TopBar: React.FC = () => (
+const TopNavBar: React.FC = () => (
   <header
     css={css`
       display: flex;
@@ -23,4 +23,4 @@ const TopBar: React.FC = () => (
   </header>
 );
 
-export default TopBar;
+export default TopNavBar;

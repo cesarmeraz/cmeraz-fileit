@@ -3,13 +3,13 @@ import { Grid, GridColumn } from '@progress/kendo-react-grid';
 import type { GridDataStateChangeEvent } from '@progress/kendo-react-grid';
 import { process } from '@progress/kendo-data-query';
 import type { State } from '@progress/kendo-data-query';
-import type { CommonLogServer } from '../../core/models/common-log.model';
+import type { CommonLog } from '../../core/models/common-log.model';
 
-export interface CommonLogsGridProps {
-  data: CommonLogServer[];
+export interface CommonLogGridProps {
+  data: CommonLog[];
 }
 
-export const CommonLogsGrid = ({ data }: CommonLogsGridProps) => {
+export const CommonLogGrid = ({ data }: CommonLogGridProps) => {
   const [dataState, setDataState] = useState<State>({ skip: 0, take: 10 });
   const [result, setResult] = useState(process(data, dataState));
 
@@ -32,7 +32,7 @@ export const CommonLogsGrid = ({ data }: CommonLogsGridProps) => {
       <GridColumn field="id" title="Id" width={100} />
       <GridColumn field="application" title="Application" />
       <GridColumn field="invocationId" title="Invocation Id" />
-      <GridColumn field="eventId" width={100} title="Event Id" />
+      <GridColumn field="eventName" width={100} title="Event Name" />
       <GridColumn
         field="createdOn"
         title="Created"

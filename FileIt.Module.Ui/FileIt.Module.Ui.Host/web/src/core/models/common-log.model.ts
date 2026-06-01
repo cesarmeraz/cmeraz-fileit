@@ -2,7 +2,7 @@ export interface CommonLog {
   id: number;
   application: string;
   invocationId: string;
-  eventId: number;
+  eventName: string;
   createdOn: Date;
 }
 
@@ -10,7 +10,7 @@ export interface CommonLogServer {
   id: number;
   application: string;
   invocationId: string;
-  eventId: number;
+  eventName: string;
   createdOn: string;
 }
 

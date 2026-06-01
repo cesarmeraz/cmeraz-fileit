@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react';
 import PageTitle from '../../shared/page-title';
-import logData from '../../data/log-query-highlevel-output.json';
-import { CommonLogsGrid } from './common-logs-grid';
-import type { CommonLogServer } from '../../core/models/common-log.model';
+import { CommonLogGrid } from './common-log-grid';
+import type { CommonLog } from '../../core/models/common-log.model';
 import Page from '../../shared/page';
+import { getCommonLogs } from './common-logs.service';
 
 const CommonLogsPage: React.FC = () => {
-  const [commonLogs, setCommonLogs] = useState<CommonLogServer[]>([]);
+  const [commonLogs, setCommonLogs] = useState<CommonLog[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     let cancelled = false;
     const doGetCommonLogs = async () => {
       if (!cancelled) {
-        setCommonLogs(logData);
+        const commonLogs = await getCommonLogs();
+        setCommonLogs(commonLogs);
         setLoading(false);
       }
     };
@@ -21,16 +22,12 @@ const CommonLogsPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [commonLogs]);
+  }, []);
 
   return (
     <Page>
       <PageTitle>Logs</PageTitle>
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <CommonLogsGrid data={commonLogs}></CommonLogsGrid>
-      )}
+      {loading ? <div>Loading...</div> : <CommonLogGrid data={commonLogs}></CommonLogGrid>}
       <div></div>
     </Page>
   );
