@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+
+		<title>FileIt</title>
+
+		<link rel="stylesheet" href="dist/reset.css" />
+		<link rel="stylesheet" href="dist/reveal.css" />
+		<link rel="stylesheet" href="dist/theme/beige.css" />
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+		<style>
+			.reveal .slides pre.mermaid.mermaid-focus {
+				width: 100%;
+				margin: 0 auto;
+			}
+
+			.reveal .slides pre.mermaid.mermaid-focus svg {
+				width: 100% !important;
+				height: auto !important;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+
+				<section>
+					<h1>FileIt</h1>
+					<h2>Migrating a Windows service to Azure</h2>
+				</section>
+
+				<section>
+					<h2>Team</h2>
+					<table>
+						<tr>
+							<td>
+								Sree<br />
+								Stas<br />
+								Marat<br />
+								Eric<br />
+								Chris<br />
+								Xavier<br />
+							</td>
+							<td>
+								Mat<br />
+								Eli<br />
+								Sumesh<br />
+								Mihil<br />
+								Cesar<br />
+								Copilot<br />
+							</td>
+						</tr>
+					</table>
+				</section>
+
+				<section>
+					<h2>Migrating a Windows service to Azure</h2>
+					<h4>Criteria</h4>
+					<ul>
+						<li class="fragment fade-up">Proof of concept for cloud-native workflows</li>
+						<li class="fragment fade-up">Modular function apps with shared resources</li>
+						<li class="fragment fade-up">Built to run locally with emulators</li>
+					</ul>
+				</section>
+
+				<section>
+					<h4>Current FileHandler Service</h4>
+					<div class="r-stack">
+					<pre class="mermaid mermaid-wide fragment fade-in-then-out">
+---
+title: A Windows Service
+---
+  flowchart LR
+      Service
+					</pre>
+					<pre class="mermaid mermaid-wide fragment fade-in-then-out">
+---
+title: Multiple connections to downstream systems
+---
+  flowchart LR
+      Service==>PLAPI["PrivateLink Rest API"]
+	  Service-->LPVision["LPVision Endpoint"]
+	  Service-->SalesForce["SalesForce API"]
+	  Service-->PartyCentral["PartyCentral"]
+					</pre>
+					<pre class="mermaid mermaid-wide fragment fade-in-then-out">
+---
+title: A provider is a plug-in using interfaces to access shared resources
+---
+  flowchart LR
+	    subgraph Service
+		    Interfaces
+			Provider
+			Provider-->Interfaces
+		end
+      Interfaces==>PLAPI["PrivateLink Rest API"]
+	  Interfaces-->LPVision["LPVision Endpoint"]
+	  Interfaces-->SalesForce["SalesForce API"]
+	  Interfaces-->PartyCentral["PartyCentral"]
+					</pre>
+					<pre class="mermaid mermaid-wide fragment fade-in">
+---
+title: Many Providers, running in one process
+---
+  flowchart LR
+	    subgraph Service
+		    Interfaces
+			P1["Provider 1"]
+			PN["Provider N"]
+			P12["Provider 12"]
+			P1-->Interfaces
+			PN-->Interfaces
+			P12-->Interfaces
+		end
+      Interfaces==>PLAPI["PrivateLink Rest API"]
+	  Interfaces-->LPVision["LPVision Endpoint"]
+	  Interfaces-->SalesForce["SalesForce API"]
+	  Interfaces-->PartyCentral["PartyCentral"]
+					</pre>
+					</div>
+				</section>
+
+				<section>
+					<h2>Legacy pain points:</h2>
+					<ul>
+						<li>Manual deployment and fragile operations</li>
+						<li>Limited observability / limited root cause analysis</li>
+						<li>Heavy-load failures without safe load leveling</li>
+						<li>Scattered repos: hard to test, refactor, improve</li>
+					</ul>
+				</section>
+
+
+				<section>
+					<h4>The FileIt Solution</h4>
+					<div class="r-stack">
+<div class="fragment fade-in-then-out">
+	<p>An App Module handles file ingestion and validation</p>
+	<pre class="mermaid mermaid-wide">
+flowchart LR
+	App["App Module"]
+	</pre>
+</div>
+
+<div class="fragment fade-in-then-out">
+	<p>The App adds messages to a Service Bus Queue for file processing</p>
+	<pre class="mermaid mermaid-wide">
+flowchart LR
+	App["App Module"]
+	App--with CorrelationId-->Bus["Service Bus Queue"]
+	</pre>
+</div>
+
+<div class="fragment fade-in-then-out">
+	<p>The App is done. The Services Module processes the file asynchronously.</p>
+	<pre class="mermaid mermaid-wide">
+flowchart LR
+	Bus["Service Bus Queue"]
+	Bus--triggers-->Services["Services Module"]
+	Services--interact-->DownstreamSystems["Downstream Systems"]
+	Services--publishes-->Bus["Service Bus Queue"]
+	</pre>
+</div>
+
+<div class="fragment fade-in-then-out">
+	<p>The Services Module is done. The App Module processes the response asynchronously.</p>
+	<pre class="mermaid mermaid-wide">
+flowchart LR
+	Bus["Service Bus Queue"]
+	Bus--triggers-->App["App Module"]
+	App--processes response-->End["End of flow"]
+	</pre>
+</div>
+
+<div class="fragment fade-in-then-out">
+	<pre class="mermaid mermaid-wide">
+flowchart TD
+  App@{ img: "./images/10029-icon-service-Function-apps.svc", label: "App Module", pos: "t", h: 60, constraint: "on" }
+  Bus@{ img: "./images/10836-icon-service-Azure-Service-Bus.svg", label: "Service Bus", pos: "t", h: 60, constraint: "on" }
+  DB@{ img: "./images/02390-icon-service-Azure-SQL.svg", label: "Azure SQL Database", pos: "t", h: 60, constraint: "on" }
+  Services@{ img: "./images/10029-icon-service-Function-apps.svc", label: "Services Module", pos: "t", h: 60, constraint: "on" }
+  Storage@{ img: "./images/10839-icon-service-Storage-Container.svg", label: "Storage", pos: "t", h: 60, constraint: "on" }
+  Storage-->App
+  App-->Bus
+  Bus-->Services
+  Services-->DownstreamSystems["Downstream Systems"]
+  Services-->Bus
+  Bus-->App
+  Services-->DB
+  Ap-->DB
+  App-->Storage
+	</pre>
+</div>
+				</section>
+
+
+				<section>
+					<h1>What makes this different</h1>
+					<ul>
+						<li>Available for DevSecOps pipelines</li>
+						<li>Structured logs with multiple sinks</li>
+						<li>Short-lived, asynchronous queue processing</li>
+						<li>
+							Dead-letter lifecycle designed as an operational feature, not an
+							afterthought
+						</li>
+						<li>Single repository</li>
+					</ul>
+				</section>
+
+				<section>
+					<h1>High-level architecture</h1>
+					<ul>
+						<li>Each module accesses shared resources with its own Managed Identity</li>
+						<li>Module communication mediated by messages to Service Bus</li>
+					</ul>
+					<pre class="mermaid mermaid-wide">
+block
+  columns 4
+    block:common:2
+      columns 1
+      FA1["FileIt.Module.Services"]
+      MI1&lt;["Managed Identity 1"]&gt;(down)
+      end
+    block:simple:2
+      columns 1
+      FA2["FileIt.Module.Simple"]
+      MA2&lt;["Managed Identity 2"]&gt;(down)
+    end
+  block:shared:4
+    DB["Azure SQL Database"]
+    SB["Service Bus"]
+    BS["Blob Storage"]
+    AI["App Insights"]
+  end
+  classDef shape color:black, stroke-width:1px, stroke:black
+  class FA1,MI1,FA2,MA2,DB,SB,BS,AI shape
+  style common fill:cornflowerblue,stroke-width:4px
+  style simple fill:coral,stroke-width:4px
+  style shared fill:goldenrod,stroke-width:4px
+					</pre>
+				</section>
+
+				<section>
+					<h1>Service Bus Sequence</h1>
+					<div class="cols">
+						<div class="flow">
+							<ul>
+								<li>File ingestion triggers the flow</li>
+								<li>Mail check pattern using blob URI</li>
+								<li>Flow traceable with CorrelationId</li>
+								<li>
+									Service Bus messages require blob URI and CorrelationId
+								</li>
+							</ul>
+						</div>
+						<div class="diagram">
+							<pre class="mermaid">
+sequenceDiagram
+  autonumber
+  participant SF as SimpleFlow
+  participant SB as Service Bus
+  participant SVC as Services Module
+
+  SF-&gt;&gt;SB: Enqueue message
+
+  SB-&gt;&gt;SVC: Deliver queued message
+  SVC-&gt;&gt;SVC: Process request
+  SVC-&gt;&gt;SVC: Call downstream API
+  SVC-&gt;&gt;SB: Publish response event
+
+  SB-&gt;&gt;SF: Subscribe to response
+  SF--&gt;&gt;SF: Complete flow
+							</pre>
+						</div>
+					</div>
+				</section>
+
+				<section>
+					<h1>Code example: watcher trigger + correlation scope</h1>
+					<pre><code class="language-csharp">[Function("DataFlowWatcherLocal")]
+public async Task RunLocal(
+	[BlobTrigger("dataflow-source/{blobName}")] BlobClient blobClient,
+	string blobName,
+	FunctionContext context)
+{
+	string clientRequestId = await blobClient.GetCorrelationId();
+
+	using (_logger.BeginScope(new Dictionary&lt;string, object&gt;
+	{
+		{ "CorrelationId", clientRequestId }
+	}))
+	{
+		await _watcher.RunAsync(blobName, clientRequestId, context.CancellationToken);
+	}
+}</code></pre>
+					<p><small>Source: FileIt.Module.DataFlow.Host/DataFlowWatcher.cs</small></p>
+				</section>
+
+				<section>
+					<h1>Code example: event IDs as a first-class contract</h1>
+					<pre><code class="language-csharp">public static EventId DataFlowWatcher = new EventId(3000, nameof(DataFlowWatcher));
+public static EventId DataFlowWatcherAddRequestLog = new EventId(3001, nameof(DataFlowWatcherAddRequestLog));
+public static EventId DataFlowWatcherMoveToWorking = new EventId(3002, nameof(DataFlowWatcherMoveToWorking));
+public static EventId DataFlowWatcherQueueTransform = new EventId(3003, nameof(DataFlowWatcherQueueTransform));</code></pre>
+					<p>Why it matters:</p>
+					<ul>
+						<li>Predictable event catalog per module</li>
+						<li>Easier dashboards, alerts, and timeline reconstruction</li>
+					</ul>
+					<p><small>Source: FileIt.Module.DataFlow.App/DataFlowEvents.cs</small></p>
+				</section>
+
+				<section>
+					<h1>Code example: dead-letter reader pattern</h1>
+					<pre><code class="language-csharp">[Function(nameof(DataFlowDeadLetterReader))]
+public async Task Run(
+	[ServiceBusTrigger("dataflow-transform/$deadletterqueue")]
+	ServiceBusReceivedMessage message,
+	FunctionContext context)
+{
+	var envelope = BuildEnvelope(message);
+	await _ingestion.IngestWithoutResultAsync(envelope, context.CancellationToken);
+}</code></pre>
+					<p>Design intent:</p>
+					<ul>
+						<li>Thin function adapter</li>
+						<li>Centralized classification + persistence service</li>
+						<li>Same pattern reused across modules</li>
+					</ul>
+					<p><small>Source: FileIt.Module.DataFlow.Host/DataFlowDeadLetterReader.cs</small></p>
+				</section>
+
+				<section>
+					<h1>Dead-letter strategy (operationally useful)</h1>
+					<p>Message categories:</p>
+					<ul>
+						<li>Transient</li>
+						<li>Permanent</li>
+						<li>Poison</li>
+						<li>Unknown</li>
+					</ul>
+					<p>Lifecycle:</p>
+					<p><code>Pending -&gt; PendingReplay -&gt; Replayed -&gt; Resolved</code></p>
+					<p>or</p>
+					<p><code>Pending -&gt; Discarded</code></p>
+					<p>Each action is logged and auditable in SQL + CommonLog.</p>
+				</section>
+
+				<section>
+					<h1>Local dev experience</h1>
+					<p>Local stack options:</p>
+					<ul>
+						<li>Existing approach: emulator + separate function hosts</li>
+						<li>Optional Aspire AppHost: one command + unified dashboard</li>
+					</ul>
+					<p>What this unlocks:</p>
+					<ul>
+						<li>Faster onboarding</li>
+						<li>Reproducible runs</li>
+						<li>Better multi-host log visibility</li>
+					</ul>
+				</section>
+
+				<section>
+					<h1>Module generation as a platform feature</h1>
+					<pre><code class="language-powershell">.\scripts\new-fileit-module.ps1 -Name TradeRecon</code></pre>
+					<p>Generates:</p>
+					<ul>
+						<li>Host + App + Test + Integration projects</li>
+						<li>EventId block + port allocation</li>
+						<li>Solution wiring + smoke build</li>
+					</ul>
+					<p>Result: new modules ship with architecture guardrails by default.</p>
+				</section>
+
+				<section>
+					<h1>Deployment approach (Flex Consumption)</h1>
+					<p>For each module:</p>
+					<ul>
+						<li><code>dotnet publish</code> creates deployable output</li>
+						<li>package zipped via MSBuild target</li>
+						<li>OneDeploy uploads zip to function app</li>
+					</ul>
+					<p>Database:</p>
+					<ul>
+						<li>SQL project / DACPAC-style deployment path</li>
+					</ul>
+					<p>Trade-off:</p>
+					<ul>
+						<li>Simple and effective for this phase</li>
+						<li>Can evolve into enterprise-grade CI/CD later</li>
+					</ul>
+				</section>
+
+				<section>
+					<h1>Placeholder: architecture screenshot</h1>
+					<p>TODO: add screenshot of current architecture diagram</p>
+					<p>Suggested path:</p>
+					<p><code>./slides/assets/architecture-overview.png</code></p>
+					<pre><code class="language-markdown">![w:1500](./slides/assets/architecture-overview.png)</code></pre>
+				</section>
+
+				<section>
+					<h1>Placeholder: screencast (local run)</h1>
+					<p>TODO: add short screencast clip/GIF showing:</p>
+					<ul>
+						<li><code>dotnet run</code> in AppHost (or <code>func start</code> flows)</li>
+						<li>file dropped in source container</li>
+						<li>end-to-end completion in logs</li>
+					</ul>
+					<p>Suggested path:</p>
+					<p><code>./slides/assets/local-run.gif</code></p>
+				</section>
+
+				<section>
+					<h1>Placeholder: log timeline</h1>
+					<p>TODO: add screenshot of correlated logs by <code>CorrelationId</code></p>
+					<p>Include:</p>
+					<ul>
+						<li>watcher start</li>
+						<li>queue publish</li>
+						<li>subscriber receive</li>
+						<li>completion / dead-letter event</li>
+					</ul>
+					<p>Suggested path:</p>
+					<p><code>./slides/assets/correlation-log-timeline.png</code></p>
+				</section>
+
+				<section>
+					<h1>Placeholder: DLQ investigation</h1>
+					<p>
+						TODO: add screenshot of one <code>DeadLetterRecord</code> + corresponding
+						timeline query
+					</p>
+					<p>Show:</p>
+					<ul>
+						<li>category</li>
+						<li>status transition</li>
+						<li>operator action note</li>
+					</ul>
+					<p>Suggested path:</p>
+					<p><code>./slides/assets/dlq-record-detail.png</code></p>
+				</section>
+
+				<section>
+					<h1>Current status and next steps</h1>
+					<p>Now:</p>
+					<ul>
+						<li>Core architecture and patterns are in place</li>
+						<li>Slide deck scaffold is ready for pipeline testing</li>
+					</ul>
+					<p>Next:</p>
+					<ol>
+						<li>Wire assets (screenshots/screencasts/logs)</li>
+						<li>Trim/expand per audience and timebox</li>
+						<li>Publish via GitHub Pages workflow and iterate</li>
+					</ol>
+				</section>
+
+				<section>
+					<h1>Q&amp;A</h1>
+					<p>If useful, next revision can include:</p>
+					<ul>
+						<li>one slide per module</li>
+						<li>failure demo script (FORCE_DLQ_TEST)</li>
+						<li>
+							architecture comparison vs. lift-and-shift VM approach
+						</li>
+					</ul>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="dist/plugin/notes.js"></script>
+		<script src="dist/plugin/markdown.js"></script>
+		<script src="dist/plugin/highlight.js"></script>
+		<script type="module">
+			import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+			mermaid.initialize({ startOnLoad: false, theme: "forest", themeVariables: { fontSize: "20px" } });
+			mermaid.run({ querySelector: ".mermaid" });
+		</script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+				slideNumber: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+			});
+		</script>
+	</body>
+</html>
