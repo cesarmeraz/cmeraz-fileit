@@ -72,7 +72,7 @@
 				</section>
 
 				<section>
-					<h4>Current FileHandler Service</h4>
+					<h3>Current FileHandler Service</h3>
 					<div class="r-stack">
 					<pre class="mermaid mermaid-wide fragment fade-in-then-out">
 ---
@@ -129,18 +129,18 @@ title: Many Providers, running in one process
 				</section>
 
 				<section>
-					<h2>Legacy pain points:</h2>
+					<h3>Legacy pain points:</h3>
 					<ul>
 						<li>Manual deployment and fragile operations</li>
 						<li>Limited observability / limited root cause analysis</li>
-						<li>Heavy-load failures without safe load leveling</li>
+						<li>Long processes choke on shared resources</li>
 						<li>Scattered repos: hard to test, refactor, improve</li>
 					</ul>
 				</section>
 
 
 				<section>
-					<h4>The FileIt Solution</h4>
+					<h3>The FileIt Solution</h3>
 					<div class="r-stack">
 <div class="fragment fade-in-then-out">
 	<p>An App Module handles file ingestion and validation</p>
@@ -174,115 +174,90 @@ flowchart LR
 	<p>The Services Module is done. The App Module processes the response asynchronously.</p>
 	<pre class="mermaid mermaid-wide">
 flowchart LR
-	Bus["Service Bus Queue"]
-	Bus--triggers-->App["App Module"]
-	App--processes response-->End["End of flow"]
-	</pre>
+Bus["Service Bus Queue"]
+Bus--triggers-->App["App Module"]
+App--processes response-->End["End of flow"]
+</pre>
 </div>
 
-<div class="fragment fade-in-then-out">
-	<pre class="mermaid mermaid-wide">
-flowchart TD
-  App@{ img: "./images/10029-icon-service-Function-apps.svc", label: "App Module", pos: "t", h: 60, constraint: "on" }
-  Bus@{ img: "./images/10836-icon-service-Azure-Service-Bus.svg", label: "Service Bus", pos: "t", h: 60, constraint: "on" }
-  DB@{ img: "./images/02390-icon-service-Azure-SQL.svg", label: "Azure SQL Database", pos: "t", h: 60, constraint: "on" }
-  Services@{ img: "./images/10029-icon-service-Function-apps.svc", label: "Services Module", pos: "t", h: 60, constraint: "on" }
-  Storage@{ img: "./images/10839-icon-service-Storage-Container.svg", label: "Storage", pos: "t", h: 60, constraint: "on" }
-  Storage-->App
-  App-->Bus
-  Bus-->Services
-  Services-->DownstreamSystems["Downstream Systems"]
-  Services-->Bus
-  Bus-->App
-  Services-->DB
-  Ap-->DB
-  App-->Storage
-	</pre>
-</div>
-				</section>
+</section>
 
-
-				<section>
-					<h1>What makes this different</h1>
-					<ul>
-						<li>Available for DevSecOps pipelines</li>
-						<li>Structured logs with multiple sinks</li>
-						<li>Short-lived, asynchronous queue processing</li>
-						<li>
-							Dead-letter lifecycle designed as an operational feature, not an
-							afterthought
-						</li>
-						<li>Single repository</li>
-					</ul>
-				</section>
-
-				<section>
-					<h1>High-level architecture</h1>
-					<ul>
-						<li>Each module accesses shared resources with its own Managed Identity</li>
-						<li>Module communication mediated by messages to Service Bus</li>
-					</ul>
-					<pre class="mermaid mermaid-wide">
-block
-  columns 4
+<section>
+<h3>FileIt Architecture</h3>
+<pre class="mermaid mermaid-wide">
+	block
+	columns 4
     block:common:2
-      columns 1
-      FA1["FileIt.Module.Services"]
-      MI1&lt;["Managed Identity 1"]&gt;(down)
-      end
+	columns 1
+	FA1["FileIt.Module.Services"]
+	MI1<["Managed Identity 1"]>(down)
+	end
     block:simple:2
-      columns 1
-      FA2["FileIt.Module.Simple"]
-      MA2&lt;["Managed Identity 2"]&gt;(down)
+	columns 1
+	FA2["FileIt.Module.Simple"]
+	MA2<["Managed Identity 2"]>(down)
     end
-  block:shared:4
+	block:shared:4
     DB["Azure SQL Database"]
     SB["Service Bus"]
     BS["Blob Storage"]
     AI["App Insights"]
-  end
-  classDef shape color:black, stroke-width:1px, stroke:black
-  class FA1,MI1,FA2,MA2,DB,SB,BS,AI shape
-  style common fill:cornflowerblue,stroke-width:4px
-  style simple fill:coral,stroke-width:4px
-  style shared fill:goldenrod,stroke-width:4px
-					</pre>
-				</section>
+	end
+	classDef shape color:black, stroke-width:1px, stroke:black
+	class FA1,MI1,FA2,MA2,DB,SB,BS,AI shape
+	style common fill:cornflowerblue,stroke-width:4px
+	style simple fill:coral,stroke-width:4px
+	style shared fill:goldenrod,stroke-width:4px
+</pre>
+<ul>
+	<li class="fragment fade-in">Blob Event triggers file ingestion</li>
+	<li class="fragment fade-in">Managed Identity accesses all shared resources</li>
+	<li class="fragment fade-in">Service Bus mediates module communication</li>
+	<li class="fragment fade-in">Services Module publish results back to Bus</li>
+	<li class="fragment fade-in">Logs sink to one DB table/App Insights</li>
+</ul>
+</section>	
 
-				<section>
-					<h1>Service Bus Sequence</h1>
-					<div class="cols">
-						<div class="flow">
-							<ul>
-								<li>File ingestion triggers the flow</li>
-								<li>Mail check pattern using blob URI</li>
-								<li>Flow traceable with CorrelationId</li>
-								<li>
-									Service Bus messages require blob URI and CorrelationId
-								</li>
-							</ul>
-						</div>
-						<div class="diagram">
-							<pre class="mermaid">
-sequenceDiagram
-  autonumber
-  participant SF as SimpleFlow
-  participant SB as Service Bus
-  participant SVC as Services Module
+<section>
+	<h3>What makes this different</h3>
+	<ul>
+		<li class="fragment fade-in">Available for DevSecOps pipelines</li>
+		<li class="fragment fade-in">Structured logs with multiple sinks</li>
+		<li class="fragment fade-in">Short-lived, asynchronous queue processing</li>
+		<li class="fragment fade-in">
+			Dead-letter lifecycle designed as an operational feature, not an
+			afterthought
+		</li>
+		<li class="fragment fade-in">Clean Architecture patterns 
+		<ul>
+			<li>Easier maintenance and safer refactoring</li>
+			<li>Testable components with clear dependencies</li>
+		</ul>
+		</li>
+		<li class="fragment fade-in">Single repository</li>
+	</ul>
+</section>
 
-  SF-&gt;&gt;SB: Enqueue message
+<section>
+	<h3>Local Development Requirements</h3>
+	<ul>
+		<li>All Azure components in the FileIt system must be emulated locally</li>
+		<li>Function apps run locally</li>
+		<li>The Service Bus emulator requires <strong>Docker</strong> which requires <strong>Windows Subsystem for Linux (WSL)</strong></li>
+		<li>SQL Server Developer Edition </li>
+		<li>Azurite</li>
+	</ul>
+</section>
 
-  SB-&gt;&gt;SVC: Deliver queued message
-  SVC-&gt;&gt;SVC: Process request
-  SVC-&gt;&gt;SVC: Call downstream API
-  SVC-&gt;&gt;SB: Publish response event
+<section>
+	<h3>Aspire</h3>
+	
+</section>
 
-  SB-&gt;&gt;SF: Subscribe to response
-  SF--&gt;&gt;SF: Complete flow
-							</pre>
-						</div>
-					</div>
-				</section>
+<section>
+	<h3>Aspire</h3>
+	
+</section>
 
 				<section>
 					<h1>Code example: watcher trigger + correlation scope</h1>
