@@ -1,4 +1,5 @@
-import { Dialog } from '@progress/kendo-react-dialogs';
+import { useState } from 'react';
+import { Window } from '@progress/kendo-react-dialogs';
 import type { CommonLog } from '../../core/models/common-log.model';
 
 export interface CommonLogDetailsModalProps {
@@ -68,12 +69,21 @@ export const CommonLogDetailsModal = ({
   relatedLogs = [],
   onClose,
 }: CommonLogDetailsModalProps) => {
+  const [windowState, setWindowState] = useState<'normal' | 'maximized' | 'minimized'>('normal');
+
   if (!modalShowing || !selectedLog) {
     return null;
   }
 
   return (
-    <Dialog title="Log Details" onClose={onClose} width={1000} height={700}>
+    <Window
+      title="Log Details"
+      onClose={onClose}
+      width={1000}
+      height={700}
+      state={windowState}
+      onStateChange={(e) => setWindowState(e.state)}
+    >
       <div style={detailsContainerStyle}>
         {/* Related Logs Section */}
         <div style={relatedLogsContainerStyle}>
@@ -116,6 +126,6 @@ export const CommonLogDetailsModal = ({
           </div>
         </div>
       </div>
-    </Dialog>
+    </Window>
   );
 };
