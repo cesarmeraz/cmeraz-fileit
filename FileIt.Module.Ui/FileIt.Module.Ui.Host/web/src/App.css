@@ -1,0 +1,6 @@
+/* Custom styles */
+
+/* Kendo overrides */
+.k-grid tbody tr {
+  cursor: pointer;
+}

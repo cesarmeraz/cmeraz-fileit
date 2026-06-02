@@ -3,6 +3,7 @@ import TopNavBar from './core/layout/top-navbar';
 import NotFoundPage from './not-found-page';
 import CommonLogsPage from './modules/common-logs/common-logs-page';
 import '@progress/kendo-theme-material/dist/all.css';
+import './App.css';
 
 const App: React.FC = () => {
   return (
