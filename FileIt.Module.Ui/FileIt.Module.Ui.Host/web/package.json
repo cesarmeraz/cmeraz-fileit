@@ -12,6 +12,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@progress/kendo-licensing": "^1.11.2",
     "@progress/kendo-react-grid": "^15.0.0",
     "@progress/kendo-theme-material": "^14.1.0",
     "dotenv": "^17.4.2",
