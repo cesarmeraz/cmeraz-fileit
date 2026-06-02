@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { StyledNavLink, StyledBrandLink } from '../../styles';
+import { StyledBrandLink } from '../../styles';
 import { DeepNavy } from '../../colors';
 
 const TopNavBar: React.FC = () => (
@@ -15,10 +15,7 @@ const TopNavBar: React.FC = () => (
     `}
   >
     <div>
-      <StyledBrandLink to="/">
-        FileIt<span>{import.meta.env.VITE_REACT_APP_ENV || 'dev'}</span>
-      </StyledBrandLink>
-      <StyledNavLink to="/logs">Logs</StyledNavLink>
+      <StyledBrandLink to="/">FileIt<span>Log Viewer</span></StyledBrandLink>
     </div>
   </header>
 );

@@ -39,7 +39,6 @@ const CommonLogsPage: React.FC = () => {
 
   return (
     <Page>
-      <PageTitle>Logs</PageTitle>
       {loading ? <div>Loading...</div> : <CommonLogGrid data={commonLogs} onRowClick={handleRowClick} />}
       <CommonLogDetailsModal
         modalShowing={dialogOpen}
