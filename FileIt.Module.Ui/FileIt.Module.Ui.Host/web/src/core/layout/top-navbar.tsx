@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { StyledNavLink, StyledBrandLink } from '../../Styles';
+import { StyledNavLink, StyledBrandLink } from '../../styles';
 import { DeepNavy } from '../../colors';
 
 const TopNavBar: React.FC = () => (
