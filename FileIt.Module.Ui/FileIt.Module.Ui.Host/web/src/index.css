@@ -4,3 +4,18 @@ body {
   font-family: Roboto, sans-serif;
   color: lightgray;
 }
+
+/* Kendo Dialog styling for rounded corners */
+.k-dialog {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.k-dialog-titlebar {
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.k-dialog-content {
+  border-radius: 0 0 8px 8px !important;
+  overflow: hidden !important;
+}
