@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import { StyledBrandLink } from '../../styles';
 import { DeepNavy } from '../../colors';
+import { APPLICATION_NAME, SYSTEM_NAME } from '../constants/app-constants';
 
 const TopNavBar: React.FC = () => (
   <header
@@ -16,8 +17,8 @@ const TopNavBar: React.FC = () => (
   >
     <div>
       <StyledBrandLink to="/">
-        {import.meta.env.VITE_SYSTEM_NAME}
-        <span>{import.meta.env.VITE_APP_NAME}</span>
+        {SYSTEM_NAME}
+        <span>{APPLICATION_NAME}</span>
       </StyledBrandLink>
     </div>
   </header>

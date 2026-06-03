@@ -22,15 +22,6 @@ const relatedLogsContainerStyle: React.CSSProperties = {
   overflow: 'hidden',
 };
 
-const tableHeaderStyle: React.CSSProperties = {
-  fontWeight: 'bold',
-  marginBottom: '8px',
-  color: '#333',
-  fontSize: '12px',
-  textTransform: 'uppercase',
-  letterSpacing: '0.5px',
-};
-
 const tableContainerStyle: React.CSSProperties = {
   flex: 1,
   overflow: 'auto',
@@ -77,7 +68,6 @@ export const CommonLogDetailsModal = ({
       <div style={detailsContainerStyle}>
         {/* Related Logs Section */}
         <div style={relatedLogsContainerStyle}>
-          <div style={tableHeaderStyle}>Related Logs</div>
           <div style={tableContainerStyle}>
             <table style={tableStyle}>
               <thead>

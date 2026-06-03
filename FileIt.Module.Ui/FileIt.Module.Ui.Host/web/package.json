@@ -15,7 +15,6 @@
     "@progress/kendo-licensing": "^1.11.2",
     "@progress/kendo-react-grid": "^15.0.0",
     "@progress/kendo-theme-material": "^14.1.0",
-    "dotenv": "^17.4.2",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.16.0"
