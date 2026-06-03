@@ -3,7 +3,7 @@ CREATE PROCEDURE [dbo].[usp_GetCommonLogDetail]
 AS
 BEGIN
     SET NOCOUNT ON;
-
+    
     -- Temporary table to hold results
     DECLARE @results TABLE (
         Id INT,
@@ -17,8 +17,8 @@ BEGIN
         InfrastructureVersion NVARCHAR(50),
         SourceContext NVARCHAR(100),
         CorrelationId UNIQUEIDENTIFIER,
-        InvocationId UNIQUEIDENTIFIER,
-        EventId INT,
+        InvocationId NVARCHAR(100),
+        EventName NVARCHAR(100),
         CreatedOn DATETIME
     );
 
@@ -48,7 +48,7 @@ BEGIN
         ApplicationVersion, InfrastructureVersion, SourceContext, CorrelationId,
         InvocationId, EventName, CreatedOn
     FROM [dbo].[CommonLog]
-    WHERE EventName IN ('FunctionStart') -- TODO: add more as needed
+    WHERE EventName IN ('First', 'FunctionStart', 'FunctionEnd')
       AND Id NOT IN (SELECT Id FROM @results)
       AND InvocationId IN (SELECT InvocationId FROM @results);
 
@@ -66,8 +66,9 @@ BEGIN
         SourceContext,
         CorrelationId,
         InvocationId,
-        EventId,
+        EventName,
         CreatedOn
     FROM @results
     ORDER BY Id ASC;
 END;
+GO
