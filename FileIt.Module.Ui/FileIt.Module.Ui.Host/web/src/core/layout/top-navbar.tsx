@@ -15,7 +15,10 @@ const TopNavBar: React.FC = () => (
     `}
   >
     <div>
-      <StyledBrandLink to="/">FileIt<span>Log Viewer</span></StyledBrandLink>
+      <StyledBrandLink to="/">
+        {import.meta.env.VITE_SYSTEM_NAME}
+        <span>{import.meta.env.VITE_APP_NAME}</span>
+      </StyledBrandLink>
     </div>
   </header>
 );

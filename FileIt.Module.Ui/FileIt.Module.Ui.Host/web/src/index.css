@@ -19,3 +19,18 @@ body {
   border-radius: 0 0 8px 8px !important;
   overflow: hidden !important;
 }
+
+/* Kendo Window styling for rounded corners */
+.k-window {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.k-window-titlebar {
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.k-window-content {
+  border-radius: 0 0 8px 8px !important;
+  overflow: hidden !important;
+}

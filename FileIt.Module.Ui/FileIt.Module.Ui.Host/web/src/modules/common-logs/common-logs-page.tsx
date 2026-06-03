@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import PageTitle from '../../shared/page-title';
+import Page from '../../shared/page';
 import { CommonLogGrid } from './common-log-grid';
 import { CommonLogDetailsModal } from './common-log-details-modal';
 import type { CommonLog } from '../../core/models/common-log.model';
-import Page from '../../shared/page';
 import { getCommonLogs } from './common-logs.service';
 
 const CommonLogsPage: React.FC = () => {
