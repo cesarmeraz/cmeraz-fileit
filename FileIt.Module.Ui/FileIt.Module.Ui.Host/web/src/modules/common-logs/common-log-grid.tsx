@@ -31,7 +31,6 @@ export const CommonLogGrid = ({ data, onRowClick }: CommonLogGridProps) => {
       size="small"
       style={{ height: 600 }}
       data={result}
-      filterable={true}
       pageable={true}
       onDataStateChange={handleDataStateChange}
       onRowClick={handleRowClick}
