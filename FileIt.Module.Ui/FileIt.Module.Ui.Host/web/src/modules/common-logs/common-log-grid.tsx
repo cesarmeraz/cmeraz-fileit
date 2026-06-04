@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Grid, GridColumn } from '@progress/kendo-react-grid';
 import type { GridDataStateChangeEvent, GridRowClickEvent } from '@progress/kendo-react-grid';
 import { process } from '@progress/kendo-data-query';
@@ -14,9 +14,12 @@ export const CommonLogGrid = ({ data, onRowClick }: CommonLogGridProps) => {
   const [dataState, setDataState] = useState<State>({ skip: 0, take: 10 });
   const [result, setResult] = useState(process(data, dataState));
 
+  useEffect(() => {
+    setResult(process(data, dataState));
+  }, [data, dataState]);
+
   const handleDataStateChange = (event: GridDataStateChangeEvent) => {
     setDataState(event.dataState);
-    setResult(process(data, event.dataState));
   };
 
   const handleRowClick = (event: GridRowClickEvent) => {

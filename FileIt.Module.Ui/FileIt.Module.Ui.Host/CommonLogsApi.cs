@@ -25,7 +25,7 @@ public class CommonLogsApi
         CancellationToken token)
     {
         // Collect optional params
-        string? applicationName = req.Query["applicationName"];
+        string? application = req.Query["application"];
         string? timePeriod = req.Query["timePeriod"];
         var now = DateTime.UtcNow;
         DateTime? startDate = timePeriod switch
@@ -41,7 +41,7 @@ public class CommonLogsApi
         // Query database
         await using var db = _factory.CreateDbContext();
         var commonLogs = await db.Database
-            .SqlQuery<CommonLogSummaryDto>($"EXEC dbo.usp_GetCommonLogSummary @ApplicationName={applicationName},@StartDate={startDate},@EndDate={endDate}")
+            .SqlQuery<CommonLogSummaryDto>($"EXEC dbo.usp_GetCommonLogSummary @Application={application},@StartDate={startDate},@EndDate={endDate}")
             .ToListAsync(token);
 
         return new OkObjectResult(commonLogs);
