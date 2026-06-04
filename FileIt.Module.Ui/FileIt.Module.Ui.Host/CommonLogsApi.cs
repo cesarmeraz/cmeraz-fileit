@@ -26,9 +26,9 @@ public class CommonLogsApi
     {
         // Collect optional params
         string? applicationName = req.Query["applicationName"];
-        string? dateRange = req.Query["dateRange"];
+        string? timePeriod = req.Query["timePeriod"];
         var now = DateTime.UtcNow;
-        DateTime? startDate = dateRange switch
+        DateTime? startDate = timePeriod switch
         {
             "1h" => now.AddHours(1),
             "24h" => now.AddHours(-24),

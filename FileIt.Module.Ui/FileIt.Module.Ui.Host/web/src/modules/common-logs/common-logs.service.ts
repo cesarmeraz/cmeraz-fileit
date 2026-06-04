@@ -1,4 +1,4 @@
-import { getJson } from '../../core/api/api-client';
+import { buildQueryString, getJson } from '../../core/api/api-utils';
 import {
   type CommonLog,
   type CommonLogServer,
@@ -8,10 +8,12 @@ import {
   commonLogsServerToCommonLogs,
 } from '../../core/models/common-log.model';
 
-export async function getCommonLogs(): Promise<CommonLog[]> {
-  return getJson<CommonLogServer[]>('/common-logs').then((commonLogsServer: CommonLogServer[]) => {
-    const commonLogs = commonLogsServerToCommonLogs(commonLogsServer);
-    return commonLogs;
+export async function getCommonLogs(application: string, timePeriod: string): Promise<CommonLog[]> {
+  const queryString = buildQueryString({ application, timePeriod });
+  const url = queryString ? `/common-logs?${queryString}` : '/common-logs';
+
+  return getJson<CommonLogServer[]>(url).then((commonLogsServer: CommonLogServer[]) => {
+    return commonLogsServerToCommonLogs(commonLogsServer);
   });
 }
 
