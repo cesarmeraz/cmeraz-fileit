@@ -14,8 +14,8 @@ using Microsoft.Extensions.Logging;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 builder.ConfigureFunctionsWebApplication();
-builder.UseMiddleware<MiddlewareLogger>();
 builder.UseMiddleware<SerilogInvocationIdMiddleware>();
+builder.UseMiddleware<MiddlewareLogger>();
 builder.UseMiddleware<ExceptionHandlingMiddleware>();
 
 #if RELEASE
