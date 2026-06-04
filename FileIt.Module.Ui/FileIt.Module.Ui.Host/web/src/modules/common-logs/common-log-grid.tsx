@@ -38,7 +38,6 @@ export const CommonLogGrid = ({ data, onRowClick }: CommonLogGridProps) => {
       <GridColumn field="id" title="Id" width={100} />
       <GridColumn field="application" title="Application" />
       <GridColumn field="invocationId" title="Invocation Id" />
-      <GridColumn field="eventName" width={100} title="Event Name" />
       <GridColumn
         field="createdOn"
         title="Created"

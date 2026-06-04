@@ -1,9 +1,9 @@
-CREATE PROCEDURE [dbo].[usp_GetCommonLogDetail]
+CREATE or alter  PROCEDURE [dbo].[usp_GetCommonLogDetail]
     @InvocationId NVARCHAR(100)
 AS
 BEGIN
     SET NOCOUNT ON;
-    
+
     -- Temporary table to hold results
     DECLARE @results TABLE (
         Id INT,
@@ -16,11 +16,11 @@ BEGIN
         ApplicationVersion NVARCHAR(50),
         InfrastructureVersion NVARCHAR(50),
         SourceContext NVARCHAR(100),
-        CorrelationId UNIQUEIDENTIFIER,
+        CorrelationId NVARCHAR(100),
         InvocationId NVARCHAR(100),
         EventName NVARCHAR(100),
         CreatedOn DATETIME
-    );
+    )
 
     -- 1. Insert logs for the specific InvocationId
     INSERT INTO @results

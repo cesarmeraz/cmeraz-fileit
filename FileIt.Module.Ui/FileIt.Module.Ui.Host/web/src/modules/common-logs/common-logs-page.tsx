@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import Page from '../../shared/page';
 import { CommonLogGrid } from './common-log-grid';
 import { CommonLogDetailsModal } from './common-log-details-modal';
-import type { CommonLog } from '../../core/models/common-log.model';
-import { getCommonLogs } from './common-logs.service';
+import type { CommonLog, CommonLogDetail } from '../../core/models/common-log.model';
+import { getCommonLogs, getCommonLogDetails } from './common-logs.service';
 
 const CommonLogsPage: React.FC = () => {
   const [commonLogs, setCommonLogs] = useState<CommonLog[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedLog, setSelectedLog] = useState<CommonLog | null>(null);
+  const [, setSelectedLog] = useState<CommonLog | null>(null);
+  const [selectedLogDetails, setSelectedLogDetails] = useState<CommonLogDetail[] | null>(null);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -26,8 +27,10 @@ const CommonLogsPage: React.FC = () => {
     };
   }, []);
 
-  const handleRowClick = (log: CommonLog) => {
+  const handleRowClick = async (log: CommonLog) => {
     setSelectedLog(log);
+    const commonLogDetails = await getCommonLogDetails(log.invocationId);
+    setSelectedLogDetails(commonLogDetails);
     setDialogOpen(true);
   };
 
@@ -39,14 +42,7 @@ const CommonLogsPage: React.FC = () => {
   return (
     <Page>
       {loading ? <div>Loading...</div> : <CommonLogGrid data={commonLogs} onRowClick={handleRowClick} />}
-      <CommonLogDetailsModal
-        modalShowing={dialogOpen}
-        selectedLog={selectedLog}
-        relatedLogs={
-          selectedLog ? commonLogs.filter((log) => log.application === selectedLog.application).slice(0, 10) : []
-        }
-        onClose={handleDialogClose}
-      />
+      <CommonLogDetailsModal modalShowing={dialogOpen} logDetails={selectedLogDetails} onClose={handleDialogClose} />
     </Page>
   );
 };

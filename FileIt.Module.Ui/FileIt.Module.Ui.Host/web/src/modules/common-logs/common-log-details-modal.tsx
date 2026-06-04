@@ -1,10 +1,9 @@
 import { Window } from '@progress/kendo-react-dialogs';
-import type { CommonLog } from '../../core/models/common-log.model';
+import type { CommonLogDetail } from '../../core/models/common-log.model';
 
 export interface CommonLogDetailsModalProps {
   modalShowing: boolean;
-  selectedLog: CommonLog | null;
-  relatedLogs?: CommonLog[];
+  logDetails: CommonLogDetail[] | null;
   onClose: () => void;
 }
 
@@ -53,34 +52,37 @@ const tableCellStyle: React.CSSProperties = {
   color: '#666',
 };
 
-export const CommonLogDetailsModal = ({
-  modalShowing,
-  selectedLog,
-  relatedLogs = [],
-  onClose,
-}: CommonLogDetailsModalProps) => {
-  if (!modalShowing || !selectedLog) {
+export const CommonLogDetailsModal = ({ modalShowing, logDetails, onClose }: CommonLogDetailsModalProps) => {
+  if (!modalShowing || !logDetails) {
     return null;
   }
 
   return (
     <Window title="Log Details" onClose={onClose} width={1000} height={700}>
       <div style={detailsContainerStyle}>
-        {/* Related Logs Section */}
         <div style={relatedLogsContainerStyle}>
           <div style={tableContainerStyle}>
             <table style={tableStyle}>
               <thead>
                 <tr style={{ backgroundColor: '#f5f5f5' }}>
                   <th style={tableHeaderCellStyle}>Id</th>
+                  <th style={tableHeaderCellStyle}>Message</th>
+                  <th style={tableHeaderCellStyle}>Level</th>
+                  <th style={tableHeaderCellStyle}>Exception</th>
+                  <th style={tableHeaderCellStyle}>Environment</th>
+                  <th style={tableHeaderCellStyle}>MachineName</th>
                   <th style={tableHeaderCellStyle}>Application</th>
+                  <th style={tableHeaderCellStyle}>Application Version</th>
+                  <th style={tableHeaderCellStyle}>Infrastructure Version</th>
+                  <th style={tableHeaderCellStyle}>Source Context</th>
+                  <th style={tableHeaderCellStyle}>Correlation Id</th>
                   <th style={tableHeaderCellStyle}>Invocation Id</th>
                   <th style={tableHeaderCellStyle}>Event Name</th>
-                  <th style={tableHeaderCellStyle}>Created</th>
+                  <th style={tableHeaderCellStyle}>Created On</th>
                 </tr>
               </thead>
               <tbody>
-                {relatedLogs.slice(0, 10).map((log, index) => (
+                {logDetails.map((log, index) => (
                   <tr
                     key={`${log.id}-${index}`}
                     style={tableRowStyle}
@@ -92,16 +94,25 @@ export const CommonLogDetailsModal = ({
                     }}
                   >
                     <td style={tableCellStyle}>{log.id}</td>
+                    <td style={tableCellStyle}>{log.message}</td>
+                    <td style={tableCellStyle}>{log.level}</td>
+                    <td style={tableCellStyle}>{log.exception}</td>
+                    <td style={tableCellStyle}>{log.environment}</td>
+                    <td style={tableCellStyle}>{log.machineName}</td>
                     <td style={tableCellStyle}>{log.application}</td>
+                    <td style={tableCellStyle}>{log.applicationVersion}</td>
+                    <td style={tableCellStyle}>{log.infrastructureVersion}</td>
+                    <td style={tableCellStyle}>{log.sourceContext}</td>
+                    <td style={tableCellStyle}>{log.correlationId}</td>
                     <td style={tableCellStyle}>{log.invocationId}</td>
                     <td style={tableCellStyle}>{log.eventName}</td>
-                    <td style={tableCellStyle}>{new Date(log.createdOn).toLocaleString()}</td>
+                    <td style={tableCellStyle}>{log.createdOn.toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            {relatedLogs.length === 0 && (
-              <div style={{ padding: '16px', textAlign: 'center', color: '#999' }}>No related logs found</div>
+            {logDetails.length === 0 && (
+              <div style={{ padding: '16px', textAlign: 'center', color: '#999' }}>No log details found</div>
             )}
           </div>
         </div>
