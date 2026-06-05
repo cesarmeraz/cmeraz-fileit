@@ -33,7 +33,7 @@ const filterGroupStyle = css`
 `;
 
 const labelStyle = css`
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
   color: #333;
 `;
@@ -67,11 +67,11 @@ export const CommonLogsFilterPanel = ({
 }: CommonLogsFilterPanelProps) => {
   const applicationOptions = useMemo(() => getAllApplicationMappings(), []);
 
-  const timePeriods = [
-    { label: '1h', value: '1h' },
-    { label: '24h', value: '24h' },
-    { label: '7d', value: '7d' },
-    { label: '30d', value: '30d' },
+  const timeRanges = [
+    { label: '1 Hour', value: '1h' },
+    { label: '24 Hours', value: '24h' },
+    { label: '7 Days', value: '7d' },
+    { label: '30 Days', value: '30d' },
   ];
 
   return (
@@ -93,9 +93,9 @@ export const CommonLogsFilterPanel = ({
         </div>
 
         <div css={filterGroupStyle}>
-          <label css={labelStyle}>Time Period</label>
+          <label css={labelStyle}>Time Range</label>
           <div css={buttonGroupStyle}>
-            {timePeriods.map((period) => (
+            {timeRanges.map((period) => (
               <button
                 key={period.value}
                 css={buttonStyle(selectedTimePeriod === period.value)}

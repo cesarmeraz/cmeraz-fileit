@@ -106,7 +106,7 @@ export const CommonLogDetailsModal = ({ modalShowing, logDetails, onClose }: Com
                     <td style={tableCellStyle}>{log.correlationId}</td>
                     <td style={tableCellStyle}>{log.invocationId}</td>
                     <td style={tableCellStyle}>{log.eventName}</td>
-                    <td style={tableCellStyle}>{log.createdOn.toLocaleString()}</td>
+                    <td style={tableCellStyle}>{log.createdOnFormatted}</td>
                   </tr>
                 ))}
               </tbody>

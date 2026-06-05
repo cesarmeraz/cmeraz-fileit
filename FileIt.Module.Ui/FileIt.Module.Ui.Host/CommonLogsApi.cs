@@ -30,7 +30,7 @@ public class CommonLogsApi
         var now = DateTime.UtcNow;
         DateTime? startDate = timePeriod switch
         {
-            "1h" => now.AddHours(1),
+            "1h" => now.AddHours(-1),
             "24h" => now.AddHours(-24),
             "7d" => now.AddDays(-7),
             "30d" => now.AddDays(-30),

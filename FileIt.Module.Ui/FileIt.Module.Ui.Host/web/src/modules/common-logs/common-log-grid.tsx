@@ -40,14 +40,7 @@ export const CommonLogGrid = ({ data, onRowClick }: CommonLogGridProps) => {
       <GridColumn field="id" title="Id" width={100} />
       <GridColumn field="application" title="Application" />
       <GridColumn field="invocationId" title="Invocation Id" />
-      <GridColumn
-        field="createdOn"
-        title="Created"
-        cells={{
-          data: (props) => <td>{new Date(props.dataItem.createdOn).toLocaleString()}</td>,
-        }}
-        width={160}
-      />
+      <GridColumn field="createdOnFormatted" title="Created" width={160} />
     </Grid>
   );
 };

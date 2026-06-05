@@ -4,6 +4,7 @@ export interface CommonLog {
   invocationId: string;
   eventName: string;
   createdOn: Date;
+  createdOnFormatted: string;
 }
 
 export interface CommonLogServer {
@@ -29,6 +30,7 @@ export interface CommonLogDetail {
   invocationId: string;
   eventName: string;
   createdOn: Date;
+  createdOnFormatted: string;
 }
 
 export interface CommonLogDetailServer {
@@ -52,6 +54,7 @@ export function commonLogServerToCommonLog(item: CommonLogServer): CommonLog {
   return {
     ...item,
     createdOn: new Date(item.createdOn),
+    createdOnFormatted: new Date(item.createdOn).toLocaleString(),
   };
 }
 
@@ -63,6 +66,7 @@ export function commonLogDetailServerToCommonLogDetail(item: CommonLogDetailServ
   return {
     ...item,
     createdOn: new Date(item.createdOn),
+    createdOnFormatted: new Date(item.createdOn).toLocaleString(),
   };
 }
 
